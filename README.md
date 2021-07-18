@@ -15,7 +15,19 @@
 
 
 
+## 贡献者
 
+<table border="0">
+  <tbody>
+    <tr align="center" >
+      <td>
+         <a href="https://github.com/JohnJim0816"><img width="70" height="70" src="https://github.com/JohnJim0816.png?s=40" alt="pic"></a><br>
+         <a href="https://github.com/JohnJim0816">John Jim</a>
+         <p>算法实战<br> 北京大学</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 ## Refs
 
