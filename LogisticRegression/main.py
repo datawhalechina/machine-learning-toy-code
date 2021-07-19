@@ -5,7 +5,7 @@
 @Email: johnjim0816@gmail.com
 @Date: 2020-06-06 17:26:50
 @LastEditor: John
-LastEditTime: 2021-04-08 00:56:08
+LastEditTime: 2021-07-19 14:02:49
 @Discription: 
 @Environment: python 3.7.7
 '''
@@ -46,7 +46,7 @@ class LogisticRegression:
         self.y_train_mat, self.y_test_mat = np.mat(
             self.y_test).T, np.mat(self.y_test).T
         # theta表示模型的参数，即w和b
-        self.theta=np.mat(np.zeros(len(x_train[0])))
+        self.theta = np.mat(np.zeros(len(x_train[0])))
         self.lr=0.001 # 可以设置学习率优化，使用Adam等optimizier
         self.n_iters=10  # 设置迭代次数
     @staticmethod
