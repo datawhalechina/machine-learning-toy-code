@@ -5,7 +5,7 @@
 @Email: johnjim0816@gmail.com
 @Date: 2020-06-06 17:26:50
 @LastEditor: John
-LastEditTime: 2021-07-19 14:02:49
+LastEditTime: 2021-07-27 15:33:55
 @Discription: 
 @Environment: python 3.7.7
 '''
@@ -64,10 +64,10 @@ class LogisticRegression:
         '''训练过程，可参考伪代码
         '''
         for i_iter in range(self.n_iters):
-            for n in range(len(self.x_train)):
-                result = self.sigmoid(np.dot(self.x_train_mat[n], self.theta.T))
-                error = self.y_train[n]- result
-                grad = error*self.x_train_mat[n]
+            for i in range(len(self.x_train)):
+                result = self.sigmoid(np.dot(self.x_train_mat[i], self.theta.T))
+                error = self.y_train[i]- result
+                grad = error*self.x_train_mat[i]
                 self.theta+= self.lr*grad
             print('LogisticRegression Model(learning_rate={},i_iter={})'.format(
             self.lr, i_iter+1))
@@ -76,8 +76,6 @@ class LogisticRegression:
         '''
         np.save(os.path.dirname(sys.argv[0])+"/theta.npy",self.theta)
     def load(self):
-        import os 
-        import sys
         self.theta=np.load(os.path.dirname(sys.argv[0])+"/theta.npy")
     def test(self):
          # 错误值计数
