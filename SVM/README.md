@@ -161,12 +161,61 @@ $$
 $$
 可以看到与硬间隔SVM相比，只是多了一个约束条件$0 \leq \alpha_{i} \leq C$。
 
+### 核函数SVM
 
+对于完全线性不可分的情况，我们可以将数据映射到高维，从而线性可分。回顾线性可分的SVM优化函数：
+$$
+ \begin{gathered}\underbrace{\min }_{\alpha} \frac{1}{2} \sum_{i=1}^{m} \sum_{j=1}^{m} \alpha_{i} \alpha_{j} y_{i} y_{j}\left(x_{i} \cdot x_{j}\right)-\sum_{i=1}^{m} \alpha_{i} \\\text { s.t. } \sum_{i=1}^{m} \alpha_{i} y_{i}=0 \\\alpha_{i} \geq 0 i=1,2, \ldots m\end{gathered}
+$$
+上式低维特征仅仅以内积$𝑥_𝑖∙𝑥_𝑗$的形式出现，如果我们定义一个低维特征空间到高维特征空间的映射$\phi$，将所有特征映射到一个更高的维度，让数据线性可分，从而按照前面的方法求出超平面，即：
+$$
+\begin{gathered}
+\underbrace{\min }_{\alpha} \frac{1}{2} \sum_{i=1, j=1}^{m} \alpha_{i} \alpha_{j} y_{i} y_{j} \phi\left(x_{i}\right) \cdot \phi\left(x_{j}\right)-\sum_{i=1}^{m} \alpha_{i} \\
+\text { s.t. } \sum_{i=1}^{m} \alpha_{i} y_{i}=0 \\
+0 \leq \alpha_{i} \leq C
+\end{gathered}
+$$
+但是这样我们需要求出内积$\phi\left(x_{i}\right) \cdot \phi\left(x_{j}\right)$，这样类似于二次规划那样会引入一个$\tilde{d}$维空间，从而发生维度爆炸影响计算速度。
+
+为此我们可以引入核函数，设$\phi$是一个从低维的输入空间$\chi$（欧式空间的子集或者离散集合）到高维的希尔伯特空间的$\mathcal{H}$映射，如果存在函数$K(x, x')$，对于任意$x, x' \in \chi $，都有：
+$$
+K(x, x')=\phi(x) \bullet \phi(x')
+$$
+咋看跟上面没什么区别，但实际上核函数计算都是在低维空间下进行的，例如对于
+$$
+\Phi(\mathbf{x})=\left(1, x_{1}, x_{2}, \ldots, x_{d}, x_{1}^{2}, x_{1} x_{2}, \ldots, x_{1} x_{d}, x_{2} x_{1}, x_{2}^{2}, \ldots, x_{2} x_{d}, \ldots, x_{d}^{2}\right)
+$$
+我们得到:
+$$
+K_{\Phi}\left(x, x^{\prime}\right)=1+\left(x^{T} x^{\prime}\right)+\left(x^{T} x^{\prime}\right)^{2}
+$$
+这样看只需要计算低维空间的内积就行了。
+
+常见的核函数有四种：
+
+|    核函数     |                       公式                       | 备注                                    |
+| :-----------: | :----------------------------------------------: | --------------------------------------- |
+|  线性核函数   |             $K(x, x')=x \bullet x'$              | 其实就是线性可分的SVM                   |
+| 多项式核函数  |      $K(x, x')=(\gamma x \bullet x'+r)^{d}$      | 其中$\gamma,r,d$都需要自己调参定义      |
+|  高斯核函数   | $K(x, x')=\exp \left(-\gamma||x-x'||^{2}\right)$ | 最主流的核函数，在SVM中也叫径向基核函数 |
+| Sigmoid核函数 |      $K(x, x')=\tanh (\gamma x \cdot x'+r)$      | 也是线性不可分SVM常用的核函数之一       |
+
+下图是高斯核函数在不同参数下的分类效果:
+
+<img src="assets/image-20210809104104109.png" alt="image-20210809104104109" style="zoom:50%;" />
+
+可以看到原来线性SVM下超平面是一条直线，映射到高维可以较自由地定义位置形状。
 
 ## Refs
+
+西瓜书
 
 台大林轩田机器学习技法
 
 [支持向量机原理(二) 线性支持向量机的软间隔最大化模型](https://www.cnblogs.com/pinard/p/6100722.html)
 
 https://shomy.top/2017/02/17/svm-02-dual/
+
+
+
+[林轩田机器学习笔记](https://wizardforcel.gitbooks.io/ntu-hsuantienlin-ml/content/21.html)
