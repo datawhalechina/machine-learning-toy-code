@@ -2,7 +2,10 @@
 
 SVM是一种二元分类模型，它依托的原理是如果能找到一条线，能够划分样本，并且训练点到线的间隔尽可能远，也就是所有点到超平面的最小值要最大，这样的分割线(一般叫超平面, Hyperplane)就是最好的分类方式，间隔叫作Margin。因此SVM的两个关键点就是：完全分类正确，及所有点到超平面的最小值要最大。
 
+<div style="text-align: center">
 <img src="assets/20180214224342909.png" alt="img" style="zoom:50%;" />
+</div>
+
 
 ### 线性SVM
 
@@ -104,11 +107,17 @@ $$
 
 前面讲到线性SVM一个关键点就是超平面必须完全分类所有点，但实际上一方面有些数据混入了异常点，导致本来线性可分变成了不可分，如下图一个橙色和蓝色的异常点导致我们无法用线性SVM。
 
-![img](assets/1042406-20161125104106409-1177897648.png)
+<div style="text-align: center">
+<img src="assets/1042406-20161125104106409-1177897648.png" alt="img" style="zoom:50%;" />
+</div>
+
 
 但还有一种情况是没有糟糕到那么不可分，如下图，本来如果不考虑异常点，SVM的超平面应该是如红色线所示，但由于有一个蓝色的异常点，导致我们学到的超平面是如粗虚线所示。
 
-![img](assets/1042406-20161125104737206-364720074.png)
+<div style="text-align: center">
+<img src="assets/1042406-20161125104737206-364720074.png" alt="img" style="zoom:50%;" />
+</div>
+
 
 为解决这个问题，SVM引入了软间隔的方法。
 
@@ -191,7 +200,7 @@ K_{\Phi}\left(x, x^{\prime}\right)=1+\left(x^{T} x^{\prime}\right)+\left(x^{T} x
 $$
 这样看只需要计算低维空间的内积就行了。
 
-常见的核函数有四种：
+常见的核函数有四种： 
 
 |    核函数     |                       公式                       | 备注                                    |
 | :-----------: | :----------------------------------------------: | --------------------------------------- |
@@ -200,9 +209,11 @@ $$
 |  高斯核函数   | $K(x, x')=\exp \left(-\gamma||x-x'||^{2}\right)$ | 最主流的核函数，在SVM中也叫径向基核函数 |
 | Sigmoid核函数 |      $K(x, x')=\tanh (\gamma x \cdot x'+r)$      | 也是线性不可分SVM常用的核函数之一       |
 
-下图是高斯核函数在不同参数下的分类效果:
+下图是高斯核函数在不同参数下的分类效果:  
+<div style="text-align: center">
+<img src="assets/image-20210809104104109.png" alt="img" style="zoom:50%;" />
+</div>
 
-<img src="assets/image-20210809104104109.png" alt="image-20210809104104109" style="zoom:50%;" />
 
 可以看到原来线性SVM下超平面是一条直线，映射到高维可以较自由地定义位置形状。
 
@@ -214,8 +225,8 @@ $$
 
 [支持向量机原理(二) 线性支持向量机的软间隔最大化模型](https://www.cnblogs.com/pinard/p/6100722.html)
 
-https://shomy.top/2017/02/17/svm-02-dual/
+[支持向量机原理(三)线性不可分支持向量机与核函数](https://www.cnblogs.com/pinard/p/6103615.html)
 
-
+[机器学习技法笔记(3)-对偶SVM](https://shomy.top/2017/02/17/svm-02-dual/)
 
 [林轩田机器学习笔记](https://wizardforcel.gitbooks.io/ntu-hsuantienlin-ml/content/21.html)
