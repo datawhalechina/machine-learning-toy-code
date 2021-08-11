@@ -5,7 +5,7 @@
 @Email: johnjim0816@gmail.com
 @Date: 2020-07-09 15:01:26
 @LastEditor: John
-@LastEditTime: 2020-07-09 16:26:02
+LastEditTime: 2021-08-11 15:53:15
 @Discription: 
 @Environment: python 3.7.7
 '''
@@ -22,33 +22,32 @@
 '''
 # 
 # 导入处于不同目录下的Mnist.load_data
-import os 
-import sys
-parent_path=os.path.dirname(os.path.dirname(sys.argv[0])) # 获取上级目录
-sys.path.append(parent_path) # 修改sys.path
+
+import sys,os
+curr_path = os.path.dirname(__file__)
+parent_path = os.path.dirname(curr_path)
+sys.path.append(parent_path)  # 添加父目录到系统目录
+
 from Mnist.load_data import load_local_mnist
-from sklearn import datasets, svm, metrics
+from sklearn import svm
 from sklearn.metrics import classification_report
 import joblib 
-import time
-
-
 
 
 if __name__ == "__main__":
-    start = time.time()
+   
     train = False # 是否训练
-    (x_train, y_train), (x_test, y_test) = load_local_mnist(one_hot=False)
-    x_train, y_train= x_train[:2000], y_train[:2000]
+
+    (x_train, y_train), (x_test, y_test) = load_local_mnist(one_hot=False) # one_hot指对标签y进行one hot编码
+    # 这里只截取部分数据
+    x_train, y_train= x_train[:2000], y_train[:2000] 
     x_test, y_test = x_test[:200],y_test[:200]
-    
     if train:
-        classifier = svm.SVC(C=200,kernel='rbf',gamma=0.01,cache_size=200,probability=False) # 各系数说明：https://blog.csdn.net/qq_16953611/article/details/82414129
-        classifier.fit(x_train, y_train)
-        joblib.dump(classifier, os.path.dirname(sys.argv[0])+"/SVM_sklearn_model.pkl")
+        model = svm.SVC(C=200,kernel='rbf',gamma=0.01,cache_size=200,probability=False) # 各系数说明：https://blog.csdn.net/qq_16953611/article/details/82414129
+        model.fit(x_train, y_train)
+        joblib.dump(model, curr_path+"/SVM_sklearn_model.pkl")
     else:
-        classifier=joblib.load(os.path.dirname(sys.argv[0])+"/SVM_sklearn_model.pkl")
-    y_predicted = classifier.predict(x_test)
-    end = time.time()
-    print('time span:', end - start)
-    print(classification_report(y_test, y_predicted ))
+        model=joblib.load(curr_path+"/SVM_sklearn_model.pkl")
+    y_predicted = model.predict(x_test)
+
+    print(classification_report(y_test, y_predicted)) # 分类报告
