@@ -18,8 +18,8 @@
 # -- Project information -----------------------------------------------------
 
 project = 'whale-project'
-copyright = '2021, gyh'
-author = 'gyh'
+copyright = '2021, GYH'
+author = 'GYH'
 
 # The full version, including alpha/beta/rc tags
 release = '0.0.1'
@@ -67,8 +67,8 @@ html_theme = 'sphinx_book_theme'
 html_static_path = ['_static']
 
 html_theme_options = {
-    "repository_url": "https://github.com/GYHHAHA",
-    "use_repository_button": True,
+    #"repository_url": "https://github.com/GYHHAHA",
+    #"use_repository_button": True,
     "use_download_button": True,
     "logo_only": True,
 }
