@@ -43,7 +43,7 @@ class DecisionTreeClassifier:
         if weight is None:
             weight = np.full(X.shape[0], 1 / X.shape[0])
         final_weight = weight * get_class_weight(
-            self.class_weight, y,  self.tree.n_classes
+            self.class_weight, y, self.tree.n_classes
         )
         self.tree.weight = final_weight
         self.tree._init_node()

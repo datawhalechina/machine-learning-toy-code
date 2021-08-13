@@ -1,4 +1,9 @@
-from sparrow.tree.util import get_info_gain, get_conditional_info_gain
+from sparrow.tree.util import (
+    get_score,
+    get_conditional_score,
+    get_criterion,
+    get_feature_id,
+)
 
 import numpy as np
 
@@ -8,7 +13,7 @@ class Tree:
     def __init__(
         self,
         criterion,
-        splitter,
+        splitter, #
         max_depth,
         min_samples_split,
         min_samples_leaf,
@@ -53,18 +58,25 @@ class Tree:
     def _split(self, node, idx):
         if not self._able_to_split(node):
             return None, None
-        Hy = get_info_gain(self.y, idx, self.n_classes)
+        criterion = get_criterion(self.criterion)
+        feature_id = get_feature_id(
+            self.X.shape[1],
+            self.random_state,
+            self.max_features
+        )
+        Hy = get_score(self.y, idx, self.n_classes, criterion)
         (
             Hyx, idx_left, idx_right, l_num, r_num, feature_id
-        ) = get_conditional_info_gain(
-            self.X, self.y, self.weight, idx, self.n_classes
+        ) = get_conditional_score(
+            self.X, self.y, self.weight, idx, self.splitter,
+            self.n_classes, criterion, feature_id, self.random_state
         )
         info_gain = Hy - Hyx
         relative_gain = (
             self.weight[idx == 1].sum() / self.weight.sum() * info_gain
         )
         node.mccp_value = Hy + self.ccp_alpha
-        if l_num < self.min_samples_leaf | r_num < self.min_samples_leaf:
+        if (l_num < self.min_samples_leaf) or (r_num < self.min_samples_leaf):
             return None, None
         if relative_gain < self.min_impurity_decrease:
             return None, None

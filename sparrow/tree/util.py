@@ -1,5 +1,31 @@
+from sparrow.tree._criterion import gini, entropy, mse, mae
+from sparrow.tree._splitter import random_split, best_split
+
 import numpy as np
-import pandas as pd
+
+
+def get_criterion(func_type):
+    if func_type == "gini":
+        return gini
+    elif func_type == "entropy":
+        return entropy
+    elif func_type == "mse":
+        return mse
+    elif func_type == "mae":
+        return mae
+
+
+def get_feature_id(fea_num, random_state, max_feature):
+    np.random.seed(random_state)
+    if max_feature == "log":
+        select_num = int(np.log(fea_num))
+    else:
+        select_num = fea_num
+    return np.random.choice(
+        np.arange(fea_num),
+        select_num,
+        replace=False,
+    )
 
 
 def get_class_weight(class_weight, target, n_classes):
@@ -7,49 +33,38 @@ def get_class_weight(class_weight, target, n_classes):
         class_weight = (
             target.shape[0] / (n_classes * np.bincount(target))
         )
+        class_weight = class_weight[target]
     else:
         class_weight = class_weight.values()[target]
     return class_weight
 
 
-def _estimate_py(y, n_classes):
-    res = np.r_[y, [n_classes-1]]
-    res = np.bincount(res)
-    res[-1] -= 1
-    res = res / res.sum()
-    return res
+def get_score(y, idx, n_classes, criterion):
+    return criterion(y[idx == 1], n_classes)
 
 
-def gini(prob):
-    return 1 - (prob**2).sum()
-
-
-def get_info_gain(y, idx, n_classes):
-    prob = _estimate_py(y[idx == 1], n_classes)
-    return gini(prob)
-
-
-def _make_discrete(X):
-    pass
-
-
-def get_conditional_info_gain(X, y, w, idx, n_classes):
-    Hyx = -np.infty
-    for i in range(X.shape[1]):
+def get_conditional_score(
+    X, y, w, idx, splitter,
+    n_classes, criterion, feature_id, random_state
+):
+    Hyx = np.infty
+    for i in feature_id:
         data = X[:, i]
-        cat_X = data <= np.median(data)
-        df = pd.DataFrame({"X": cat_X, "y": y, "w": w}).loc[idx == 1]
-        res = df.groupby("X")[["y", "w"]].apply(
-            lambda _df: (
-                _df.w.sum() / w.sum() * (
-                    gini(_estimate_py(y, n_classes))
-                )
+        if splitter == "random":
+            inner_Hyx, inner_idx_left, inner_idx_right = random_split(
+                data, y, w, idx, n_classes, criterion, random_state
             )
-        ).sum()
-        if Hyx < res:
-            Hyx = res
-            idx_left = (idx == 1) & cat_X
-            idx_right = (idx == 1) & ~cat_X
+        elif splitter == "best":
+            inner_Hyx, inner_idx_left, inner_idx_right = best_split(
+                data, y, w, idx, n_classes, criterion
+            )
+        if Hyx > inner_Hyx:
+            Hyx, idx_left, idx_right = (
+                inner_Hyx,
+                inner_idx_left,
+                inner_idx_right,
+            )
+            Hyx = inner_Hyx
             l_num = idx_left.sum()
             r_num = idx_right.sum()
             feature_id = i
