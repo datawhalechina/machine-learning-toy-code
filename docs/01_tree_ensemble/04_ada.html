@@ -373,14 +373,14 @@ err^{(m)}=\sum_{i=1}^n\frac{w_i}{\sum_{i=1}^nw_i}\mathbb{I}_{\{i\notin T\}}
 \[
 \tilde{w}_i = w_i\cdot\exp[\frac{1-K}{K}\alpha^{*(m)}]\exp(\alpha^{*(m)}\mathbb{1}_{\{i\notin T\}})
 \]</div>
-<p>对<span class="math notranslate nohighlight">\(\mathbf{w}\)</span>进行归一化操作后，不会对下一轮算法\ref{algo1}中<span class="math notranslate nohighlight">\(G^*\)</span>和<span class="math notranslate nohighlight">\(err^{(m)}\)</span>的结果产生任何影响。同时，如果把算法\ref{algo1}第12行的<span class="math notranslate nohighlight">\(\beta^{*(m)}\)</span>替换为<span class="math notranslate nohighlight">\(\alpha^{*(m)}\)</span>，由于它们的输出结果只相差常数倍<span class="math notranslate nohighlight">\(\frac{(K-1)^2}{K}\)</span>，因此最后的预测结果<span class="math notranslate nohighlight">\(c(\mathbf{x})\)</span>也不会产生任何变化。</p>
+<p>对<span class="math notranslate nohighlight">\(\mathbf{w}\)</span>进行归一化操作后，不会对下一轮算法1中<span class="math notranslate nohighlight">\(G^*\)</span>和<span class="math notranslate nohighlight">\(err^{(m)}\)</span>的结果产生任何影响。同时，如果把算法1第12行的<span class="math notranslate nohighlight">\(\beta^{*(m)}\)</span>替换为<span class="math notranslate nohighlight">\(\alpha^{*(m)}\)</span>，由于它们的输出结果只相差常数倍<span class="math notranslate nohighlight">\(\frac{(K-1)^2}{K}\)</span>，因此最后的预测结果<span class="math notranslate nohighlight">\(c(\mathbf{x})\)</span>也不会产生任何变化。</p>
 <p>由于<span class="math notranslate nohighlight">\(\exp[\frac{1-K}{K}\alpha^{*(m)}]\)</span>是样本公共项，故我们可以每次都利用</p>
 <div class="math notranslate nohighlight">
 \[
 \tilde{w}_i = w_i\cdot\exp(\alpha^{*(m)}\mathbb{1}_{\{i\notin T\}})
 \]</div>
 <p>来更新，而不影响归一化结果。</p>
-<p>此时，算法\ref{algo1}的迭代循环可进行如下重写：</p>
+<p>此时，算法1的迭代循环可进行如下重写：</p>
 <div class="figure align-left">
 <a class="reference internal image-reference" href="../_images/ada_algo2.png"><img alt="../_images/ada_algo2.png" src="../_images/ada_algo2.png" style="width: 380px;" /></a>
 </div>
@@ -474,9 +474,9 @@ y=\inf \{ y\big| \sum_{m\in \{m\vert y_m\leq y\}}\alpha^{(m)} \geq 0.5 \sum_{m=1
 <li><p>在sklearn源码中找出算法流程中每一行对应的处理代码。</p></li>
 </ul>
 </li>
-<li><p>算法\ref{algo2}第12行中给出了<span class="math notranslate nohighlight">\(\mathbf{f}\)</span>输出的迭代方案，但在sklearn包的实现中使用了<span class="math notranslate nohighlight">\(\mathbb{I}_{\{G^*(\mathbf{x})=S(\mathbf{y})\}}\)</span>来代替<span class="math notranslate nohighlight">\(\mathbf{b}^{*(m)}(\mathbf{x})\)</span>。请根据本文的实现，对sklearn包的源码进行修改并构造一个例子来比较它们的输出是否会不同。（提示：修改AdaboostClassifier类中的decision_function函数和staged_decision_function函数）</p></li>
+<li><p>算法2第12行中给出了<span class="math notranslate nohighlight">\(\mathbf{f}\)</span>输出的迭代方案，但在sklearn包的实现中使用了<span class="math notranslate nohighlight">\(\mathbb{I}_{\{G^*(\mathbf{x})=S(\mathbf{y})\}}\)</span>来代替<span class="math notranslate nohighlight">\(\mathbf{b}^{*(m)}(\mathbf{x})\)</span>。请根据本文的实现，对sklearn包的源码进行修改并构造一个例子来比较它们的输出是否会不同。（提示：修改AdaboostClassifier类中的decision_function函数和staged_decision_function函数）</p></li>
 <li><p>证明SAMME.R算法中<span class="math notranslate nohighlight">\(h^*_{k'}\)</span>的求解结果。</p></li>
-<li><p>算法\ref{algo3}的第14行给出了<span class="math notranslate nohighlight">\(w_i\)</span>的更新策略，请说明其合理性。</p></li>
+<li><p>算法3的第14行给出了<span class="math notranslate nohighlight">\(w_i\)</span>的更新策略，请说明其合理性。</p></li>
 <li><p>请实现SAMME、SAMME.R和Adaboost.R2算法。</p></li>
 <li><p>请结合加权中位数的定义解决以下问题：
 \begin{itemize}</p>

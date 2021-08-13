@@ -15,7 +15,7 @@ if "%1" == "" goto help
 %SPHINXBUILD% >NUL 2>NUL
 
 echo >>docs\\.nojekyll
-echo inter.projectname.datawhale.club>>docs\\CNAME
+rem echo inter.projectname.datawhale.club>>docs\\CNAME
 
 if errorlevel 9009 (
 	echo.
