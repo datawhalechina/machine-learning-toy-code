@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Part D: 自适应提升法</title>
+    <title>Part D: 自适应提升法 &#8212; Datawhale</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
   <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -63,6 +63,8 @@
       
       <img src="../_static/logo.png" class="logo" alt="logo">
       
+      
+      <h1 class="site-logo" id="site-title">Datawhale</h1>
       
     </a>
 </div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
@@ -336,8 +338,8 @@ w_i=\exp(-\frac{1}{K}\mathbf{y}_i^T\mathbf{f}^{(m-1)}(\mathbf{x}_i))
 \begin{aligned}
 \tilde{L}(\beta^{(m)}, \mathbf{b}^{(m)})&amp;=\sum_{i=1}^n w_i\exp(-\frac{1}{K}\beta^{(m)}\mathbf{y}_i^T\mathbf{b}^{(m)}(\mathbf{x}_i)) \\
 &amp;= \sum_{i\in T}w_i\exp[-\frac{\beta^{m}}{K-1}]+\sum_{i \notin T}w_i\exp[\frac{\beta^{(m)}}{(K-1)^2}] \\
-&amp;= \sum_{i\in T}w_i\exp[-\frac{\beta^{m}}{K-1}] +\sum_{i\notin T}w_i\exp[-\frac{\beta^{m}}{K-1}] - \\&amp;\qquad \sum_{i\notin T}w_i\exp[-\frac{\beta^{m}}{K-1}] +\sum_{i \notin T}w_i\exp[\frac{\beta^{(m)}}{(K-1)^2}]\\
-&amp;=\exp[-\frac{\beta^{(m)}}{K-1}]\sum_{i=1}^nw_i +\\&amp;\qquad \{ \exp[\frac{\beta^{(m)}}{(K-1)^2}]-\exp[-\frac{\beta^{(m)}}{K-1}] \}\sum_{i=1}^nw_i\mathbb{I}_{\{i\notin T\}}
+&amp;= \sum_{i\in T}w_i\exp[-\frac{\beta^{m}}{K-1}] +\sum_{i\notin T}w_i\exp[-\frac{\beta^{m}}{K-1}] - \sum_{i\notin T}w_i\exp[-\frac{\beta^{m}}{K-1}] +\sum_{i \notin T}w_i\exp[\frac{\beta^{(m)}}{(K-1)^2}]\\
+&amp;=\exp[-\frac{\beta^{(m)}}{K-1}]\sum_{i=1}^nw_i + \{ \exp[\frac{\beta^{(m)}}{(K-1)^2}]-\exp[-\frac{\beta^{(m)}}{K-1}] \}\sum_{i=1}^nw_i\mathbb{I}_{\{i\notin T\}}
 \end{aligned}
 \end{split}\]</div>
 <p>注意到<span class="math notranslate nohighlight">\(\mathbf{b}^{(m)}\)</span>仅与<span class="math notranslate nohighlight">\(\sum_{i=1}w_i\mathbb{I}_{\{i\notin T\}}\)</span>有关（因为基学习器的好坏控制了样本是否能够正确预测），且此项前的系数非负（因为<span class="math notranslate nohighlight">\(\beta^{(m)}\)</span>非负），因此得到</p>

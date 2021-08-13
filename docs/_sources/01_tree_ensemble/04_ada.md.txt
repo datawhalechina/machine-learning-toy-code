@@ -93,8 +93,8 @@ $$
 \begin{aligned}
 \tilde{L}(\beta^{(m)}, \mathbf{b}^{(m)})&=\sum_{i=1}^n w_i\exp(-\frac{1}{K}\beta^{(m)}\mathbf{y}_i^T\mathbf{b}^{(m)}(\mathbf{x}_i)) \\
 &= \sum_{i\in T}w_i\exp[-\frac{\beta^{m}}{K-1}]+\sum_{i \notin T}w_i\exp[\frac{\beta^{(m)}}{(K-1)^2}] \\
-&= \sum_{i\in T}w_i\exp[-\frac{\beta^{m}}{K-1}] +\sum_{i\notin T}w_i\exp[-\frac{\beta^{m}}{K-1}] - \\&\qquad \sum_{i\notin T}w_i\exp[-\frac{\beta^{m}}{K-1}] +\sum_{i \notin T}w_i\exp[\frac{\beta^{(m)}}{(K-1)^2}]\\
-&=\exp[-\frac{\beta^{(m)}}{K-1}]\sum_{i=1}^nw_i +\\&\qquad \{ \exp[\frac{\beta^{(m)}}{(K-1)^2}]-\exp[-\frac{\beta^{(m)}}{K-1}] \}\sum_{i=1}^nw_i\mathbb{I}_{\{i\notin T\}}
+&= \sum_{i\in T}w_i\exp[-\frac{\beta^{m}}{K-1}] +\sum_{i\notin T}w_i\exp[-\frac{\beta^{m}}{K-1}] - \sum_{i\notin T}w_i\exp[-\frac{\beta^{m}}{K-1}] +\sum_{i \notin T}w_i\exp[\frac{\beta^{(m)}}{(K-1)^2}]\\
+&=\exp[-\frac{\beta^{(m)}}{K-1}]\sum_{i=1}^nw_i + \{ \exp[\frac{\beta^{(m)}}{(K-1)^2}]-\exp[-\frac{\beta^{(m)}}{K-1}] \}\sum_{i=1}^nw_i\mathbb{I}_{\{i\notin T\}}
 \end{aligned}
 $$
 
