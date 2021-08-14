@@ -59,14 +59,14 @@ class Tree:
         )
         node.mccp_value = Hy + self.ccp_alpha
         if not self._able_to_split(node):
-            return None, None
+            return None, None, None, None
         feature_ids = get_feature_id(
             self.X.shape[1],
             self.random_state,
             self.max_features
         )
         (
-            Hyx, idx_left, idx_right, l_num, r_num, feature_id
+            Hyx, idx_left, idx_right, l_num, r_num, feature_id, pivot
         ) = get_conditional_score(
             self.X, self.y, self.weight, idx, self.splitter,
             self.n_classes, criterion, feature_ids,
@@ -77,9 +77,9 @@ class Tree:
             self.weight[idx == 1].sum() / self.weight.sum() * info_gain
         )
         if (l_num < self.min_samples_leaf) or (r_num < self.min_samples_leaf):
-            return None, None
+            return None, None, None, None
         if relative_gain < self.min_impurity_decrease:
-            return None, None
+            return None, None, None, None
         self.feature_importances_[feature_id] += relative_gain
         left_weight_frac, right_weight_frac = (
             self.weight[idx_left == 1].sum() / self.weight.sum(),
@@ -89,7 +89,7 @@ class Tree:
         node.right = Node(node.depth+1, idx_right, right_weight_frac, self)
         self.left_nodes_num += 1
         self.depth = max(node.depth+1, self.depth)
-        return idx_left, idx_right
+        return idx_left, idx_right, pivot, feature_id
 
     def init_node(self):
         self.depth = 0
@@ -105,9 +105,33 @@ class Tree:
     def build(self, mid, idx):
         if mid is None:
             return
-        idx_left, idx_right = self._split(mid, idx)
+        idx_left, idx_right, split_pivot, split_feature = self._split(mid, idx)
         self.build(mid.left, idx_left)
         self.build(mid.right, idx_right)
+        mid.split_pivot = split_pivot
+        mid.split_feature = split_feature
+        if mid.left is None and mid.right is None:
+            mid.leaf_idx = idx
+
+    def _search_prediction(self, mid, x):
+        if mid.left is None and mid.right is None:
+            return self._get_predict(mid)
+        if x[mid.split_feature] <= mid.split_pivot:
+            node = mid.left
+        else:
+            node = mid.right
+        return self._search_prediction(node, x)
+
+    def _get_predict(self, node):
+        if self.tree_type == "cls":
+            return np.argmax(np.bincount(self.y[node.leaf_idx]))
+        elif self.tree_type == "reg":
+            res = (self.weight[node.leaf_idx] * self.y[node.leaf_idx]).sum()
+            res /= self.weight[node.leaf_idx].sum()
+            return res
+
+    def predict(self, x):
+        return self._search_prediction(self.root, x)
 
 
 class Node:
@@ -130,3 +154,7 @@ class Node:
         self.mccp_value = mccp_value
         self.left = left
         self.right = right
+
+        self.split_pivot = None
+        self.split_feature = None
+        self.leaf_idx = None

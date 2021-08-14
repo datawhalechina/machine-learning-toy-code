@@ -71,6 +71,11 @@ class BaseDecisionTree:
         )
         return self
 
+    def predict(self, X):
+        return np.array([
+            self.tree.predict(x) for x in X
+        ])
+
 
 class DecisionTreeClassifier(BaseDecisionTree):
 
@@ -105,9 +110,6 @@ class DecisionTreeClassifier(BaseDecisionTree):
         )
         self.tree.tree_type = "cls"
         self.class_weight = class_weight
-
-    def predict(self, X):
-        pass
 
     def predict_proba(self, X):
         pass
@@ -145,6 +147,3 @@ class DecisionTreeRegressor(BaseDecisionTree):
             ccp_alpha=ccp_alpha,
         )
         self.tree.tree_type = "reg"
-
-    def predict(self, X):
-        pass

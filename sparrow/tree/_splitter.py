@@ -25,19 +25,22 @@ def _get_split_score(X, y, w, idx, n_classes, criterion, tree_type):
 def random_split(
     data, y, w, idx, n_classes, criterion, random_state, tree_type
 ):
-    cat_X = data <= np.random.uniform(data.min(), data.max())
+    pivot = np.random.uniform(data.min(), data.max())
+    cat_X = data <= pivot
     Hyx = _get_split_score(cat_X, y, w, idx, n_classes, criterion, tree_type)
-    return Hyx, (idx == 1) & cat_X, (idx == 1) & ~cat_X
+    return Hyx, (idx == 1) & cat_X, (idx == 1) & ~cat_X, pivot
 
 
 def best_split(data, y, w, idx, n_classes, criterion, tree_type):
     best_Hyx = np.infty
-    for item in data[:-1]:
-        cat_X_iter = data <= item
+    best_pivot = None
+    for pivot in data[:-1]:
+        cat_X_iter = data <= pivot
         Hyx = _get_split_score(
             cat_X_iter, y, w, idx, n_classes, criterion, tree_type
         )
         if best_Hyx > Hyx:
             best_Hyx = Hyx
             cat_X = cat_X_iter
-    return best_Hyx, (idx == 1) & cat_X, (idx == 1) & ~cat_X
+            best_pivot = pivot
+    return best_Hyx, (idx == 1) & cat_X, (idx == 1) & ~cat_X, best_pivot

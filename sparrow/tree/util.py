@@ -40,14 +40,15 @@ def get_conditional_score(
     n_classes, criterion, feature_id, random_state, tree_type
 ):
     Hyx = np.infty
+    best_pivot = None
     for i in feature_id:
         data = X[:, i]
         if splitter == "random":
-            inner_Hyx, inner_idx_left, inner_idx_right = random_split(
+            inner_Hyx, inner_idx_left, inner_idx_right, pivot = random_split(
                 data, y, w, idx, n_classes, criterion, random_state, tree_type
             )
         elif splitter == "best":
-            inner_Hyx, inner_idx_left, inner_idx_right = best_split(
+            inner_Hyx, inner_idx_left, inner_idx_right, pivot = best_split(
                 data, y, w, idx, n_classes, criterion, tree_type
             )
         if Hyx > inner_Hyx:
@@ -60,4 +61,5 @@ def get_conditional_score(
             l_num = idx_left.sum()
             r_num = idx_right.sum()
             feature_id = i
-    return Hyx, idx_left, idx_right, l_num, r_num, feature_id
+            best_pivot = pivot
+    return Hyx, idx_left, idx_right, l_num, r_num, feature_id, best_pivot
