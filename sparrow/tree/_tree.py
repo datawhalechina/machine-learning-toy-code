@@ -55,7 +55,6 @@ class Tree:
     def _split(self, node, idx):
         criterion = get_criterion(self.criterion)
         Hy = get_score(self.y, self.weight, idx, self.n_classes, criterion)
-        print(Hy)
         node.mccp_value = Hy + self.ccp_alpha
         if not self._able_to_split(node):
             return None, None
@@ -74,7 +73,6 @@ class Tree:
         relative_gain = (
             self.weight[idx == 1].sum() / self.weight.sum() * info_gain
         )
-        print(feature_id)
         if (l_num < self.min_samples_leaf) or (r_num < self.min_samples_leaf):
             return None, None
         if relative_gain < self.min_impurity_decrease:

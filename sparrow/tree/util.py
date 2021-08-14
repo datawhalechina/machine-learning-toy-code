@@ -28,19 +28,6 @@ def get_feature_id(fea_num, random_state, max_feature):
     )
 
 
-def get_class_weight(class_weight, target, n_classes):
-    if class_weight == "balanced":
-        class_weight = (
-            target.shape[0] / (n_classes * np.bincount(target))
-        )
-        class_weight = class_weight[target]
-    elif class_weight == "equal":
-        class_weight = np.ones(target.shape[0])
-    elif isinstance(class_weight, dict):
-        class_weight = np.array(list(class_weight.values()))[target]
-    return class_weight
-
-
 def get_score(y, w, idx, n_classes, criterion):
     return criterion(y[idx == 1], n_classes, w[idx == 1])
 
