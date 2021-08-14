@@ -54,7 +54,9 @@ class Tree:
 
     def _split(self, node, idx):
         criterion = get_criterion(self.criterion)
-        Hy = get_score(self.y, self.weight, idx, self.n_classes, criterion)
+        Hy = get_score(
+            self.y, self.weight, idx, self.n_classes, criterion, self.tree_type
+        )
         node.mccp_value = Hy + self.ccp_alpha
         if not self._able_to_split(node):
             return None, None
@@ -67,7 +69,8 @@ class Tree:
             Hyx, idx_left, idx_right, l_num, r_num, feature_id
         ) = get_conditional_score(
             self.X, self.y, self.weight, idx, self.splitter,
-            self.n_classes, criterion, feature_ids, self.random_state
+            self.n_classes, criterion, feature_ids,
+            self.random_state, self.tree_type
         )
         info_gain = Hy - Hyx
         relative_gain = (

@@ -19,9 +19,9 @@ def entropy(y, n_classes, w):
     return - (prob * log_prob).sum()
 
 
-def mse(y, n_classes=None, w=None):
-    return ((y - y.mean())**2).mean()
+def mse(y, w=None):
+    return ((w * y**2).sum()) / w.sum() - ((w * y).sum() / w.sum()) ** 2
 
 
-def mae(y, n_classes=None, w=None):
-    return np.abs(y - np.median(y))
+def mae(y, w=None):
+    return np.abs(w*y - np.median(w*y)).sum() / w.sum()

@@ -28,24 +28,27 @@ def get_feature_id(fea_num, random_state, max_feature):
     )
 
 
-def get_score(y, w, idx, n_classes, criterion):
-    return criterion(y[idx == 1], n_classes, w[idx == 1])
+def get_score(y, w, idx, n_classes, criterion, tree_type):
+    if tree_type == "cls":
+        return criterion(y[idx == 1], n_classes, w[idx == 1])
+    elif tree_type == "reg":
+        return criterion(y[idx == 1], w[idx == 1])
 
 
 def get_conditional_score(
     X, y, w, idx, splitter,
-    n_classes, criterion, feature_id, random_state
+    n_classes, criterion, feature_id, random_state, tree_type
 ):
     Hyx = np.infty
     for i in feature_id:
         data = X[:, i]
         if splitter == "random":
             inner_Hyx, inner_idx_left, inner_idx_right = random_split(
-                data, y, w, idx, n_classes, criterion, random_state
+                data, y, w, idx, n_classes, criterion, random_state, tree_type
             )
         elif splitter == "best":
             inner_Hyx, inner_idx_left, inner_idx_right = best_split(
-                data, y, w, idx, n_classes, criterion
+                data, y, w, idx, n_classes, criterion, tree_type
             )
         if Hyx > inner_Hyx:
             Hyx, idx_left, idx_right = (

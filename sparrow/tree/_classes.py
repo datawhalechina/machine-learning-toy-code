@@ -17,7 +17,7 @@ class BaseDecisionTree:
         max_leaf_nodes=2**(6+1)-1,
         random_state=0,
         min_impurity_decrease=0.0,
-        class_weight="balanced",
+        class_weight="equal",
         ccp_alpha=0.0,
     ):
         self.tree = Tree(
@@ -33,17 +33,17 @@ class BaseDecisionTree:
             min_impurity_decrease=min_impurity_decrease,
             ccp_alpha=ccp_alpha,
         )
-        self.class_weight = class_weight
 
     def _adjust_sample_weight(self, sample_weight):
         if sample_weight is None:
             sample_weight = np.full(
                 self.tree.X.shape[0], 1 / self.tree.X.shape[0]
             )
-        final_weight = sample_weight * self._get_class_weight(
-            self.class_weight, self.tree.y, self.tree.n_classes
-        )
-        return final_weight
+        if self.tree.tree_type == "cls":
+            sample_weight = sample_weight * self._get_class_weight(
+                self.class_weight, self.tree.y, self.tree.n_classes
+            )
+        return sample_weight
 
     def _get_class_weight(self, class_weight, target, n_classes):
         if class_weight == "balanced":
@@ -86,7 +86,7 @@ class DecisionTreeClassifier(BaseDecisionTree):
         max_leaf_nodes=2**(6+1)-1,
         random_state=0,
         min_impurity_decrease=0.0,
-        class_weight="balanced",
+        class_weight="equal",
         ccp_alpha=0.0,
     ):
         super().__init__(
@@ -103,7 +103,8 @@ class DecisionTreeClassifier(BaseDecisionTree):
             class_weight=class_weight,
             ccp_alpha=ccp_alpha,
         )
-        self.tree_type = "cls"
+        self.tree.tree_type = "cls"
+        self.class_weight = class_weight
 
     def predict(self, X):
         pass
@@ -126,7 +127,7 @@ class DecisionTreeRegressor(BaseDecisionTree):
         max_leaf_nodes=2**(6+1)-1,
         random_state=0,
         min_impurity_decrease=0.0,
-        class_weight="balanced",
+        class_weight="equal",
         ccp_alpha=0.0,
     ):
         super().__init__(
@@ -143,7 +144,7 @@ class DecisionTreeRegressor(BaseDecisionTree):
             class_weight=class_weight,
             ccp_alpha=ccp_alpha,
         )
-        self.tree_type = "reg"
+        self.tree.tree_type = "reg"
 
     def predict(self, X):
         pass
