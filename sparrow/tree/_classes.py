@@ -10,12 +10,12 @@ class DecisionTreeClassifier:
         self,
         criterion="gini",
         splitter="best",
-        max_depth=2,
+        max_depth=6,
         min_samples_split=2,
         min_samples_leaf=1,
         min_weight_fraction_leaf=0.0,
         max_features="all",
-        max_leaf_nodes=2**(2+1)-1,
+        max_leaf_nodes=2**(6+1)-1,
         random_state=0,
         min_impurity_decrease=0.0,
         class_weight="balanced",
@@ -49,6 +49,10 @@ class DecisionTreeClassifier:
         self.tree._init_node()
         self.tree._build(self.tree.root, np.ones(X.shape[0]))
         self.tree._pruning()
+        self.tree.feature_importances_ = (
+            self.tree.feature_importances_ /
+            self.tree.feature_importances_.sum()
+        )
         return self
 
     def predict(self, X):

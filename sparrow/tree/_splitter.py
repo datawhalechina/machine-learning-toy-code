@@ -3,10 +3,10 @@ import pandas as pd
 
 
 def _get_split_score(X, y, w, idx, n_classes, criterion):
-    df = pd.DataFrame({"X": X, "y": y, "w": w}).loc[idx == 1]
+    df = pd.DataFrame({"X": X[idx == 1], "y": y[idx == 1], "w": w[idx == 1]})
     res = df.groupby("X")[["y", "w"]].apply(
         lambda _df: (
-            _df.w.sum() / w.sum() * (
+            _df.w.sum() / df.w.sum() * (
                 criterion(_df.y, n_classes)
             )
         )
@@ -28,4 +28,4 @@ def best_split(data, y, w, idx, n_classes, criterion):
         if best_Hyx > Hyx:
             best_Hyx = Hyx
             cat_X = cat_X_iter
-    return Hyx, (idx == 1) & cat_X, (idx == 1) & ~cat_X
+    return best_Hyx, (idx == 1) & cat_X, (idx == 1) & ~cat_X

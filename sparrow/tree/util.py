@@ -34,6 +34,8 @@ def get_class_weight(class_weight, target, n_classes):
             target.shape[0] / (n_classes * np.bincount(target))
         )
         class_weight = class_weight[target]
+    elif class_weight == "equal":
+        class_weight = np.ones(target.shape[0])
     else:
         class_weight = class_weight.values()[target]
     return class_weight
