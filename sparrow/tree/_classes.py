@@ -36,19 +36,19 @@ class DecisionTreeClassifier:
         )
         self.class_weight = class_weight
 
-    def fit(self, X, y, weight=None):
+    def fit(self, X, y, sample_weight=None):
         self.tree.X = X
         self.tree.y = y
         self.tree.n_classes = y.max() + 1
-        if weight is None:
-            weight = np.full(X.shape[0], 1 / X.shape[0])
-        final_weight = weight * get_class_weight(
+        if sample_weight is None:
+            sample_weight = np.full(X.shape[0], 1 / X.shape[0])
+        final_weight = sample_weight * get_class_weight(
             self.class_weight, y, self.tree.n_classes
         )
         self.tree.weight = final_weight
-        self.tree._init_node()
-        self.tree._build(self.tree.root, np.ones(X.shape[0]))
-        self.tree._pruning()
+        self.tree.init_node()
+        self.tree.build(self.tree.root, np.ones(X.shape[0]))
+        self.tree.pruning()
         self.tree.feature_importances_ = (
             self.tree.feature_importances_ /
             self.tree.feature_importances_.sum()

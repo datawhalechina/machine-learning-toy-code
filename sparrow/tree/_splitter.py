@@ -7,7 +7,7 @@ def _get_split_score(X, y, w, idx, n_classes, criterion):
     res = df.groupby("X")[["y", "w"]].apply(
         lambda _df: (
             _df.w.sum() / df.w.sum() * (
-                criterion(_df.y, n_classes)
+                criterion(_df.y.values, n_classes, _df.w.values)
             )
         )
     )

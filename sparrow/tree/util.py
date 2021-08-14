@@ -36,13 +36,13 @@ def get_class_weight(class_weight, target, n_classes):
         class_weight = class_weight[target]
     elif class_weight == "equal":
         class_weight = np.ones(target.shape[0])
-    else:
-        class_weight = class_weight.values()[target]
+    elif isinstance(class_weight, dict):
+        class_weight = np.array(list(class_weight.values()))[target]
     return class_weight
 
 
-def get_score(y, idx, n_classes, criterion):
-    return criterion(y[idx == 1], n_classes)
+def get_score(y, w, idx, n_classes, criterion):
+    return criterion(y[idx == 1], n_classes, w[idx == 1])
 
 
 def get_conditional_score(

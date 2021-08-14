@@ -41,10 +41,7 @@ class Tree:
         self.weight = None
         self.n_classes = None
 
-        self.left_nodes_num = 1
-        self.depth = 0
-
-    def _pruning(self):
+    def pruning(self):
         pass
 
     def _able_to_split(self, node):
@@ -57,7 +54,8 @@ class Tree:
 
     def _split(self, node, idx):
         criterion = get_criterion(self.criterion)
-        Hy = get_score(self.y, idx, self.n_classes, criterion)
+        Hy = get_score(self.y, self.weight, idx, self.n_classes, criterion)
+        print(Hy)
         node.mccp_value = Hy + self.ccp_alpha
         if not self._able_to_split(node):
             return None, None
@@ -76,6 +74,7 @@ class Tree:
         relative_gain = (
             self.weight[idx == 1].sum() / self.weight.sum() * info_gain
         )
+        print(feature_id)
         if (l_num < self.min_samples_leaf) or (r_num < self.min_samples_leaf):
             return None, None
         if relative_gain < self.min_impurity_decrease:
@@ -91,7 +90,9 @@ class Tree:
         self.depth = max(node.depth+1, self.depth)
         return idx_left, idx_right
 
-    def _init_node(self):
+    def init_node(self):
+        self.depth = 0
+        self.left_nodes_num = 1
         self.feature_importances_ = np.zeros(self.X.shape[1])
         self.root = Node(
             depth=0,
@@ -100,12 +101,12 @@ class Tree:
             tree=self,
         )
 
-    def _build(self, mid, idx):
+    def build(self, mid, idx):
         if mid is None:
             return
         idx_left, idx_right = self._split(mid, idx)
-        self._build(mid.left, idx_left)
-        self._build(mid.right, idx_right)
+        self.build(mid.left, idx_left)
+        self.build(mid.right, idx_right)
 
 
 class Node:
