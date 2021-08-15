@@ -35,15 +35,41 @@ class Tree:
         self.max_leaf_nodes = max_leaf_nodes
         self.random_state = random_state
         self.min_impurity_decrease = min_impurity_decrease
-        self.ccp_alpha = ccp_alpha,
+        self.ccp_alpha = ccp_alpha
 
         self.X = None
         self.y = None
         self.weight = None
         self.n_classes = None
 
+    def _get_child_mccp_value(self, node):
+        if node is None:
+            return 0
+        elif node.left is None and node.right is None:
+            return node.mccp_value
+        node.child_mccp_value = (
+            self._get_child_mccp_value(node.left) +
+            self._get_child_mccp_value(node.right))
+        return node.child_mccp_value
+
+    def _pruning_subtree(self, node):
+        if node.left is None and node.right is None:
+            return False
+        elif node.mccp_value < node.child_mccp_value:
+            node.left, node.right = None, None
+            return True
+        else:
+            return False
+        bool_res = (
+            self._pruning_subtree(node.left) &
+            self._pruning_subtree(node.right))
+        return bool_res
+
     def pruning(self):
-        pass
+        self._get_child_mccp_value(self.root)
+        need_prune = True
+        while need_prune:
+            need_prune = self._pruning_subtree(self.root)
 
     def _able_to_split(self, node):
         return (
@@ -58,6 +84,7 @@ class Tree:
         Hy = get_score(
             self.y, self.weight, idx, self.n_classes,
             criterion, self.tree_type)
+        print(Hy)
         node.mccp_value = Hy + self.ccp_alpha
         if not self._able_to_split(node):
             return None, None, None, None
@@ -143,7 +170,6 @@ class Node:
         idx,
         weight_frac,
         tree,
-        mccp_value=None,
         left=None,
         right=None,
     ):
@@ -152,10 +178,11 @@ class Node:
         self.data_size = self.idx.sum()
         self.weight_frac = weight_frac
         self.tree = tree
-        self.mccp_value = mccp_value
         self.left = left
         self.right = right
 
         self.split_pivot = None
         self.split_feature = None
         self.leaf_idx = None
+        self.mccp_value = None
+        self.child_mccp_value = None
