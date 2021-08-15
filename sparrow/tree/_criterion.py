@@ -1,4 +1,5 @@
 import numpy as np
+from weightedstats import numpy_weighted_median as wmd
 
 
 def _estimate_py(y, n_classes, w):
@@ -24,4 +25,4 @@ def mse(y, w=None):
 
 
 def mae(y, w=None):
-    return np.abs(w*y - np.median(w*y)).sum() / w.sum()
+    return (w * np.abs(y - wmd(y, w))).sum() / w.sum()

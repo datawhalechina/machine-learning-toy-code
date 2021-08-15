@@ -6,6 +6,7 @@ from sparrow.tree.util import (
 )
 
 import numpy as np
+from weightedstats import numpy_weighted_median as wmd
 
 
 class Tree:
@@ -57,6 +58,7 @@ class Tree:
         Hy = get_score(
             self.y, self.weight, idx, self.n_classes, criterion, self.tree_type
         )
+        print(Hy)
         node.mccp_value = Hy + self.ccp_alpha
         if not self._able_to_split(node):
             return None, None, None, None
@@ -116,6 +118,7 @@ class Tree:
     def _search_prediction(self, mid, x):
         if mid.left is None and mid.right is None:
             return self._get_predict(mid)
+        print(mid.split_feature, mid.split_pivot)
         if x[mid.split_feature] <= mid.split_pivot:
             node = mid.left
         else:
@@ -126,8 +129,12 @@ class Tree:
         if self.tree_type == "cls":
             return np.argmax(np.bincount(self.y[node.leaf_idx]))
         elif self.tree_type == "reg":
-            res = (self.weight[node.leaf_idx] * self.y[node.leaf_idx]).sum()
-            res /= self.weight[node.leaf_idx].sum()
+            if self.criterion == "mse":
+                res = (self.weight[node.leaf_idx] *
+                       self.y[node.leaf_idx]).sum()
+                res /= self.weight[node.leaf_idx].sum()
+            elif self.criterion == "mae":
+                res = wmd(self.y[node.leaf_idx], self.weight[node.leaf_idx])
             return res
 
     def predict(self, x):

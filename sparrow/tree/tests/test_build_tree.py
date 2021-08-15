@@ -23,7 +23,7 @@ def main():
     #X, y = np.random.randint(0,10,(100, 4)), np.random.rand(100) * 100
     clf1 = DecisionTreeRegressor(criterion="mae", max_depth=3)
     w = np.random.randint(5,10,100)
-    w = np.ones(y.shape[0])
+    #w = np.ones(y.shape[0])
     clf1.fit(X, y, sample_weight=w)
     clf2 = dt(criterion="mae", max_depth=3)
     clf2.fit(X, y, sample_weight=w)
@@ -31,6 +31,8 @@ def main():
     print(clf2.feature_importances_)
     print(clf1.predict(X[:2, :]))
     print(clf2.predict(X[:2, :]))
+    print(clf1.tree.root.left.left.left.mccp_value)
+    print(np.median(y[clf1.tree.root.right.left.left.leaf_idx]))
     tree.plot_tree(clf2)
     plt.show()
 
