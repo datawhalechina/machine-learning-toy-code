@@ -119,7 +119,7 @@ class DecisionTreeRegressor(BaseDecisionTree):
 
     def __init__(
         self,
-        criterion="gini",
+        criterion="mse",
         splitter="best",
         max_depth=6,
         min_samples_split=2,

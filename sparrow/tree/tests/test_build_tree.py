@@ -16,20 +16,28 @@ def main():
     #    100, 6, 3, 1,
     #    random_state=0, weights=[0.65, 0.35]
     #)
-    #y *= 1000
-    X, y = np.array([[0,2,3,5,6,2,5,6,2,2],[2,3,6,2,2,1,4,4,6,3],[5,8,1,4,2,6,3,5,6,2]]).T, np.random.rand(10)*10
-    np.random.seed(1)
+    y *= 1
+
+    np.random.seed(2)
+    #X, y = np.random.rand(100, 4), np.random.rand(100)*10
 
     #X, y = np.random.randint(0,10,(100, 4)), np.random.rand(100) * 100
-    clf1 = DecisionTreeRegressor(criterion="mae", max_depth=3, ccp_alpha=0.05)
-    #w = np.random.randint(5,10,100)
-    w = np.ones(y.shape[0])
+    clf1 = DecisionTreeRegressor(criterion="mse", max_depth=3, ccp_alpha=100000)
+    w = np.random.randint(5,10,100)
+    #w = np.ones(y.shape[0])
     clf1.fit(X, y, sample_weight=w)
-    clf2 = dt(criterion="mae", max_depth=3, ccp_alpha=0.05)
+    clf2 = dt(criterion="mse", max_depth=3, ccp_alpha=100000)
     clf2.fit(X, y, sample_weight=w)
-    print(clf1.tree.feature_importances_)
-    print(clf2.feature_importances_)
-    print(clf1.predict(X[:2, :]),clf2.predict(X[:2, :]))
+    #print(clf1.tree.feature_importances_)
+    #print(clf2.feature_importances_)
+    print(clf1.predict(X[-5:, :]),clf2.predict(X[-5:, :]))
+    def p(node):
+        if node is None:
+            return
+        print(node.depth, node.child_mccp_value)
+        p(node.left)
+        p(node.right)
+    p(clf1.tree.root)
     tree.plot_tree(clf2)
     plt.show()
 

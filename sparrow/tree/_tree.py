@@ -44,26 +44,30 @@ class Tree:
 
     def _get_child_mccp_value(self, node):
         if node is None:
-            return 0
+            return 0, 0
         elif node.left is None and node.right is None:
-            return node.mccp_value
+            return node.Hy * self.weight[node.idx].sum(), 1
+        left_w, left_n = self._get_child_mccp_value(node.left)
+        right_w, right_n = self._get_child_mccp_value(node.right)
+        leaf_w = left_w + right_w
+        leaf_node_num = left_n + right_n
         node.child_mccp_value = (
-            self._get_child_mccp_value(node.left) +
-            self._get_child_mccp_value(node.right))
-        return node.child_mccp_value
+            self.ccp_alpha * leaf_node_num + (
+                leaf_w / self.weight[node.idx].sum()))
+        return leaf_w, leaf_node_num
 
     def _pruning_subtree(self, node):
-        if node.left is None and node.right is None:
+        print(node.depth, node.Hy, node.child_mccp_value)
+        if node is None or node.left is None or node.right is None:
             return False
-        elif node.mccp_value < node.child_mccp_value:
+        elif node.Hy < node.child_mccp_value:
             node.left, node.right = None, None
             return True
         else:
-            return False
-        bool_res = (
-            self._pruning_subtree(node.left) &
-            self._pruning_subtree(node.right))
-        return bool_res
+            bool_res = (
+                self._pruning_subtree(node.left) &
+                self._pruning_subtree(node.right))
+            return bool_res
 
     def pruning(self):
         self._get_child_mccp_value(self.root)
@@ -84,8 +88,7 @@ class Tree:
         Hy = get_score(
             self.y, self.weight, idx, self.n_classes,
             criterion, self.tree_type)
-        print(Hy)
-        node.mccp_value = Hy + self.ccp_alpha
+        node.Hy = Hy  # 不纯度
         if not self._able_to_split(node):
             return None, None, None, None
         feature_ids = get_feature_id(
@@ -139,7 +142,6 @@ class Tree:
     def _search_prediction(self, mid, x):
         if mid.left is None and mid.right is None:
             return self._get_predict(mid)
-        print(mid.split_feature, mid.split_pivot)
         if x[mid.split_feature] <= mid.split_pivot:
             node = mid.left
         else:
@@ -184,5 +186,6 @@ class Node:
         self.split_pivot = None
         self.split_feature = None
         self.leaf_idx = None
-        self.mccp_value = None
+        self.Hy = None
         self.child_mccp_value = None
+        self.leaf_node_num = None
