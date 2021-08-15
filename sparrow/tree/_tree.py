@@ -56,28 +56,24 @@ class Tree:
     def _split(self, node, idx):
         criterion = get_criterion(self.criterion)
         Hy = get_score(
-            self.y, self.weight, idx, self.n_classes, criterion, self.tree_type
-        )
-        print(Hy)
+            self.y, self.weight, idx, self.n_classes,
+            criterion, self.tree_type)
         node.mccp_value = Hy + self.ccp_alpha
         if not self._able_to_split(node):
             return None, None, None, None
         feature_ids = get_feature_id(
             self.X.shape[1],
             self.random_state,
-            self.max_features
-        )
+            self.max_features)
         (
             Hyx, idx_left, idx_right, l_num, r_num, feature_id, pivot
         ) = get_conditional_score(
             self.X, self.y, self.weight, idx, self.splitter,
             self.n_classes, criterion, feature_ids,
-            self.random_state, self.tree_type
-        )
+            self.random_state, self.tree_type)
         info_gain = Hy - Hyx
         relative_gain = (
-            self.weight[idx == 1].sum() / self.weight.sum() * info_gain
-        )
+            self.weight[idx == 1].sum() / self.weight.sum() * info_gain)
         if (l_num < self.min_samples_leaf) or (r_num < self.min_samples_leaf):
             return None, None, None, None
         if relative_gain < self.min_impurity_decrease:
@@ -85,8 +81,7 @@ class Tree:
         self.feature_importances_[feature_id] += relative_gain
         left_weight_frac, right_weight_frac = (
             self.weight[idx_left == 1].sum() / self.weight.sum(),
-            self.weight[idx_right == 1].sum() / self.weight.sum()
-        )
+            self.weight[idx_right == 1].sum() / self.weight.sum())
         node.left = Node(node.depth+1, idx_left, left_weight_frac, self)
         node.right = Node(node.depth+1, idx_right, right_weight_frac, self)
         self.left_nodes_num += 1
@@ -101,8 +96,7 @@ class Tree:
             depth=0,
             idx=np.ones(self.X.shape[0]) == 1.,
             weight_frac=1,
-            tree=self,
-        )
+            tree=self)
 
     def build(self, mid, idx):
         if mid is None:
