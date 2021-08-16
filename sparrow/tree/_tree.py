@@ -57,7 +57,6 @@ class Tree:
         return leaf_w, leaf_node_num
 
     def _pruning_subtree(self, node):
-        print(node.depth, node.Hy, node.child_mccp_value)
         if node is None or node.left is None or node.right is None:
             return False
         elif node.Hy < node.child_mccp_value:
