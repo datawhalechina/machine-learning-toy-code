@@ -80,7 +80,6 @@ $$
     * $\mathbf{END \ FOR}$
   
 * $\mathbf{END \ FOR}$
-  
 
 ## Refs
 

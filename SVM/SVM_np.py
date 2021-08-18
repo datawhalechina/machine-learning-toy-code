@@ -1,18 +1,3 @@
-#coding=utf-8
-#Author:Dodo
-#Date:2018-12-03
-#Email:lvtengchao@pku.edu.cn
-#Blog:www.pkudodo.com
-'''
-数据集：Mnist
-训练集数量：60000(实际使用：1000)
-测试集数量：10000（实际使用：100)
-------------------------------
-运行结果：
-    正确率：99%
-    运行时长：50s
-'''
-
 import time
 import numpy as np
 import math
@@ -296,7 +281,6 @@ class SVM:
 
                     self.E[i] = self.calcEi(i)
                     self.E[j] = self.calcEi(j)
-
                     #如果α2的改变量过于小，就认为该参数未改变，不增加parameterChanged值
                     #反之则自增1
                     if math.fabs(alphaNew_2 - alphaOld_2) >= 0.00001:

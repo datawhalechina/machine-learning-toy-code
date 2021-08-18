@@ -150,7 +150,7 @@ $$
 $$
 \underbrace{\max }_{\alpha_{i} \geq 0, \mu_{i} \geq 0} \underbrace{\min }_{w, b, \xi} L(w, b, \alpha, \xi, \mu)
 $$
-(以下推导略过，具体可见[支持向量机原理(二) 线性支持向量机的软间隔最大化模型](https://www.cnblogs.com/pinard/p/6100722.html)，类似地首先求出$w, b, \xi$的极小值:
+(以下推导略过)，类似地首先求出$w, b, \xi$的极小值:
 $$
 \begin{gathered}
 \frac{\partial L}{\partial w}=0 \Rightarrow w=\sum_{i=1}^{m} \alpha_{i} y_{i} x_{i} \\
