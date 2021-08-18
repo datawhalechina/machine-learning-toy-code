@@ -1,0 +1,27 @@
+## 5. 带权样本的训练
+
+C4.5算法还能够处理带权重的样本：设所有节点的样本权重为$\mathbf{w}^{(D)}=(w^{(D)}_1,...,w^{(D)}_n)$，其中$n$为全体样本的个数；当前分裂节点$N$的样本权重为$\mathbf{w}^{(N)}=({w}^{(N)}_1,...,{w}^{(N)}_{n_{N}})$，其中$n_{N}$为当前节点的样本个数；当前节点按照特征$\mathbf{y}$分裂的第$m$个子节点权重为$\mathbf{w}^{(m)}=(w^{(m)}_1,...,w^{(m)}_{n_{m}})$，其中$n_m$为该子节点的样本个数。
+
+此时可得到带权的信息增益为
+
+$$
+G_N(X,Y)=-\sum_{i=1}^K\tilde{p}(x_k)\log \tilde{p}(x_k)+\sum_{m=1}^M\frac{\sum_{i=1}^{n_{m}}{w}^{(m)}_{i}}{\sum_{i=1}^{n_{N}}{w}^{(N)}_{i}}\tilde{p}(y_m)\tilde{p}(x_k\vert y_m)\log \tilde{p}(x_k\vert y_m)
+$$
+
+先前提到了min\_impurity\_decrease参数，$\frac{D_N}{D_{all}}G^{max}_N(X,Y)$的值会与此阈值进行对比以决定节点$N$是否分裂。对于带权样本，我们可以将相对最大信息增益修正为
+
+$$
+\frac{\sum_{i=1}^{n_{N}}{w}^{(N)}_{i}}{\sum_{i=1}^{n}{w}^{(D)}_{i}}G^{max}_N(X,Y)
+$$
+
+此处，我们需要注意到当样本的权重被设为全1时，加权信息增益和修正的阈值对比值与原来的定义完全一致，具有越高权重的样本就越容易对模型的分裂决策产生影响。
+
+当样本带有权重时，加权信息增益定义为
+
+$$
+G_{\mathbf{w}}^{MSE}(X,Y)=-\sum_{i=1}^{N}(y^{(D)}_i-\bar{y}^{(D)})^2+\frac{\sum_{i=1}^{N_L}w^{(N)}_i}{\sum_{i=1}^{N}w^{(N_L)}_i}\sum_{i=1}^{N_L}(y^{(L)}_i-\bar{y}^{(L)})^2+\frac{\sum_{i=1}^{N_R}w^{(N)}_i}{\sum_{i=1}^{N}w^{(N_R)}_i}\sum_{i=1}^{N_R}(y^{(R)}_i-\bar{y}^{(R)})^2
+$$
+
+$$
+G_{\mathbf{w}}^{MAE}(X,Y)=-\sum_{i=1}^{N}\vert y^{(D)}_i-\tilde{y}^{(D)}\vert+\frac{\sum_{i=1}^{N_L}w^{(N)}_i}{\sum_{i=1}^{N}w^{(N_L)}_i}\sum_{i=1}^{N_L}\vert y^{(L)}_i-\tilde{y}^{(L)}\vert+\frac{\sum_{i=1}^{N_R}w^{(N)}_i}{\sum_{i=1}^{N}w^{(N_R)}_i}\sum_{i=1}^{N_R}\vert y^{(R)}_i-\tilde{y}^{(R)}\vert
+$$
