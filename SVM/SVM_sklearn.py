@@ -7,21 +7,17 @@
 @LastEditor: John
 LastEditTime: 2021-08-11 15:53:15
 @Discription: 
-@Environment: python 3.7.7
+@Environment:
 '''
 '''
 数据集：Mnist
 训练集数量：60000(实际使用：2000)
 测试集数量：10000（实际使用：200)
-运行机器：CPU i7-9750H
-依赖：joblib 0.14.1 sklearn 0.23
 ------------------------------
 运行结果：
     正确率：0.96
     运行时长：0.721
 '''
-# 
-# 导入处于不同目录下的Mnist.load_data
 
 import sys,os
 curr_path = os.path.dirname(__file__)
