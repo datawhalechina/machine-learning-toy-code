@@ -1,47 +1,42 @@
-#coding=utf-8
-#Author:Dodo
-#Date:2018-12-03
-#Email:lvtengchao@pku.edu.cn
-#Blog:www.pkudodo.com
+#!/usr/bin/env python
+# coding=utf-8
 '''
-数据集：Mnist
-训练集数量：60000(实际使用：1000)
-测试集数量：10000（实际使用：100)
-------------------------------
-运行结果：
-    正确率：99%
-    运行时长：50s
+Author: JiangJi
+Email: johnjim0816@gmail.com
+Date: 2021-08-26 11:23:51
+LastEditor: JiangJi
+LastEditTime: 2021-08-27 12:16:31
+Discription: 
+Environment: 
 '''
+import sys,os
+curr_path = os.path.dirname(os.path.abspath(__file__)) # 当前文件所在绝对路径
+parent_path = os.path.dirname(curr_path) # 父路径
+sys.path.append(parent_path) # 添加路径到系统路径
 
 import time
 import numpy as np
 import math
 import random
 
-import sys,os
-curr_path = os.path.dirname(__file__)
-parent_path = os.path.dirname(curr_path)
-sys.path.append(parent_path)  # 添加父目录到系统目录
-
-from Mnist.load_data import load_local_mnist # 本地加载数据集
+from Mnist.load_data import load_local_mnist # 本地载入数据集
 
 class SVM:
-    def __init__(self, x_train, y_train, sigma = 10, C = 200, toler = 0.001):
-        '''
-        SVM相关参数初始化
-        :param x_train:训练数据集
-        :param y_train: 训练测试集
-        :param sigma: 高斯核中分母的σ
-        :param C:软间隔中的惩罚参数
-        :param toler:松弛变量
+    def __init__(self, X_train, y_train, sigma = 10, C = 200, toler = 0.001):
+        '''SVM相关参数初始化
+        X_train:训练数据集
+        y_train: 训练测试集
+        sigma: 高斯核中分母的σ
+        C:软间隔中的惩罚参数
+        toler:松弛变量
         注：
-        关于这些参数的初始值：参数的初始值大部分没有强要求，请参照书中给的参考，例如C是调和间隔与误分类点的系数，
+            关于这些参数的初始值：参数的初始值大部分没有强要求，请参照书中给的参考，例如C是调和间隔与误分类点的系数，
             在选值时通过经验法依据结果来动态调整。（本程序中的初始值参考于《机器学习实战》中SVM章节，因为书中也
             使用了该数据集，只不过抽取了很少的数据测试。参数在一定程度上有参考性。）
             如果使用的是其他数据集且结果不太好，强烈建议重新通读所有参数所在的公式进行修改。例如在核函数中σ的值
             高度依赖样本特征值范围，特征值范围较大时若不相应增大σ会导致所有计算得到的核函数均为0
         '''
-        self.x_train_mat = np.mat(x_train)       #训练数据集
+        self.x_train_mat = np.mat(X_train)       #训练数据集
         self.y_train_mat = np.mat(y_train).T   #训练标签集，为了方便后续运算提前做了转置，变为列向量
 
         self.m, self.n = np.shape(self.x_train_mat)    # m：训练集数量    n：样本特征数目
@@ -215,20 +210,19 @@ class SVM:
         #返回第二个变量的E2值以及其索引
         return E2, maxIndex
 
-    def train(self, iter = 100):
-        # iter ：迭代次数，超过设置次数还未收敛则强制停止
+    def train(self, max_iter = 100):
+        # max_iter ：迭代次数，超过设置次数还未收敛则强制停止
         # parameterChanged：单次迭代中有参数改变则增加1
-        iterStep = 0
+        i_iter = 0 
         parameterChanged = 1
-
         #如果没有达到限制的迭代次数以及上次迭代中有参数改变则继续迭代
         #parameterChanged==0时表示上次迭代没有参数改变，如果遍历了一遍都没有参数改变，说明
         #达到了收敛状态，可以停止了
-        while (iterStep < iter) and (parameterChanged > 0):
+        while (i_iter < max_iter) and (parameterChanged > 0):
             #打印当前迭代轮数
-            print('iter:%d:%d'%( iterStep, iter))
+            print('max_iter:%d:%d'%( i_iter, max_iter))
             #迭代步数加1
-            iterStep += 1
+            i_iter += 1
             #新的一轮将参数改变标志位重新置0
             parameterChanged = 0
             #大循环遍历所有样本，用于找SMO中第一个变量
@@ -303,7 +297,7 @@ class SVM:
                         parameterChanged += 1
 
                 #打印迭代轮数，i值，该迭代轮数修改α数目
-                print("iter: %d i:%d, pairs changed %d" % (iterStep, i, parameterChanged))
+                print("max_iter: %d i:%d, pairs changed %d" % (i_iter, i, parameterChanged))
 
         #全部计算结束后，重新遍历一遍α，查找里面的支持向量
         for i in range(self.m):
@@ -349,46 +343,40 @@ class SVM:
         #使用sign函数返回预测结果
         return np.sign(result)
 
-    def test(self, x_test, y_test):
+    def test(self, X_test, y_test):
         '''
         测试
-        :param x_test:测试数据集
+        :param X_test:测试数据集
         :param y_test: 测试标签集
         :return: 正确率
         '''
         #错误计数值
         errorCnt = 0
         #遍历测试集所有样本
-        for i in range(len(x_test)):
+        for i in range(len(X_test)):
             #打印目前进度
-            print('test:%d:%d'%(i, len(x_test)))
+            print('test:%d:%d'%(i, len(X_test)))
             #获取预测结果
-            result = self.predict(x_test[i])
+            result = self.predict(X_test[i])
             #如果预测与标签不一致，错误计数值加一
             if result != y_test[i]:
                 errorCnt += 1
         #返回正确率
-        return 1 - errorCnt / len(x_test)
-
+        return 1 - errorCnt / len(X_test)
 
 
 
 if __name__ == '__main__':
     start = time.time()
-    (x_train, y_train), (x_test, y_test) = load_local_mnist(one_hot=False) # one_hot指对标签y进行one hot编码
-
-
-    #初始化SVM类
-    print('start init SVM')
-    model = SVM(x_train[:1000], y_train[:1000], 10, 200, 0.001)
-
+    (X_train, y_train), (X_test, y_test) = load_local_mnist(one_hot=False) # one_hot指对标签y进行one hot编码    
+    # 初始化SVM类
+    model = SVM(X_train[:1000], y_train[:1000], 10, 200, 0.001)
     # 开始训练
     print('start to train')
     model.train()
     # 开始测试
     print('start to test')
-    accuracy = model.test(x_test[:100], y_test[:100])
+    accuracy = model.test(X_test[:100], y_test[:100])
     print('the accuracy is:%d'%(accuracy * 100), '%')
-
     # 打印时间
     print('time span:', time.time() - start)

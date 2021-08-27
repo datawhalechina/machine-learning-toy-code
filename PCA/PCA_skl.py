@@ -5,12 +5,11 @@ Author: JiangJi
 Email: johnjim0816@gmail.com
 Date: 2021-08-26 17:12:43
 LastEditor: JiangJi
-LastEditTime: 2021-08-26 17:53:30
+LastEditTime: 2021-08-27 12:04:21
 Discription: 
 Environment: 
 '''
 import sys,os
-
 curr_path = os.path.dirname(os.path.abspath(__file__)) # 当前文件所在绝对路径
 parent_path = os.path.dirname(curr_path) # 父路径
 sys.path.append(parent_path) # 添加路径到系统路径
