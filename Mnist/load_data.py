@@ -5,13 +5,9 @@
 @Email: johnjim0816@gmail.com
 @Date: 2020-05-21 23:36:58
 @LastEditor: John
-@LastEditTime: 2020-06-07 10:34:19
-@Discription: 
+LastEditTime: 2021-08-27 12:00:39
+@Discription: 由于国内网速问题，此脚本提供本地载入Mnist数据集的方法
 @Environment: python 3.7.7
-'''
-'''
-此脚本提供两种方法，一种为load_local_mnist，即将本地的.gz文件解码为数据，
-一种是利用keras在线下载mnist
 '''
 import numpy as np
 from struct import unpack
@@ -30,7 +26,6 @@ def __read_label(path):
     with gzip.open(path, 'rb') as f:
         magic, num = unpack('>2I', f.read(8))
         lab = np.frombuffer(f.read(), dtype=np.uint8)
-        # print(lab[1])
     return lab
 
 
@@ -91,30 +86,6 @@ def load_local_mnist(x_train_path=os.path.dirname(__file__)+'/train-images-idx3-
             label[key] = __one_hot_label(label[key])
 
     return (image['train'], label['train']), (image['test'], label['test'])
-
-
-
-def load_online_data():  # categorical_crossentropy
-    from keras.datasets import mnist
-    from keras.utils import np_utils
-    import numpy as np
-    (x_train, y_train), (x_test, y_test) = mnist.load_data()
-    number = 10000
-    x_train, y_train = x_train[0:number], y_train[0:number]
-    x_train = x_train.reshape(number, 28 * 28)
-    x_test = x_test.reshape(x_test.shape[0], 28 * 28)
-    x_train = x_train.astype('float32')
-    x_test = x_test.astype('float32')
-
-    # convert class vectors to binary class matrices
-    y_train = np_utils.to_categorical(y_train, 10)
-    y_test = np_utils.to_categorical(y_test, 10)
-    x_test = np.random.normal(x_test)  # 加噪声
-
-    x_train, x_test = x_train / 255, x_test / 255
-
-    return (x_train, y_train), (x_test, y_test)
-
 
 if __name__ == "__main__":
 
