@@ -5,7 +5,7 @@ Author: JiangJi
 Email: johnjim0816@gmail.com
 Date: 2021-08-26 11:23:51
 LastEditor: JiangJi
-LastEditTime: 2021-08-27 16:13:54
+LastEditTime: 2021-08-27 19:11:20
 Discription: 
 Environment: 
 '''
@@ -24,7 +24,7 @@ from Mnist.load_data import load_local_mnist # 本地载入数据集
 class SVM:
     def __init__(self, X_train, y_train, sigma = 10, C = 200, toler = 0.001):
         '''SVM相关参数初始化
-        X_train:训练数据集
+        X_train():训练数据集
         y_train: 训练测试集
         sigma: 高斯核中分母的σ
         C:软间隔中的惩罚参数
@@ -36,17 +36,16 @@ class SVM:
             如果使用的是其他数据集且结果不太好，强烈建议重新通读所有参数所在的公式进行修改。例如在核函数中σ的值
             高度依赖样本特征值范围，特征值范围较大时若不相应增大σ会导致所有计算得到的核函数均为0
         '''
-        self.x_train_mat = np.mat(X_train)       #训练数据集
-        self.y_train_mat = np.mat(y_train).T   #训练标签集，为了方便后续运算提前做了转置，变为列向量
-
-        self.m, self.n = np.shape(self.x_train_mat)    # m：训练集数量    n：样本特征数目
+        self.X_train = X_train  # 训练数据集
+        self.y_train_mat = np.mat(y_train).T  # 训练标签集，为了方便后续运算提前做了转置，变为列向量
+        self.m, self.n = np.shape(self.X_train)    # m：训练集数量    n：样本特征数目
         self.sigma = sigma                              #高斯核分母中的σ
         self.C = C                                      #惩罚参数
         self.toler = toler                              #松弛变量
         self.k = self.calc_kernel()                      #核函数（初始化时提前计算）
         self.b = 0                                      #SVM中的偏置b
-        self.alpha = [0] * self.x_train_mat.shape[0]   # α 长度为训练集数目
-        self.E = [0 * self.y_train_mat[i, 0] for i in range(self.y_train_mat.shape[0])]     #SMO运算过程中的Ei
+        self.alpha = [0] * self.X_train.shape[0]   # α 长度为训练集数目
+        self.E = [0 * self.y_train_mat[i, 0] for i in range(self.y_train_mat.shape[0])] # SMO运算过程中的Ei
         self.supportVecIndex = []
 
 
@@ -57,25 +56,20 @@ class SVM:
         :return: 高斯核矩阵
         '''
         #初始化高斯核结果矩阵 大小 = 训练集长度m * 训练集长度m
-        #k[i][j] = Xi * Xj
+        # k[i][j] = Xi * Xj
         k = [[0 for i in range(self.m)] for j in range(self.m)]
 
         #大循环遍历Xi，Xi为式7.90中的x
         for i in range(self.m):
-            #每100个打印一次
-            #不能每次都打印，会极大拖慢程序运行速度
-            #因为print是比较慢的
-            if i % 100 == 0:
-                print('construct the kernel:', i, self.m)
             #得到式7.90中的X
-            X = self.x_train_mat[i, :]
+            X = self.X_train[i, :]
             #小循环遍历Xj，Xj为式7.90中的Z
             # 由于 Xi * Xj 等于 Xj * Xi，一次计算得到的结果可以
             # 同时放在k[i][j]和k[j][i]中，这样一个矩阵只需要计算一半即可
             #所以小循环直接从i开始
             for j in range(i, self.m):
                 #获得Z
-                Z = self.x_train_mat[j, :]
+                Z = self.X_train[j, :]
                 #先计算||X - Z||^2
                 result = (X - Z) * (X - Z).T
                 #分子除以分母后去指数，得到的即为高斯核结果
@@ -110,7 +104,6 @@ class SVM:
         elif (self.alpha[i] > -self.toler) and (self.alpha[i] < (self.C + self.toler)) \
                 and (math.fabs(yi * gxi - 1) < self.toler):
             return True
-
         return False
 
     def calc_gxi(self, i):
@@ -233,7 +226,6 @@ class SVM:
                     #第一个变量α的下标i已经确定，接下来按照“7.4.2 变量的选择方法”第二步
                     #选择变量2。由于变量2的选择中涉及到|E1 - E2|，因此先计算E1
                     E1 = self.calcEi(i)
-
                     #选择第2个变量
                     E2, j = self.getAlphaJ(E1, i)
 
@@ -335,7 +327,7 @@ class SVM:
             #这也是为什么在SVM最后只有支持向量起作用
             #------------------
             #先单独将核函数计算出来
-            tmp = self.calcSinglKernel(self.x_train_mat[i, :], np.mat(x))
+            tmp = self.calcSinglKernel(self.X_train[i, :], np.mat(x))
             #对每一项子式进行求和，最终计算得到求和项的值
             result += self.alpha[i] * self.y_train_mat[i] * tmp
         #求和项计算结束后加上偏置b
@@ -370,13 +362,13 @@ if __name__ == '__main__':
     start = time.time()
     (X_train, y_train), (X_test, y_test) = load_local_mnist(one_hot=False) # one_hot指对标签y进行one hot编码    
     # 初始化SVM类
-    model = SVM(X_train[:1000], y_train[:1000], 10, 200, 0.001)
+    model = SVM(X_train[:2000], y_train[:2000], 10, 200, 0.001)
     # 开始训练
     print('start to train')
     model.train()
     # 开始测试
     print('start to test')
-    accuracy = model.test(X_test[:100], y_test[:100])
+    accuracy = model.test(X_test[:200], y_test[:200])
     print('the accuracy is:%d'%(accuracy * 100), '%')
     # 打印时间
     print('time span:', time.time() - start)
