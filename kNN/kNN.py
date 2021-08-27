@@ -5,7 +5,7 @@
 @Email: johnjim0816@gmail.com
 @Date: 2020-05-22 10:55:13
 @LastEditor: John
-@LastEditTime: 2020-06-08 20:42:24
+LastEditTime: 2021-08-27 15:36:18
 @Discription:
 @Environment: python 3.7.7
 '''
@@ -58,7 +58,7 @@ class KNN:
         '''计算两个样本点向量之间的距离,使用的是欧氏距离
         :param x1:向量1
         :param x2:向量2
-        :return:向量之间的欧式距离
+        :return: 向量之间的欧式距离
         '''
         return np.sqrt(np.sum(np.square(x1 - x2)))
 

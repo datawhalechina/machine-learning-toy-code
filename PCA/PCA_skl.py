@@ -5,7 +5,7 @@ Author: JiangJi
 Email: johnjim0816@gmail.com
 Date: 2021-08-26 17:12:43
 LastEditor: JiangJi
-LastEditTime: 2021-08-27 12:04:21
+LastEditTime: 2021-08-27 14:21:46
 Discription: 
 Environment: 
 '''
@@ -17,9 +17,9 @@ sys.path.append(parent_path) # 添加路径到系统路径
 from Mnist.load_data import load_local_mnist
 
 from sklearn.decomposition import PCA
-import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
+import numpy as np
 
 (X_train, y_train), (X_test, y_test) = load_local_mnist(normalize = False,one_hot = False)
 print(f"原本特征维度数：{X_train.shape[1]}") # 特征维度数为784
