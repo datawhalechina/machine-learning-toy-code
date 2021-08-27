@@ -5,11 +5,10 @@
 @Email: johnjim0816@gmail.com
 @Date: 2020-07-09 15:01:26
 @LastEditor: John
-LastEditTime: 2021-08-27 18:55:47
+LastEditTime: 2021-08-27 18:58:26
 @Discription: 
 @Environment:
 '''
-
 import sys,os
 curr_path = os.path.dirname(os.path.abspath(__file__)) # 当前文件所在绝对路径
 parent_path = os.path.dirname(curr_path) # 父路径
