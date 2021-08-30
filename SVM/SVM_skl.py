@@ -5,7 +5,7 @@
 @Email: johnjim0816@gmail.com
 @Date: 2020-07-09 15:01:26
 @LastEditor: John
-LastEditTime: 2021-08-27 18:58:26
+LastEditTime: 2021-08-30 14:25:06
 @Discription: 
 @Environment:
 '''
@@ -48,5 +48,4 @@ if __name__ == "__main__":
     for model, i in zip(models, range(len(models))):
         model.fit(X_train, y_train)
         print(f"{titles[i]}'s score: {model.score(X_test,y_test)}")
-  
     # print(classification_report(y_test, y_pred)) # 打印报告

@@ -5,8 +5,8 @@ Author: JiangJi
 Email: johnjim0816@gmail.com
 Date: 2021-08-26 17:12:43
 LastEditor: JiangJi
-LastEditTime: 2021-08-27 14:21:46
-Discription: 
+LastEditTime: 2021-08-30 14:48:05
+Discription: https://towardsdatascience.com/pca-using-python-scikit-learn-e653f8989e60
 Environment: 
 '''
 import sys,os
