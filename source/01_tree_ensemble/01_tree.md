@@ -122,7 +122,7 @@ G(Y,X)&=\mathbb{E}_{Y}[-\log_2p(Y)]-\mathbb{E}_{X}[\mathbb{E}_{Y\vert X}[-\log_2
 &=-\sum_{k=1}^Kp(y_k)\log_2p(y_k)+\sum_{m=1}^Mp(x_m)\sum_{k=1}^K p(y_k\vert X=x_m)\log_2p(y_k\vert X=x_m) \\
 &=-\sum_{k=1}^K[\sum_{m=1}^Mp(y_k, x_m)]\log_2p(y_k)+\sum_{k=1}^K\sum_{m=1}^M p(x_m)\frac{p(y_k, x_m)}{p(x_m)}\log_2\frac{p(y_k, x_m)}{p(x_m)}\\
 &=\sum_{k=1}^K\sum_{m=1}^Mp(y_k,x_m)[\log_2\frac{p(y_k, x_m)}{p(x_m)}-\log_2p(y_k)] \\
-&=-\sum_{k=1}^K\sum_{m=1}^M p(y_k,x_m) \log\frac{p(y_k)p(x_m)}{p(y_k, x_m)}
+&=-\sum_{k=1}^K\sum_{m=1}^M p(y_k)p(x_m) \log\frac{p(y_k)p(x_m)}{p(y_k, x_m)}
 \end{aligned}
 $$
 
@@ -166,12 +166,12 @@ $$
 
 当数据完全缺失时$\gamma=1$，信息增益为0；当数据没有缺失值时$\gamma=0$，信息增益与原来的值保持一致。
 
-在C4.5算法中，使用了信息增益比来代替信息增益，其原因在于信息增益来选择的决策树对类别较多的特征具有天然的倾向性，例如当某一个特征$Y$（身份证号码、学号等）的类别数恰好就是样本数量时，此时由于$H(X\vert Y)=0$，即$G(X,Y)$达到最大值，因此必然会优先选择此特征进行分裂，但这样的情况是非常不合理的。
+在C4.5算法中，使用了信息增益比来代替信息增益，其原因在于信息增益来选择的决策树对类别较多的特征具有天然的倾向性，例如当某一个特征$X$（身份证号码、学号等）的类别数恰好就是样本数量时，此时由于$H(Y\vert X)=0$，即$G(Y,X)$达到最大值，因此必然会优先选择此特征进行分裂，但这样的情况是非常不合理的。
 
 我们在第1节已经证明了，在类别占比均匀的情况下，类别数越多则熵越高，因此我们可以使用特征对应的熵来进行惩罚，即熵越高的变量会在信息增益上赋予更大程度的抑制，由此我们可以定义信息增益比为
 
 $$
-G^R(X,Y) = \frac{G(X,Y)}{H(Y)}
+G^R(Y,X) = \frac{G(Y,X)}{H(Y)}
 $$
 
 在前面的部分中，我们讨论了单个节点如何选取特征进行分裂，但没有涉及到树节点的分裂顺序。例如下图所示，假设当前已经处理完了节点2的分裂，所有黄色节点（包括2号节点）都是当前已经存在的树节点，那么我们接下来究竟应该选取叶节点3号、4号和5号中的哪一个节点来继续进行决策以生成新的叶节点6号和7号？
@@ -200,17 +200,17 @@ CART（Classification And Regression Tree）是一棵二叉树，它既能处理
 此时，两者的信息增益可以分别定义为
 
 $$
-G^{MSE}(Y,X)=-\frac{1}{N}\sum_{i=1}^{N}(y^{(D)}_i-\bar{y}^{(D)})^2+\frac{N_L}{N}\frac{1}{N_L}\sum_{i=1}^{N_L}(y^{(L)}_i-\bar{y}^{(L)})^2+\frac{N_R}{N}\frac{1}{N_R}\sum_{i=1}^{N_R}(y^{(R)}_i-\bar{y}^{(R)})^2
+G^{MSE}(Y,X)=\frac{1}{N}\sum_{i=1}^{N}(y^{(D)}_i-\bar{y}^{(D)})^2-\frac{N_L}{N}\frac{1}{N_L}\sum_{i=1}^{N_L}(y^{(L)}_i-\bar{y}^{(L)})^2-\frac{N_R}{N}\frac{1}{N_R}\sum_{i=1}^{N_R}(y^{(R)}_i-\bar{y}^{(R)})^2
 $$
 
 $$
-G^{MAE}(Y,X)=-\frac{1}{N}\sum_{i=1}^{N}\vert y^{(D)}_i-\tilde{y}^{(D)}\vert+\frac{N_L}{N}\frac{1}{N_L}\sum_{i=1}^{N_L}\vert y^{(L)}_i-\tilde{y}^{(L)}\vert-\frac{N_R}{N}\sum_{i=1}^{N_R}\frac{1}{N_R}\vert y^{(R)}_i-\tilde{y}^{(R)}\vert
+G^{MAE}(Y,X)=\frac{1}{N}\sum_{i=1}^{N}\vert y^{(D)}_i-\tilde{y}^{(D)}\vert-\frac{N_L}{N}\frac{1}{N_L}\sum_{i=1}^{N_L}\vert y^{(L)}_i-\tilde{y}^{(L)}\vert-\frac{N_R}{N}\sum_{i=1}^{N_R}\frac{1}{N_R}\vert y^{(R)}_i-\tilde{y}^{(R)}\vert
 $$
 
 当处理分类问题时，虽然ID3或C4.5定义的熵仍然可以使用，但是由于对数函数$\log$的计算代价较大，CART将熵中的$\log$在$p=1$处利用一阶泰勒展开，基尼系数定义为熵的线性近似，即由于
 
 $$
-H(Y)=\mathbb{E}_YI(p)=\mathbb{E}_Y[-\log_2p(Y)]\approx\mathbb{E}_X[1-p(Y)]
+H(Y)=\mathbb{E}_YI(p)=\mathbb{E}_Y[-\log_2p(Y)]\approx\mathbb{E}_Y[1-p(Y)]
 $$
 
 从而定义基尼系数为
@@ -280,7 +280,7 @@ $$
 ### A组
 
 1. ID3树算法、C4.5树算法和CART算法之间有何异同？
-2. 什么是信息增益率？它衡量了什么指标？它有什么缺陷？
+2. 什么是信息增益？它衡量了什么指标？它有什么缺陷？
 3. sklearn决策树中的random\_state参数控制了哪些步骤的随机性？
 4. 决策树如何处理连续变量和缺失变量？
 5. 基尼系数是什么？为什么要在CART中引入它？
@@ -292,7 +292,7 @@ $$
 2. 如何理解min\_samples\_leaf参数能够控制回归树输出值的平滑程度？
 3. 我们在第4节提到决策树具有很强的拟合能力，对于任何一个没有特征重复值的数据集，它一定能够在训练集上做到分类错误率或均方回归损失为0。为什么？
 4. 对信息熵中的$\log$函数在$p=1$处进行一阶泰勒展开可以近似为基尼系数，那么如果在$p=1$处进行二阶泰勒展开我们可以获得什么近似指标？请写出对应指标的信息增益公式。
-5. 除了信息熵和基尼系数之外，我们还可以使用节点的$1-\max_{k}p(X=x_k)$和第$m$个子节点的$1-\max_{k}p(X=x_k\vert Y=y_m)$来作为衡量纯度的指标。请解释其合理性并给出相应的信息增益和加权信息增益公式。
+5. 除了信息熵和基尼系数之外，我们还可以使用节点的$1-\max_{k}p(Y=y_k)$和第$m$个子节点的$1-\max_{k}p(Y=y_k\vert X=x_m)$来作为衡量纯度的指标。请解释其合理性并给出相应的信息增益和加权信息增益公式。
 6. 在讨论缺失值对信息增益的惩罚时，我们直接使用了$1-\gamma$作为惩罚系数，其中$\gamma$为缺失值的比例。如果将系数替换为$1-\gamma^2$，请问对缺失值而言是加强了惩罚还是削弱了惩罚？
 7.  如果将树的生长策略从深度优先生长改为广度优先生长，假设其他参数保持不变的情况下，两个模型对应的结果输出可能不同吗？
 8.  请实现参数与sklearn一致的DecisionTreeClassifier类，其成员函数包括fit、predict和predict\_proba，同时需给出feature\_importances\_指标。
@@ -300,11 +300,11 @@ $$
     - feature\_importances\_指每个特征的重要性，对于某个特征而言，其特征重要性等于决策树中根据该特征分裂而产生的相对信息增益之和。
 9.  假设当前我们需要处理一个分类问题，请问对输入特征进行归一化会对树模型的类别输出产生影响吗？请解释原因。
 10. sklearn提供了class\_weight参数来处理非平衡样本。设每个类别的样本数量为$n_1,...,n_K$，第$i$个样本的类别、样本权重和类别权重分别为$k$、$w_i$和$w^c_i$。当class\_weight值是形式为\{class\_label: class\_weight\}的字典时，样本权重被调整为$w_i\cdot w^c_i$；当class\_weight值是字符串“balanced”，样本权重被调整为$w_i\cdot \frac{\sum_{k'=1}^K n_{k'}}{K\cdot n_k}$；否则$w_i$不变。现有样本$x_1$、$x_2$和$x_3$的样本权重为$[20,30,10]$，类别分别是$0$、$0$和$1$，且给定class\_weight=\{0:40, 1:60\}，请计算调整后的样本权重。
-11. $X,Y$的联合熵为$H(X,Y)=\mathbb{E}_{(X,Y)\sim p(x,y)}[-\log_2p(X,Y)]$
+11. $X,Y$的联合熵为$H(Y,X)=\mathbb{E}_{(Y,X)\sim p(y,x)}[-\log_2p(Y,X)]$
     - 请证明如下关系：
-        - $G(X,Y)=H(Y)-H(Y\vert X)$
-        - $G(X,Y)=H(X)+H(Y)-H(X,Y)$
-        - $G(X,Y)=H(X,Y)-H(X\vert Y)-H(Y\vert X)$
+        - $G(Y,X)=H(X)-H(X\vert Y)$
+        - $G(Y,X)=H(X)+H(Y)-H(X,Y)$
+        - $G(Y,X)=H(X,Y)-H(X\vert Y)-H(Y\vert X)$
     - 下图被分为了A、B和C三个区域。若AB区域代表X的不确定性，BC区域代表Y的不确定性，那么$H(X)$、$H(Y)$、$H(X\vert Y)$、$H(Y\vert X)$、$H(X,Y)$和$G(X,Y)$分别指代的是哪片区域？
 
 ```{figure} ../_static/tree_pic3.png

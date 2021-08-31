@@ -1,0 +1,21 @@
+\frametitle{$\rm E$ $\rm Step$}
+
+\begin{tcolorbox}[colback=lightyellow,colframe=lightred,title=My title]
+  I can do this also with a title.
+\end{tcolorbox}
+
+\begin{align*}
+\mathbbm{E}_{\bm{Z}\sim q^*}[z_{ij}]&= p(z_{ij}=1)\times 1 + p(z_{ij}=0)\times 0\\
+&= \frac{\pi_j^{now}{{\rm N}(\bm{x_i}\vert \bm{\mu_j}^{now},\bm{\Lambda_j}^{now})}}{\sum_{j=1}^k\pi_{j}^{now}{\rm N}(\bm{x_i}\vert \bm{\mu_j}^{now}, \bm{\Lambda_j}^{now})}
+\end{align*}
+\begin{lstlisting}
+def z_compute(_pi, _mu_1, _mu_2, _sigma_1, _sigma_2):
+    res = np.c_[
+            multivariate_normal.pdf(X, mean=mu_1, cov=sigma_1),
+            multivariate_normal.pdf(X, mean=mu_2, cov=sigma_2)
+        ]
+    res = res * _pi
+    res = res / res.sum(1).reshape(-1,1)
+    return res
+\end{lstlisting}
+

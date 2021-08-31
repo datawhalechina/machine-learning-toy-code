@@ -353,7 +353,7 @@ G(Y,X)&amp;=\mathbb{E}_{Y}[-\log_2p(Y)]-\mathbb{E}_{X}[\mathbb{E}_{Y\vert X}[-\l
 &amp;=-\sum_{k=1}^Kp(y_k)\log_2p(y_k)+\sum_{m=1}^Mp(x_m)\sum_{k=1}^K p(y_k\vert X=x_m)\log_2p(y_k\vert X=x_m) \\
 &amp;=-\sum_{k=1}^K[\sum_{m=1}^Mp(y_k, x_m)]\log_2p(y_k)+\sum_{k=1}^K\sum_{m=1}^M p(x_m)\frac{p(y_k, x_m)}{p(x_m)}\log_2\frac{p(y_k, x_m)}{p(x_m)}\\
 &amp;=\sum_{k=1}^K\sum_{m=1}^Mp(y_k,x_m)[\log_2\frac{p(y_k, x_m)}{p(x_m)}-\log_2p(y_k)] \\
-&amp;=-\sum_{k=1}^K\sum_{m=1}^M p(y_k,x_m) \log\frac{p(y_k)p(x_m)}{p(y_k, x_m)}
+&amp;=-\sum_{k=1}^K\sum_{m=1}^M p(y_k)p(x_m) \log\frac{p(y_k)p(x_m)}{p(y_k, x_m)}
 \end{aligned}
 \end{split}\]</div>
 <p>从上式可以发现，信息增益<span class="math notranslate nohighlight">\(G(Y,X)\)</span>在本质上就是<span class="math notranslate nohighlight">\(p(y,x)\)</span>关于<span class="math notranslate nohighlight">\(p(y)p(x)\)</span>的KL散度，而KL散度的非负性由Jensen不等式可得：</p>
@@ -386,11 +386,11 @@ G_N(Y,X)=-\sum_{i=1}^K\tilde{p}(y_k)\log \tilde{p}(y_k)+\sum_{m=1}^M\tilde{p}(x_
 \tilde{G}(Y,X) = (1-\gamma)G(\tilde{Y},\tilde{X})
 \]</div>
 <p>当数据完全缺失时<span class="math notranslate nohighlight">\(\gamma=1\)</span>，信息增益为0；当数据没有缺失值时<span class="math notranslate nohighlight">\(\gamma=0\)</span>，信息增益与原来的值保持一致。</p>
-<p>在C4.5算法中，使用了信息增益比来代替信息增益，其原因在于信息增益来选择的决策树对类别较多的特征具有天然的倾向性，例如当某一个特征<span class="math notranslate nohighlight">\(Y\)</span>（身份证号码、学号等）的类别数恰好就是样本数量时，此时由于<span class="math notranslate nohighlight">\(H(X\vert Y)=0\)</span>，即<span class="math notranslate nohighlight">\(G(X,Y)\)</span>达到最大值，因此必然会优先选择此特征进行分裂，但这样的情况是非常不合理的。</p>
+<p>在C4.5算法中，使用了信息增益比来代替信息增益，其原因在于信息增益来选择的决策树对类别较多的特征具有天然的倾向性，例如当某一个特征<span class="math notranslate nohighlight">\(X\)</span>（身份证号码、学号等）的类别数恰好就是样本数量时，此时由于<span class="math notranslate nohighlight">\(H(Y\vert X)=0\)</span>，即<span class="math notranslate nohighlight">\(G(Y,X)\)</span>达到最大值，因此必然会优先选择此特征进行分裂，但这样的情况是非常不合理的。</p>
 <p>我们在第1节已经证明了，在类别占比均匀的情况下，类别数越多则熵越高，因此我们可以使用特征对应的熵来进行惩罚，即熵越高的变量会在信息增益上赋予更大程度的抑制，由此我们可以定义信息增益比为</p>
 <div class="math notranslate nohighlight">
 \[
-G^R(X,Y) = \frac{G(X,Y)}{H(Y)}
+G^R(Y,X) = \frac{G(Y,X)}{H(Y)}
 \]</div>
 <p>在前面的部分中，我们讨论了单个节点如何选取特征进行分裂，但没有涉及到树节点的分裂顺序。例如下图所示，假设当前已经处理完了节点2的分裂，所有黄色节点（包括2号节点）都是当前已经存在的树节点，那么我们接下来究竟应该选取叶节点3号、4号和5号中的哪一个节点来继续进行决策以生成新的叶节点6号和7号？</p>
 <div class="figure align-center">
@@ -408,16 +408,16 @@ G^R(X,Y) = \frac{G(X,Y)}{H(Y)}
 <p>此时，两者的信息增益可以分别定义为</p>
 <div class="math notranslate nohighlight">
 \[
-G^{MSE}(Y,X)=-\frac{1}{N}\sum_{i=1}^{N}(y^{(D)}_i-\bar{y}^{(D)})^2+\frac{N_L}{N}\frac{1}{N_L}\sum_{i=1}^{N_L}(y^{(L)}_i-\bar{y}^{(L)})^2+\frac{N_R}{N}\frac{1}{N_R}\sum_{i=1}^{N_R}(y^{(R)}_i-\bar{y}^{(R)})^2
+G^{MSE}(Y,X)=\frac{1}{N}\sum_{i=1}^{N}(y^{(D)}_i-\bar{y}^{(D)})^2-\frac{N_L}{N}\frac{1}{N_L}\sum_{i=1}^{N_L}(y^{(L)}_i-\bar{y}^{(L)})^2-\frac{N_R}{N}\frac{1}{N_R}\sum_{i=1}^{N_R}(y^{(R)}_i-\bar{y}^{(R)})^2
 \]</div>
 <div class="math notranslate nohighlight">
 \[
-G^{MAE}(Y,X)=-\frac{1}{N}\sum_{i=1}^{N}\vert y^{(D)}_i-\tilde{y}^{(D)}\vert+\frac{N_L}{N}\frac{1}{N_L}\sum_{i=1}^{N_L}\vert y^{(L)}_i-\tilde{y}^{(L)}\vert-\frac{N_R}{N}\sum_{i=1}^{N_R}\frac{1}{N_R}\vert y^{(R)}_i-\tilde{y}^{(R)}\vert
+G^{MAE}(Y,X)=\frac{1}{N}\sum_{i=1}^{N}\vert y^{(D)}_i-\tilde{y}^{(D)}\vert-\frac{N_L}{N}\frac{1}{N_L}\sum_{i=1}^{N_L}\vert y^{(L)}_i-\tilde{y}^{(L)}\vert-\frac{N_R}{N}\sum_{i=1}^{N_R}\frac{1}{N_R}\vert y^{(R)}_i-\tilde{y}^{(R)}\vert
 \]</div>
 <p>当处理分类问题时，虽然ID3或C4.5定义的熵仍然可以使用，但是由于对数函数<span class="math notranslate nohighlight">\(\log\)</span>的计算代价较大，CART将熵中的<span class="math notranslate nohighlight">\(\log\)</span>在<span class="math notranslate nohighlight">\(p=1\)</span>处利用一阶泰勒展开，基尼系数定义为熵的线性近似，即由于</p>
 <div class="math notranslate nohighlight">
 \[
-H(Y)=\mathbb{E}_YI(p)=\mathbb{E}_Y[-\log_2p(Y)]\approx\mathbb{E}_X[1-p(Y)]
+H(Y)=\mathbb{E}_YI(p)=\mathbb{E}_Y[-\log_2p(Y)]\approx\mathbb{E}_Y[1-p(Y)]
 \]</div>
 <p>从而定义基尼系数为</p>
 <div class="math notranslate nohighlight">
@@ -477,7 +477,7 @@ E(Node^N) = \frac{R(Node^N)-R(T)}{\vert T^N\vert -1}\leq \alpha
 <h3>A组<a class="headerlink" href="#a" title="永久链接至标题">¶</a></h3>
 <ol class="simple">
 <li><p>ID3树算法、C4.5树算法和CART算法之间有何异同？</p></li>
-<li><p>什么是信息增益率？它衡量了什么指标？它有什么缺陷？</p></li>
+<li><p>什么是信息增益？它衡量了什么指标？它有什么缺陷？</p></li>
 <li><p>sklearn决策树中的random_state参数控制了哪些步骤的随机性？</p></li>
 <li><p>决策树如何处理连续变量和缺失变量？</p></li>
 <li><p>基尼系数是什么？为什么要在CART中引入它？</p></li>
@@ -491,7 +491,7 @@ E(Node^N) = \frac{R(Node^N)-R(T)}{\vert T^N\vert -1}\leq \alpha
 <li><p>如何理解min_samples_leaf参数能够控制回归树输出值的平滑程度？</p></li>
 <li><p>我们在第4节提到决策树具有很强的拟合能力，对于任何一个没有特征重复值的数据集，它一定能够在训练集上做到分类错误率或均方回归损失为0。为什么？</p></li>
 <li><p>对信息熵中的<span class="math notranslate nohighlight">\(\log\)</span>函数在<span class="math notranslate nohighlight">\(p=1\)</span>处进行一阶泰勒展开可以近似为基尼系数，那么如果在<span class="math notranslate nohighlight">\(p=1\)</span>处进行二阶泰勒展开我们可以获得什么近似指标？请写出对应指标的信息增益公式。</p></li>
-<li><p>除了信息熵和基尼系数之外，我们还可以使用节点的<span class="math notranslate nohighlight">\(1-\max_{k}p(X=x_k)\)</span>和第<span class="math notranslate nohighlight">\(m\)</span>个子节点的<span class="math notranslate nohighlight">\(1-\max_{k}p(X=x_k\vert Y=y_m)\)</span>来作为衡量纯度的指标。请解释其合理性并给出相应的信息增益和加权信息增益公式。</p></li>
+<li><p>除了信息熵和基尼系数之外，我们还可以使用节点的<span class="math notranslate nohighlight">\(1-\max_{k}p(Y=y_k)\)</span>和第<span class="math notranslate nohighlight">\(m\)</span>个子节点的<span class="math notranslate nohighlight">\(1-\max_{k}p(Y=y_k\vert X=x_m)\)</span>来作为衡量纯度的指标。请解释其合理性并给出相应的信息增益和加权信息增益公式。</p></li>
 <li><p>在讨论缺失值对信息增益的惩罚时，我们直接使用了<span class="math notranslate nohighlight">\(1-\gamma\)</span>作为惩罚系数，其中<span class="math notranslate nohighlight">\(\gamma\)</span>为缺失值的比例。如果将系数替换为<span class="math notranslate nohighlight">\(1-\gamma^2\)</span>，请问对缺失值而言是加强了惩罚还是削弱了惩罚？</p></li>
 <li><p>如果将树的生长策略从深度优先生长改为广度优先生长，假设其他参数保持不变的情况下，两个模型对应的结果输出可能不同吗？</p></li>
 <li><p>请实现参数与sklearn一致的DecisionTreeClassifier类，其成员函数包括fit、predict和predict_proba，同时需给出feature_importances_指标。</p>
@@ -502,13 +502,13 @@ E(Node^N) = \frac{R(Node^N)-R(T)}{\vert T^N\vert -1}\leq \alpha
 </li>
 <li><p>假设当前我们需要处理一个分类问题，请问对输入特征进行归一化会对树模型的类别输出产生影响吗？请解释原因。</p></li>
 <li><p>sklearn提供了class_weight参数来处理非平衡样本。设每个类别的样本数量为<span class="math notranslate nohighlight">\(n_1,...,n_K\)</span>，第<span class="math notranslate nohighlight">\(i\)</span>个样本的类别、样本权重和类别权重分别为<span class="math notranslate nohighlight">\(k\)</span>、<span class="math notranslate nohighlight">\(w_i\)</span>和<span class="math notranslate nohighlight">\(w^c_i\)</span>。当class_weight值是形式为{class_label: class_weight}的字典时，样本权重被调整为<span class="math notranslate nohighlight">\(w_i\cdot w^c_i\)</span>；当class_weight值是字符串“balanced”，样本权重被调整为<span class="math notranslate nohighlight">\(w_i\cdot \frac{\sum_{k'=1}^K n_{k'}}{K\cdot n_k}\)</span>；否则<span class="math notranslate nohighlight">\(w_i\)</span>不变。现有样本<span class="math notranslate nohighlight">\(x_1\)</span>、<span class="math notranslate nohighlight">\(x_2\)</span>和<span class="math notranslate nohighlight">\(x_3\)</span>的样本权重为<span class="math notranslate nohighlight">\([20,30,10]\)</span>，类别分别是<span class="math notranslate nohighlight">\(0\)</span>、<span class="math notranslate nohighlight">\(0\)</span>和<span class="math notranslate nohighlight">\(1\)</span>，且给定class_weight={0:40, 1:60}，请计算调整后的样本权重。</p></li>
-<li><p><span class="math notranslate nohighlight">\(X,Y\)</span>的联合熵为<span class="math notranslate nohighlight">\(H(X,Y)=\mathbb{E}_{(X,Y)\sim p(x,y)}[-\log_2p(X,Y)]\)</span></p>
+<li><p><span class="math notranslate nohighlight">\(X,Y\)</span>的联合熵为<span class="math notranslate nohighlight">\(H(Y,X)=\mathbb{E}_{(Y,X)\sim p(y,x)}[-\log_2p(Y,X)]\)</span></p>
 <ul class="simple">
 <li><p>请证明如下关系：</p>
 <ul>
-<li><p><span class="math notranslate nohighlight">\(G(X,Y)=H(Y)-H(Y\vert X)\)</span></p></li>
-<li><p><span class="math notranslate nohighlight">\(G(X,Y)=H(X)+H(Y)-H(X,Y)\)</span></p></li>
-<li><p><span class="math notranslate nohighlight">\(G(X,Y)=H(X,Y)-H(X\vert Y)-H(Y\vert X)\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(G(Y,X)=H(X)-H(X\vert Y)\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(G(Y,X)=H(X)+H(Y)-H(X,Y)\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(G(Y,X)=H(X,Y)-H(X\vert Y)-H(Y\vert X)\)</span></p></li>
 </ul>
 </li>
 <li><p>下图被分为了A、B和C三个区域。若AB区域代表X的不确定性，BC区域代表Y的不确定性，那么<span class="math notranslate nohighlight">\(H(X)\)</span>、<span class="math notranslate nohighlight">\(H(Y)\)</span>、<span class="math notranslate nohighlight">\(H(X\vert Y)\)</span>、<span class="math notranslate nohighlight">\(H(Y\vert X)\)</span>、<span class="math notranslate nohighlight">\(H(X,Y)\)</span>和<span class="math notranslate nohighlight">\(G(X,Y)\)</span>分别指代的是哪片区域？</p></li>

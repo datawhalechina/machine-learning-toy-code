@@ -6,7 +6,10 @@ import matplotlib.pyplot as plt
 
 import numpy as np
 
+def main():
+    pass
 
+"""
 def main():
     X, y = make_regression(
         100, 6, 3, 1,
@@ -40,7 +43,7 @@ def main():
     p(clf1.tree.root)
     tree.plot_tree(clf2)
     plt.show()
-
+"""
 
 if __name__ == "__main__":
     main()
