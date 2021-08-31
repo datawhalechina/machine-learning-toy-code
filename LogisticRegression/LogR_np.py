@@ -5,29 +5,20 @@
 @Email: johnjim0816@gmail.com
 @Date: 2020-06-06 17:26:50
 @LastEditor: John
-LastEditTime: 2021-07-27 15:33:55
+LastEditTime: 2021-08-31 18:11:45
 @Discription: 
 @Environment: python 3.7.7
 '''
-'''
-数据集：Mnist
-训练集数量：60000
-测试集数量：10000
-------------------------------
-运行机器：CPU i7-9750H
-超参数：学习率 lr=0.001 迭代次数 n_iters=10(实际上一次效果就达到了0.99)
-运行结果：
-    正确率：0.9933
-    运行时长：29.93s
-'''
 import sys,os
-curr_path = os.path.dirname(__file__)
-parent_path=os.path.dirname(curr_path) 
-sys.path.append(parent_path) # add current terminal path to sys.path
+curr_path = os.path.dirname(os.path.abspath(__file__)) # 当前文件所在绝对路径
+parent_path = os.path.dirname(curr_path) # 父路径
+sys.path.append(parent_path) # 添加路径到系统路径
+
+from Mnist.load_data import load_local_mnist
 
 import numpy as np
 import time
-from Mnist.load_data import load_local_mnist
+
 
 class LogisticRegression:
     def __init__(self, x_train, y_train, x_test, y_test):
