@@ -5,7 +5,7 @@
 @Email: johnjim0816@gmail.com
 @Date: 2020-06-06 17:26:50
 @LastEditor: John
-LastEditTime: 2021-08-31 18:11:45
+LastEditTime: 2021-09-01 11:44:46
 @Discription: 
 @Environment: python 3.7.7
 '''
@@ -42,7 +42,7 @@ class LogisticRegression:
         self.n_iters=10  # 设置迭代次数
     @staticmethod
     def sigmoid(x):
-        '''sigmoid function
+        '''sigmoid函数
         '''
         return 1.0/(1+np.exp(-x))
         
