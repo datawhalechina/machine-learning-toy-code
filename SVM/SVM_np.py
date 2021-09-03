@@ -5,7 +5,7 @@ Author: JiangJi
 Email: johnjim0816@gmail.com
 Date: 2021-08-26 11:23:51
 LastEditor: JiangJi
-LastEditTime: 2021-08-30 11:18:01
+LastEditTime: 2021-09-03 16:07:02
 Discription: 
 Environment: 
 '''
@@ -18,15 +18,16 @@ import time
 import numpy as np
 import math
 import random
+from tqdm import tqdm
 
 from Mnist.load_data import load_local_mnist # 本地载入数据集
 
 class SVM:
-    def __init__(self, X_train, y_train, sigma = 10, C = 200, toler = 0.001):
+    def __init__(self, X_train, y_train, gamma = 0.001, C = 200, toler = 0.001):
         '''SVM相关参数初始化
         X_train:训练数据集
         y_train: 训练测试集
-        sigma: 高斯核中分母的σ
+        gamma: 高斯核中的gamma
         C:软间隔中的惩罚参数
         toler:松弛变量
         注：
@@ -37,49 +38,45 @@ class SVM:
             高度依赖样本特征值范围，特征值范围较大时若不相应增大σ会导致所有计算得到的核函数均为0
         '''
         self.X_train = X_train       #训练数据集
-        self.y_train_mat = np.mat(y_train).T   #训练标签集，为了方便后续运算提前做了转置，变为列向量
-
-        self.m, self.n = np.shape(self.X_train)    # m：训练集数量    n：样本特征数目
-        self.sigma = sigma                              #高斯核分母中的σ
+        self.y_train = np.mat(y_train).T   #训练标签集，为了方便后续运算提前做了转置，变为列向量
+        self.gamma = gamma                              #高斯核分母中的σ
         self.C = C                                      #惩罚参数
         self.toler = toler                              #松弛变量
         self.k = self.calc_kernel()                      #核函数（初始化时提前计算）
         self.b = 0                                      #SVM中的偏置b
         self.alpha = [0] * self.X_train.shape[0]   # α 长度为训练集数目
-        self.E = [0 * self.y_train_mat[i, 0] for i in range(self.y_train_mat.shape[0])]     #SMO运算过程中的Ei
+        self.E = [0 * self.y_train[i, 0] for i in range(self.y_train.shape[0])]     #SMO运算过程中的Ei
         self.supportVecIndex = []
 
-    def calc_kernel(self):
+    def calc_kernel_1(self):
+        '''计算高斯核
         '''
-        计算核函数
-        使用的是高斯核 详见“7.3.3 常用核函数” 式7.90
-        :return: 高斯核矩阵
-        '''
-        #初始化高斯核结果矩阵 大小 = 训练集长度m * 训练集长度m
-        #k[i][j] = Xi * Xj
-        k = [[0 for i in range(self.m)] for j in range(self.m)]
-
-        #大循环遍历Xi，Xi为式7.90中的x
-        for i in range(self.m):
+        print("开始计算计算高斯核...")
+        m =  self.X_train.shape[0] # 训练集数量 
+        kernel = [[0 for _ in range(m)] for _ in range(m)] 
+        for i in tqdm(range(m)):
             #得到式7.90中的X
-            X = self.X_train[i, :]
-            #小循环遍历Xj，Xj为式7.90中的Z
-            # 由于 Xi * Xj 等于 Xj * Xi，一次计算得到的结果可以
-            # 同时放在k[i][j]和k[j][i]中，这样一个矩阵只需要计算一半即可
-            #所以小循环直接从i开始
-            for j in range(i, self.m):
-                #获得Z
-                Z = self.X_train[j, :]
-                #先计算||X - Z||^2
-                result = (X - Z) * (X - Z).T
-                #分子除以分母后去指数，得到的即为高斯核结果
-                result = np.exp(-1 * result / (2 * self.sigma**2))
-                #将Xi*Xj的结果存放入k[i][j]和k[j][i]中
-                k[i][j] = result
-                k[j][i] = result
-        #返回高斯核矩阵
-        return k
-
+            x_i = np.expand_dims(self.X_train[i, :],axis=0)
+            ''' 由于 x_i * x_j 等于 x_j * x_i，一次计算得到的结果可以
+                同时放在k[i][j]和k[j][i]中，这样一个矩阵只需要计算一半即可
+                所以小循环直接从i开始
+            '''
+            for j in range(i, m):
+                x_j = np.expand_dims(self.X_train[j, :],axis=0)
+                kernel[i][j] = np.exp(-self.gamma * (x_i - x_j).dot((x_i - x_j).T)[0][0])
+                kernel[j][i] = np.exp(-self.gamma * (x_i - x_j).dot((x_i - x_j).T)[0][0])
+        print("完成计算高斯核函！")
+        return kernel
+        
+    def calc_kernel(self):
+        ''' 快速计算高斯核：https://www.scutmath.com/fast_kernel_matrix_generation.html
+        '''
+        print("开始计算计算高斯核...")
+        X1,X2 = self.X_train, self.X_train
+        kernel = np.sum(X1**2, 1).reshape(-1, 1) + np.sum(X2**2, 1) - 2 * np.dot(X1, X2.T)
+        kernel = np.exp(- self.gamma * kernel)
+        print("完成计算高斯核函！")
+        return kernel
     def is_satisfy_KKT(self, i):
         '''
         查看第i个α是否满足KKT条件
@@ -88,8 +85,8 @@ class SVM:
             True：满足
             False：不满足
         '''
-        gxi =self.calc_gxi(i)
-        yi = self.y_train_mat[i]
+        gxi = self.calc_gxi(i)
+        yi = self.y_train[i]
 
         #判断依据参照“7.4.2 变量的选择方法”中“1.第1个变量的选择”
         #式7.111到7.113
@@ -125,17 +122,18 @@ class SVM:
         #角度上将也可以扔掉不算
         #index获得非零α的下标，并做成列表形式方便后续遍历
         index = [i for i, alpha in enumerate(self.alpha) if alpha != 0]
+ 
         #遍历每一个非零α，i为非零α的下标
         for j in index:
             #计算g(xi)
-            gxi += self.alpha[j] * self.y_train_mat[j] * self.k[j][i]
+            gxi += self.alpha[j] * self.y_train[j] * self.k[j][i]
         #求和结束后再单独加上偏置b
         gxi += self.b
 
         #返回
         return gxi
 
-    def calcEi(self, i):
+    def calc_Ei(self, i):
         '''
         计算Ei
         根据“7.4.1 两个变量二次规划的求解方法”式7.105
@@ -145,22 +143,17 @@ class SVM:
         #计算g(xi)
         gxi = self.calc_gxi(i)
         #Ei = g(xi) - yi,直接将结果作为Ei返回
-        return gxi - self.y_train_mat[i]
+        return gxi - self.y_train[i]
 
-    def getAlphaJ(self, E1, i):
+    def get_alpha2(self, E1, i):
+        '''SMO算法选择第二个变量alpha_2，需要选择使得|E1-E2|最大的点
         '''
-        SMO中选择第二个变量
-        :param E1: 第一个变量的E1
-        :param i: 第一个变量α的下标
-        :return: E2，α2的下标
-        '''
-        #初始化E2
         E2 = 0
         #初始化|E1-E2|为-1
         maxE1_E2 = -1
         #初始化第二个变量的下标
         maxIndex = -1
-
+        m =  self.X_train.shape[0] # 训练集数量 
         #这一步是一个优化性的算法
         #实际上书上算法中初始时每一个Ei应当都为-yi（因为g(xi)由于初始α为0，必然为0）
         #然后每次按照书中第二步去计算不同的E2来使得|E1-E2|最大，但是时间耗费太长了
@@ -176,13 +169,12 @@ class SVM:
         #在程序运行后期后其实绝大部分Ei都已经更新完毕了。下方优化算法只不过是在程序运行
         #的前半程进行了时间的加速，在程序后期其实与未优化的情况无异
         #------------------------------------------------------
-
         #获得Ei非0的对应索引组成的列表，列表内容为非0Ei的下标i
         nozeroE = [i for i, Ei in enumerate(self.E) if Ei != 0]
         #对每个非零Ei的下标i进行遍历
         for j in nozeroE:
             #计算E2
-            E2_tmp = self.calcEi(j)
+            E2_tmp = self.calc_Ei(j)
             #如果|E1-E2|大于目前最大值
             if math.fabs(E1 - E2_tmp) > maxE1_E2:
                 #更新最大值
@@ -196,53 +188,51 @@ class SVM:
             maxIndex = i
             while maxIndex == i:
                 #获得随机数，如果随机数与第一个变量的下标i一致则重新随机
-                maxIndex = int(random.uniform(0, self.m))
+                maxIndex = int(random.uniform(0, m))
             #获得E2
-            E2 = self.calcEi(maxIndex)
+            E2 = self.calc_Ei(maxIndex)
 
         #返回第二个变量的E2值以及其索引
         return E2, maxIndex
 
     def train(self, max_iter = 100):
-        # max_iter ：迭代次数，超过设置次数还未收敛则强制停止
-        # parameterChanged：单次迭代中有参数改变则增加1
+        ''' SMO算法训练
+        '''
+        # max_iter: 迭代次数，超过设置次数还未收敛则强制停止
+        # alpha_change_flag: 单次迭代中有参数改变则增加1
         i_iter = 0 
-        parameterChanged = 1
-        #如果没有达到限制的迭代次数以及上次迭代中有参数改变则继续迭代
-        #parameterChanged==0时表示上次迭代没有参数改变，如果遍历了一遍都没有参数改变，说明
-        #达到了收敛状态，可以停止了
-        while (i_iter < max_iter) and (parameterChanged > 0):
-            #打印当前迭代轮数
-            print('max_iter:%d:%d'%( i_iter, max_iter))
-            #迭代步数加1
-            i_iter += 1
-            #新的一轮将参数改变标志位重新置0
-            parameterChanged = 0
+        alpha_change_flag = 1 # alpha_change_flag==0时表示上次迭代没有参数改变，如果遍历一遍都没有参数改变，说明达到收敛状态，可以停止了
+        m =  self.X_train.shape[0] # 训练集数量 
+        while (i_iter < max_iter) and (alpha_change_flag > 0):
+            i_iter += 1 # 迭代步数加1
+            print(f"{i_iter}/{max_iter}")
+            alpha_change_flag = 0  # 新的一轮将参数改变标志位重新置0
             #大循环遍历所有样本，用于找SMO中第一个变量
-            for i in range(self.m):
-                #查看第一个遍历是否满足KKT条件，如果不满足则作为SMO中第一个变量从而进行优化
-                if self.is_satisfy_KKT(i) == False:
+            for i in range(m):
+                # alpha_1 需要选择违反KKT条件最严重的样本点，
+                if self.is_satisfy_KKT(i) == False: # 此处简化为只要不满足KKT就选择为alpha_1
                     #如果下标为i的α不满足KKT条件，则进行优化
                     #第一个变量α的下标i已经确定，接下来按照“7.4.2 变量的选择方法”第二步
                     #选择变量2。由于变量2的选择中涉及到|E1 - E2|，因此先计算E1
-                    E1 = self.calcEi(i)
+                    E1 = self.calc_Ei(i)
                     #选择第2个变量
-                    E2, j = self.getAlphaJ(E1, i)
+                    E2, j = self.get_alpha2(E1, i)
 
                     #参考“7.4.1两个变量二次规划的求解方法” P126 下半部分
                     #获得两个变量的标签
-                    y1 = self.y_train_mat[i]
-                    y2 = self.y_train_mat[j]
+                    y1 = self.y_train[i]
+                    y2 = self.y_train[j]
                     #复制α值作为old值
-                    alphaOld_1 = self.alpha[i]
-                    alphaOld_2 = self.alpha[j]
+                    alpha1_old = self.alpha[i]
+                    alpha2_old = self.alpha[j]
+                    
                     #依据标签是否一致来生成不同的L和H
                     if y1 != y2:
-                        L = max(0, alphaOld_2 - alphaOld_1)
-                        H = min(self.C, self.C + alphaOld_2 - alphaOld_1)
+                        L = max(0, alpha2_old - alpha1_old)
+                        H = min(self.C, self.C + alpha2_old - alpha1_old)
                     else:
-                        L = max(0, alphaOld_2 + alphaOld_1 - self.C)
-                        H = min(self.C, alphaOld_2 + alphaOld_1)
+                        L = max(0, alpha2_old + alpha1_old - self.C)
+                        H = min(self.C, alpha2_old + alpha1_old)
                     #如果两者相等，说明该变量无法再优化，直接跳到下一次循环
                     if L == H:   continue
 
@@ -253,43 +243,44 @@ class SVM:
                     k22 = self.k[j][j]
                     k21 = self.k[j][i]
                     k12 = self.k[i][j]
+                    
                     #依据式7.106更新α2，该α2还未经剪切
-                    alphaNew_2 = alphaOld_2 + y2 * (E1 - E2) / (k11 + k22 - 2 * k12)
+                    alpha2_new = alpha2_old + y2 * (E1 - E2) / (k11 + k22 - 2 * k12)
+
                     #剪切α2
-                    if alphaNew_2 < L: alphaNew_2 = L
-                    elif alphaNew_2 > H: alphaNew_2 = H
+                    if alpha2_new < L: alpha2_new = L
+                    elif alpha2_new > H: alpha2_new = H
                     #更新α1，依据式7.109
-                    alphaNew_1 = alphaOld_1 + y1 * y2 * (alphaOld_2 - alphaNew_2)
+                    alpha1_new = alpha1_old + y1 * y2 * (alpha2_old - alpha2_new)
 
                     #依据“7.4.2 变量的选择方法”第三步式7.115和7.116计算b1和b2
-                    b1New = -1 * E1 - y1 * k11 * (alphaNew_1 - alphaOld_1) \
-                            - y2 * k21 * (alphaNew_2 - alphaOld_2) + self.b
-                    b2New = -1 * E2 - y1 * k12 * (alphaNew_1 - alphaOld_1) \
-                            - y2 * k22 * (alphaNew_2 - alphaOld_2) + self.b
+                    b1_new = -1 * E1 - y1 * k11 * (alpha1_new - alpha1_old) \
+                            - y2 * k21 * (alpha2_new - alpha2_old) + self.b
+                    b2_new = -1 * E2 - y1 * k12 * (alpha1_new - alpha1_old) \
+                            - y2 * k22 * (alpha2_new - alpha2_old) + self.b
 
                     #依据α1和α2的值范围确定新b
-                    if (alphaNew_1 > 0) and (alphaNew_1 < self.C):
-                        bNew = b1New
-                    elif (alphaNew_2 > 0) and (alphaNew_2 < self.C):
-                        bNew = b2New
+                    if (alpha1_new > 0) and (alpha1_new < self.C):
+                        b_new = b1_new
+                    elif (alpha2_new > 0) and (alpha2_new < self.C):
+                        b_new = b2_new
                     else:
-                        bNew = (b1New + b2New) / 2
+                        b_new = (b1_new + b2_new) / 2
 
                     #将更新后的各类值写入，进行更新
-                    self.alpha[i] = alphaNew_1
-                    self.alpha[j] = alphaNew_2
-                    self.b = bNew
+                    self.alpha[i] = alpha1_new
+                    self.alpha[j] = alpha2_new
+                    self.b = b_new
 
-                    self.E[i] = self.calcEi(i)
-                    self.E[j] = self.calcEi(j)
+                    self.E[i] = self.calc_Ei(i)
+                    self.E[j] = self.calc_Ei(j)
 
                     #如果α2的改变量过于小，就认为该参数未改变，不增加parameterChanged值
                     #反之则自增1
-                    if math.fabs(alphaNew_2 - alphaOld_2) >= 0.00001:
-                        parameterChanged += 1
+                    if math.fabs(alpha2_new - alpha2_old) >= 0.00001:
+                        alpha_change_flag += 1
 
-                #打印迭代轮数，i值，该迭代轮数修改α数目
-                print("max_iter: %d i:%d, pairs changed %d" % (i_iter, i, parameterChanged))
+               
 
         #全部计算结束后，重新遍历一遍α，查找里面的支持向量
         for i in range(self.m):
@@ -307,7 +298,7 @@ class SVM:
         '''
         #按照“7.3.3 常用核函数”式7.90计算高斯核
         result = (x1 - x2) * (x1 - x2).T
-        result = np.exp(-1 * result / (2 * self.sigma ** 2))
+        result = np.exp(-1 * result / (2 * self.gamma ** 2))
         #返回结果
         return np.exp(result)
 
@@ -328,7 +319,7 @@ class SVM:
             #先单独将核函数计算出来
             tmp = self.calcSinglKernel(self.X_train[i, :], np.mat(x))
             #对每一项子式进行求和，最终计算得到求和项的值
-            result += self.alpha[i] * self.y_train_mat[i] * tmp
+            result += self.alpha[i] * self.y_train[i] * tmp
         #求和项计算结束后加上偏置b
         result += self.b
         #使用sign函数返回预测结果
@@ -361,7 +352,7 @@ if __name__ == '__main__':
     start = time.time()
     (X_train, y_train), (X_test, y_test) = load_local_mnist(one_hot=False) # one_hot指对标签y进行one hot编码    
     # 初始化SVM类
-    model = SVM(X_train[:2000], y_train[:2000], 10, 200, 0.001)
+    model = SVM(X_train[:1000], y_train[:1000], gamma=0.001,C = 200, toler = 0.001)
     # 开始训练
     print('start to train')
     model.train()
