@@ -39,7 +39,7 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="搜索" href="../search.html" />
-    <link rel="next" title="Part C: 随机森林" href="03_forest.html" />
+    <link rel="next" title="Part C: 自适应提升法" href="03_ada.html" />
     <link rel="prev" title="Part A: 决策树" href="01_tree.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -92,23 +92,18 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="03_forest.html">
-     Part C: 随机森林
+    <a class="reference internal" href="03_ada.html">
+     Part C: 自适应提升法
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="04_ada.html">
-     Part D: 自适应提升法
+    <a class="reference internal" href="04_gbdt.html">
+     Part D: 梯度提升树（上）
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="05_gbdt.html">
-     Part E: 梯度提升树（上）
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="06_xgb_lgb.html">
-     Part F: 梯度提升树（下）
+    <a class="reference internal" href="05_xgb_lgb.html">
+     Part E: 梯度提升树（下）
     </a>
    </li>
   </ul>
@@ -201,6 +196,49 @@
         <!-- Table of contents -->
         <div class="d-none d-md-block col-md-2 bd-toc show">
             
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id1">
+   1. 为何集成
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#baggingboosting">
+   2. bagging与boosting
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#stacking">
+   3. stacking方法
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id2">
+   4. 两种并行集成的树模型
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id3">
+   代码实践
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id4">
+   算法实现
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id5">
+   知识回顾
+  </a>
+ </li>
+</ul>
+
+            </nav>
         </div>
     </div>
 </div>
@@ -211,6 +249,27 @@
                 
   <div class="section" id="part-b">
 <h1>Part B: 集成模式<a class="headerlink" href="#part-b" title="永久链接至标题">¶</a></h1>
+<div class="section" id="id1">
+<h2>1. 为何集成<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+</div>
+<div class="section" id="baggingboosting">
+<h2>2. bagging与boosting<a class="headerlink" href="#baggingboosting" title="永久链接至标题">¶</a></h2>
+</div>
+<div class="section" id="stacking">
+<h2>3. stacking方法<a class="headerlink" href="#stacking" title="永久链接至标题">¶</a></h2>
+</div>
+<div class="section" id="id2">
+<h2>4. 两种并行集成的树模型<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+</div>
+<div class="section" id="id3">
+<h2>代码实践<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h2>
+</div>
+<div class="section" id="id4">
+<h2>算法实现<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
+</div>
+<div class="section" id="id5">
+<h2>知识回顾<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h2>
+</div>
 </div>
 
 
@@ -220,7 +279,7 @@
         <div class='prev-next-bottom'>
             
     <a class='left-prev' id="prev-link" href="01_tree.html" title="previous page">Part A: 决策树</a>
-    <a class='right-next' id="next-link" href="03_forest.html" title="next page">Part C: 随机森林</a>
+    <a class='right-next' id="next-link" href="03_ada.html" title="next page">Part C: 自适应提升法</a>
 
         </div>
         

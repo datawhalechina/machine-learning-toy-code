@@ -7,8 +7,7 @@
 
 01_tree
 02_ensemble
-03_forest
-04_ada
-05_gbdt
-06_xgb_lgb
+03_ada
+04_gbdt
+05_xgb_lgb
 ```

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Part D: 自适应提升法 &#8212; Datawhale</title>
+    <title>Part C: 自适应提升法 &#8212; Datawhale</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
   <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -41,8 +41,8 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="搜索" href="../search.html" />
-    <link rel="next" title="Part E: 梯度提升树（上）" href="05_gbdt.html" />
-    <link rel="prev" title="Part C: 随机森林" href="03_forest.html" />
+    <link rel="next" title="Part D: 梯度提升树（上）" href="04_gbdt.html" />
+    <link rel="prev" title="Part B: 集成模式" href="02_ensemble.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
     
@@ -93,24 +93,19 @@
      Part B: 集成模式
     </a>
    </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="03_forest.html">
-     Part C: 随机森林
-    </a>
-   </li>
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
-     Part D: 自适应提升法
+     Part C: 自适应提升法
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="05_gbdt.html">
-     Part E: 梯度提升树（上）
+    <a class="reference internal" href="04_gbdt.html">
+     Part D: 梯度提升树（上）
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="06_xgb_lgb.html">
-     Part F: 梯度提升树（下）
+    <a class="reference internal" href="05_xgb_lgb.html">
+     Part E: 梯度提升树（下）
     </a>
    </li>
   </ul>
@@ -178,7 +173,7 @@
         <!-- ipynb file if we had a myst markdown file -->
         
         <!-- Download raw file -->
-        <a class="dropdown-buttons" href="../_sources/01_tree_ensemble/04_ada.md.txt"><button type="button"
+        <a class="dropdown-buttons" href="../_sources/01_tree_ensemble/03_ada.md.txt"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
                 data-placement="left">.md</button></a>
         <!-- Download PDF via print -->
@@ -235,7 +230,17 @@
  </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#id2">
-   习题
+   代码实践
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id3">
+   算法实现
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id4">
+   知识回顾
   </a>
   <ul class="nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
@@ -261,8 +266,8 @@
         
               <div>
                 
-  <div class="section" id="part-d">
-<h1>Part D: 自适应提升法<a class="headerlink" href="#part-d" title="永久链接至标题">¶</a></h1>
+  <div class="section" id="part-c">
+<h1>Part C: 自适应提升法<a class="headerlink" href="#part-c" title="永久链接至标题">¶</a></h1>
 <div class="section" id="adaboost">
 <h2>1. Adaboost概述<a class="headerlink" href="#adaboost" title="永久链接至标题">¶</a></h2>
 <p>Adaboost的全称是Adaptive Boosting，其含义为自适应提升算法。其中，自适应是指Adaboost会根据本轮样本的误差结果来分配下一轮模型训练时样本在模型中的相对权重，即对错误的或偏差大的样本适度“重视”，对正确的或偏差小的样本适度“放松”，这里的“重视”和“放松”具体体现在了Adaboost的损失函数设计以及样本权重的更新策略。本课我们将介绍Adaboost处理分类和回归任务的算法原理，包括SAMME算法、SAMME.R算法和Adaboost.R2算法。</p>
@@ -455,7 +460,13 @@ y=\inf \{ y\big| \sum_{m\in \{m\vert y_m\leq y\}}\alpha^{(m)} \geq 0.5 \sum_{m=1
 \]</div>
 </div>
 <div class="section" id="id2">
-<h2>习题<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<h2>代码实践<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+</div>
+<div class="section" id="id3">
+<h2>算法实现<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h2>
+</div>
+<div class="section" id="id4">
+<h2>知识回顾<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
 <div class="section" id="a">
 <h3>A组<a class="headerlink" href="#a" title="永久链接至标题">¶</a></h3>
 <ol class="simple">
@@ -504,8 +515,8 @@ y'=\sup \{ y'\big| \sum_{m\in \{m\vert y_m\leq y'\}}\alpha^{(m)} \leq 0.5 \sum_{
         
         <div class='prev-next-bottom'>
             
-    <a class='left-prev' id="prev-link" href="03_forest.html" title="previous page">Part C: 随机森林</a>
-    <a class='right-next' id="next-link" href="05_gbdt.html" title="next page">Part E: 梯度提升树（上）</a>
+    <a class='left-prev' id="prev-link" href="02_ensemble.html" title="previous page">Part B: 集成模式</a>
+    <a class='right-next' id="next-link" href="04_gbdt.html" title="next page">Part D: 梯度提升树（上）</a>
 
         </div>
         

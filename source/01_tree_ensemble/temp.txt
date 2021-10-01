@@ -25,3 +25,6 @@ $$
 $$
 G_{\mathbf{w}}^{MAE}(X,Y)=-\sum_{i=1}^{N}\vert y^{(D)}_i-\tilde{y}^{(D)}\vert+\frac{\sum_{i=1}^{N_L}w^{(N)}_i}{\sum_{i=1}^{N}w^{(N_L)}_i}\sum_{i=1}^{N_L}\vert y^{(L)}_i-\tilde{y}^{(L)}\vert+\frac{\sum_{i=1}^{N_R}w^{(N)}_i}{\sum_{i=1}^{N}w^{(N_R)}_i}\sum_{i=1}^{N_R}\vert y^{(R)}_i-\tilde{y}^{(R)}\vert
 $$
+
+```{admonition} 单调约束（Monotonic Constraints）
+有时我们会对某个特征或某些特征如何影响模型的输出有先验的知识，例如每天投入在学习的有效时间上越长就越有可能在考试中取得好的成绩，即有效学习时间长度和考试分数是一种单调增的约束关系。许多GBDT的实现（sklearn中的Histogram-Based GBDT、XGBoost和LightGBM）都提供了单调约束的参数选项，有关其在内部的实现原理可以参考[本文](https://towardsdatascience.com/how-does-the-popular-xgboost-and-lightgbm-algorithms-enforce-monotonic-constraint-cf8fce797acb)。

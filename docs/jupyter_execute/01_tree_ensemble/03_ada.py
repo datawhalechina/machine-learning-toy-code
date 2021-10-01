@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# # Part D: 自适应提升法
+# # Part C: 自适应提升法
 # 
 # ## 1. Adaboost概述
 # 
@@ -241,7 +241,11 @@
 # y=\inf \{ y\big| \sum_{m\in \{m\vert y_m\leq y\}}\alpha^{(m)} \geq 0.5 \sum_{m=1}^M\alpha^{(m)}\}
 # $$
 # 
-# ## 习题
+# ## 代码实践
+# 
+# ## 算法实现
+# 
+# ## 知识回顾
 # 
 # ### A组
 # 

@@ -94,23 +94,18 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="03_forest.html">
-     Part C: 随机森林
+    <a class="reference internal" href="03_ada.html">
+     Part C: 自适应提升法
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="04_ada.html">
-     Part D: 自适应提升法
+    <a class="reference internal" href="04_gbdt.html">
+     Part D: 梯度提升树（上）
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="05_gbdt.html">
-     Part E: 梯度提升树（上）
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="06_xgb_lgb.html">
-     Part F: 梯度提升树（下）
+    <a class="reference internal" href="05_xgb_lgb.html">
+     Part E: 梯度提升树（下）
     </a>
    </li>
   </ul>
@@ -230,7 +225,17 @@
  </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#id4">
-   习题
+   代码实践
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id5">
+   算法实现
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id6">
+   知识回顾
   </a>
   <ul class="nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
@@ -353,7 +358,7 @@ G(Y,X)&amp;=\mathbb{E}_{Y}[-\log_2p(Y)]-\mathbb{E}_{X}[\mathbb{E}_{Y\vert X}[-\l
 &amp;=-\sum_{k=1}^Kp(y_k)\log_2p(y_k)+\sum_{m=1}^Mp(x_m)\sum_{k=1}^K p(y_k\vert X=x_m)\log_2p(y_k\vert X=x_m) \\
 &amp;=-\sum_{k=1}^K[\sum_{m=1}^Mp(y_k, x_m)]\log_2p(y_k)+\sum_{k=1}^K\sum_{m=1}^M p(x_m)\frac{p(y_k, x_m)}{p(x_m)}\log_2\frac{p(y_k, x_m)}{p(x_m)}\\
 &amp;=\sum_{k=1}^K\sum_{m=1}^Mp(y_k,x_m)[\log_2\frac{p(y_k, x_m)}{p(x_m)}-\log_2p(y_k)] \\
-&amp;=-\sum_{k=1}^K\sum_{m=1}^M p(y_k)p(x_m) \log\frac{p(y_k)p(x_m)}{p(y_k, x_m)}
+&amp;=-\sum_{k=1}^K\sum_{m=1}^M p(y_k,x_m) \log\frac{p(y_k)p(x_m)}{p(y_k, x_m)}
 \end{aligned}
 \end{split}\]</div>
 <p>从上式可以发现，信息增益<span class="math notranslate nohighlight">\(G(Y,X)\)</span>在本质上就是<span class="math notranslate nohighlight">\(p(y,x)\)</span>关于<span class="math notranslate nohighlight">\(p(y)p(x)\)</span>的KL散度，而KL散度的非负性由Jensen不等式可得：</p>
@@ -472,7 +477,13 @@ E(Node^N) = \frac{R(Node^N)-R(T)}{\vert T^N\vert -1}\leq \alpha
 <p>这个条件表明只要<span class="math notranslate nohighlight">\(E(Node^N)\)</span>的值小于给定的参数cpp_alpha，那么这个节点下的所有节点都会被删除。事实上在sklearn中，在树完全生成后就会把所有节点的<span class="math notranslate nohighlight">\(E(Node^N)\)</span>值进行记录，每次剪枝都会分别查看所有非叶子节点的树节点对应的<span class="math notranslate nohighlight">\(E(Node^N)\)</span>值，并且对具有最小<span class="math notranslate nohighlight">\(E(Node^N)\)</span>值的非叶子节点进行剪枝，直到所有节点的<span class="math notranslate nohighlight">\(E(Node^N)\)</span>值都大于给定的cpp_alpha。</p>
 </div>
 <div class="section" id="id4">
-<h2>习题<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
+<h2>代码实践<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
+</div>
+<div class="section" id="id5">
+<h2>算法实现<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h2>
+</div>
+<div class="section" id="id6">
+<h2>知识回顾<a class="headerlink" href="#id6" title="永久链接至标题">¶</a></h2>
 <div class="section" id="a">
 <h3>A组<a class="headerlink" href="#a" title="永久链接至标题">¶</a></h3>
 <ol class="simple">
@@ -507,8 +518,8 @@ E(Node^N) = \frac{R(Node^N)-R(T)}{\vert T^N\vert -1}\leq \alpha
 <li><p>请证明如下关系：</p>
 <ul>
 <li><p><span class="math notranslate nohighlight">\(G(Y,X)=H(X)-H(X\vert Y)\)</span></p></li>
-<li><p><span class="math notranslate nohighlight">\(G(Y,X)=H(X)+H(Y)-H(X,Y)\)</span></p></li>
-<li><p><span class="math notranslate nohighlight">\(G(Y,X)=H(X,Y)-H(X\vert Y)-H(Y\vert X)\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(G(Y,X)=H(X)+H(Y)-H(Y,X)\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(G(Y,X)=H(Y,X)-H(X\vert Y)-H(Y\vert X)\)</span></p></li>
 </ul>
 </li>
 <li><p>下图被分为了A、B和C三个区域。若AB区域代表X的不确定性，BC区域代表Y的不确定性，那么<span class="math notranslate nohighlight">\(H(X)\)</span>、<span class="math notranslate nohighlight">\(H(Y)\)</span>、<span class="math notranslate nohighlight">\(H(X\vert Y)\)</span>、<span class="math notranslate nohighlight">\(H(Y\vert X)\)</span>、<span class="math notranslate nohighlight">\(H(X,Y)\)</span>和<span class="math notranslate nohighlight">\(G(X,Y)\)</span>分别指代的是哪片区域？</p></li>

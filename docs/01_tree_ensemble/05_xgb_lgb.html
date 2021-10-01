@@ -1,0 +1,391 @@
+
+<!DOCTYPE html>
+
+<html lang="zh">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Part E: 梯度提升树（下） &#8212; Datawhale</title>
+    
+  <link href="../_static/css/theme.css" rel="stylesheet" />
+  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.5f77b4aec8189eecf79907ce328c390d.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/togglebutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="EM算法与抽样理论" href="../02_em_sampling/index.html" />
+    <link rel="prev" title="Part D: 梯度提升树（上）" href="04_gbdt.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../index.html">
+      
+      <img src="../_static/logo.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">Datawhale</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <div class="bd-toc-item active">
+        <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="index.html">
+   树模型与集成学习
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="01_tree.html">
+     Part A: 决策树
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="02_ensemble.html">
+     Part B: 集成模式
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="03_ada.html">
+     Part C: 自适应提升法
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="04_gbdt.html">
+     Part D: 梯度提升树（上）
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Part E: 梯度提升树（下）
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../02_em_sampling/index.html">
+   EM算法与抽样理论
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../02_em_sampling/01_em.html">
+     EM算法
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../02_em_sampling/02_sample.html">
+     抽样理论
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+    </div>
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/01_tree_ensemble/05_xgb_lgb.md.txt"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.md</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#xgboost">
+   1. XGBoost基础
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id1">
+   2. XGBoost的分割点查询
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id2">
+   3. XGBoost的系统设计
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#lightgbm">
+   4. LightGBM算法
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id3">
+   代码实践
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id4">
+   算法实现
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id5">
+   知识回顾
+  </a>
+ </li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="part-e">
+<h1>Part E: 梯度提升树（下）<a class="headerlink" href="#part-e" title="永久链接至标题">¶</a></h1>
+<div class="section" id="xgboost">
+<h2>1. XGBoost基础<a class="headerlink" href="#xgboost" title="永久链接至标题">¶</a></h2>
+<p>由于树模型较强的拟合能力，我们需要对模型进行正则约束来控制每轮模型学习的进度，除了学习率参数之外，XGBoost还引入了两项作用于损失函数的正则项：首先我们希望树的生长受到抑制而引入<span class="math notranslate nohighlight">\(\gamma T\)</span>，其中的<span class="math notranslate nohighlight">\(T\)</span>为树的叶子节点个数，<span class="math notranslate nohighlight">\(\gamma\)</span>越大，树就越不容易生长；接着我们希望模型每次的拟合值较小而引入<span class="math notranslate nohighlight">\(\frac{1}{2}\lambda \sum_{i=1}^T w_i^2\)</span>，其中的<span class="math notranslate nohighlight">\(w_i\)</span>是回归树上第<span class="math notranslate nohighlight">\(i\)</span>个叶子结点的预测目标值。记第<span class="math notranslate nohighlight">\(m\)</span>轮中第<span class="math notranslate nohighlight">\(i\)</span>个样本在上一轮的预测值为<span class="math notranslate nohighlight">\(F^{(m-1)}_i\)</span>，本轮需要学习的树模型为<span class="math notranslate nohighlight">\(h^{(m)}\)</span>，此时的损失函数即为</p>
+<div class="math notranslate nohighlight">
+\[
+L^{(m)}(h^{(m)}) = \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{i=1}^NL(y_i, F^{(m-1)}_i+h^{(m)}(X_i)) 
+\]</div>
+<p>从参数空间的角度而言，损失即为</p>
+<div class="math notranslate nohighlight">
+\[
+L^{(m)}(F^{(m)}_i)  = \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{i=1}^NL(y_i, F^{(m)}_i)
+\]</div>
+<p>不同于上一节中GBDT的梯度下降方法，XGBoost直接在<span class="math notranslate nohighlight">\(h^{(m)}=0\)</span>处（或<span class="math notranslate nohighlight">\(F^{(m)}_i=F^{(m-1)}_i\)</span>处）将损失函数近似为一个二次函数，从而直接将该二次函数的顶点坐标作为<span class="math notranslate nohighlight">\(h^{*(m)}(X_i)\)</span>的值，即具有更小的损失。梯度下降法只依赖损失的一阶导数，当损失的一阶导数变化较大时，使用一步梯度获得的<span class="math notranslate nohighlight">\(h^{*(m)}\)</span>估计很容易越过最优点，甚至使得损失变大（如子图2所示）；二次函数近似的方法需要同时利用一阶导数和二阶导数的信息，因此对于<span class="math notranslate nohighlight">\(h^{*(m)}\)</span>的估计在某些情况下会比梯度下降法的估计值更加准确，或说对各类损失函数更有自适应性（如子图3和子图4所示）。</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/gbdt_pic2.png"><img alt="../_images/gbdt_pic2.png" src="../_images/gbdt_pic2.png" style="width: 700px;" /></a>
+</div>
+<p>为了得到<span class="math notranslate nohighlight">\(h^{*(m)}(X_i)\)</span>，记<span class="math notranslate nohighlight">\(h_i=h^{(m)}(X_i)\)</span>，<span class="math notranslate nohighlight">\(\textbf{h}=[h_1,...,h_N]\)</span>，我们需要先将损失函数显式地展开为一个关于<span class="math notranslate nohighlight">\(h^{(m)}(X_i)\)</span>的二次函数，：</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+L^{(m)}(\textbf{h}) &amp;= \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{i=1}^N L(y_i, F^{(m-1)}_i+h_i) \\
+&amp;\approx \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{i=1}^N [L(y_i, F^{(m-1)}_i)+\left . \frac{\partial L}{\partial h_i}\right |_{h_i=0} h_i+\frac{1}{2}\left . \frac{\partial^2 L}{\partial h^2_i}\right |_{h_i=0} h^2_i]\\
+&amp;= \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{i=1}^N [\left . \frac{\partial L}{\partial h_i}\right |_{h_i=0} h_i+\frac{1}{2}\left . \frac{\partial^2 L}{\partial h^2_i}\right |_{h_i=0} h^2_i] + constant
+\end{aligned}
+\end{split}\]</div>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】请写出<span class="math notranslate nohighlight">\(L^{(m)}(F^{(m)}_i)\)</span>在<span class="math notranslate nohighlight">\(F^{(m)}_i=F^{(m-1)}_i\)</span>处的二阶展开。</p>
+</div>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】试说明不将损失函数展开至更高阶的原因。</p>
+</div>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】请写出平方损失下的近似损失。</p>
+</div>
+<p>由于近似后损失的第二项是按照叶子结点的编号来加和的，而第三项是按照样本编号来加和的，我们为了方便处理，不妨统一将第三项按照叶子结点的编号重排以统一形式。设叶子节点<span class="math notranslate nohighlight">\(j\)</span>上的样本编号集合为<span class="math notranslate nohighlight">\(I_j\)</span>，记<span class="math notranslate nohighlight">\(p_i=\left . \frac{\partial L}{\partial h_i}\right |_{h_i=0}\)</span>且<span class="math notranslate nohighlight">\(q_i=\left . \frac{\partial^2 L}{\partial h^2_i}\right |_{h_i=0}\)</span>，忽略常数项后有</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+\tilde{L}^{(m)}(\textbf{h}) &amp;= \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{i=1}^N [p_i h_i+\frac{1}{2}q_i h^2_i]\\
+&amp;= \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{j=1}^T[(\sum_{i\in I_j} p_i )w_j+\frac{1}{2}(\sum_{i\in I_j}q_i )w^2_i]\\
+&amp;= \gamma T+\sum_{j=1}^T[(\sum_{i\in I_j} p_i )w_j+\frac{1}{2}(\sum_{i\in I_j}q_i +\lambda)w^2_i]\\
+&amp;=\tilde{L}^{(m)}(\textbf{w})
+\end{aligned}
+\end{split}\]</div>
+<p>上式的第二个等号是由于同一个叶子节点上的模型输出一定相同，即<span class="math notranslate nohighlight">\(I_j\)</span>中样本对应的<span class="math notranslate nohighlight">\(h_i\)</span>一定都是<span class="math notranslate nohighlight">\(w_j\)</span>。此时，我们将损失统一为了关于叶子节点值<span class="math notranslate nohighlight">\(\textbf{w}=[w_1,...,w_T]\)</span>的二次函数，从而可以求得最优的输出值为</p>
+<div class="math notranslate nohighlight">
+\[
+w^*_j=-\frac{\sum_{i\in I_j}p_i}{\sum_{i\in I_j}q_i+\lambda}
+\]</div>
+<p>当前模型的近似损失（忽略常数项）即为</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+\tilde{L}^{(m)}(\textbf{w}^*)&amp;=\gamma T+\sum_{j=1}^T[-\frac{(\sum_{i\in I_j}p_i)^2}{\sum_{i\in I_j}q_i+\lambda}+\frac{1}{2}\frac{(\sum_{i\in I_j}p_i)^2}{\sum_{i\in I_j}q_i+\lambda}]\\
+&amp;= \gamma T-\frac{1}{2}\sum_{j=1}^T\frac{(\sum_{i\in I_j}p_i)^2}{\sum_{i\in I_j}q_i+\lambda}
+\end{aligned}
+\end{split}\]</div>
+<p>在决策树的一节中，我们曾以信息增益作为节点分裂行为操作的依据，信息增益本质上就是一种损失，增益越大即子节点的平均纯度越高，从而损失就越小。因此我们可以直接将上述的近似损失来作为分裂的依据，即选择使得损失减少得最多的特征及其分割点来进行节点分裂。由于对于某一个节点而言，分裂前后整棵树的损失变化只和该节点<span class="math notranslate nohighlight">\(I\)</span>及其左右子节点<span class="math notranslate nohighlight">\(I_L\)</span>与<span class="math notranslate nohighlight">\(L_R\)</span>的<span class="math notranslate nohighlight">\(w^*\)</span>值有关，此时分裂带来的近似损失减少量为</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+G&amp;= [\gamma T-\frac{1}{2}\frac{(\sum_{i\in I}p_i)^2}{\sum_{i\in I}q_i+\lambda}] - [\gamma (T+1)-\frac{1}{2}\frac{(\sum_{i\in I_L}p_i)^2}{\sum_{i\in I_L}q_i+\lambda}- \frac{1}{2}\frac{(\sum_{i\in I_R}p_i)^2}{\sum_{i\in I_R}q_i+\lambda}]\\
+&amp;= \frac{1}{2}[\frac{(\sum_{i\in I_L}p_i)^2}{\sum_{i\in I_L}q_i+\lambda}+\frac{(\sum_{i\in I_R}p_i)^2}{\sum_{i\in I_R}q_i+\lambda}-\frac{(\sum_{i\in I}p_i)^2}{\sum_{i\in I}q_i+\lambda}] -\gamma
+\end{aligned}
+\end{split}\]</div>
+<p>模型应当选择使得<span class="math notranslate nohighlight">\(G\)</span>达到最大的特征和分割点进行分裂。</p>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】在下列的三个损失函数<span class="math notranslate nohighlight">\(L(y,\hat{y})\)</span>中，请选出一个不应作为XGBoost损失的函数并说明理由。</p>
+<ul class="simple">
+<li><p>Root Absolute Error: <span class="math notranslate nohighlight">\(\sqrt{\vert y-\hat{y}\vert}\)</span></p></li>
+<li><p>Squared Log Error: <span class="math notranslate nohighlight">\(\frac{1}{2}[\log(\frac{y+1}{\hat{y}+1})]^2\)</span></p></li>
+<li><p>Pseudo Huber Error: <span class="math notranslate nohighlight">\(\delta^2(\sqrt{1+(\frac{y-\hat{y}}{\delta})^2}-1)\)</span></p></li>
+</ul>
+</div>
+<p>最后我们来重新回到单个样本的损失函数上：由于XGBoost使用的是二阶展开，为了保证函数在拐点处取到的是近似损失的最小值，需要满足二阶导数<span class="math notranslate nohighlight">\(q_i&gt;0\)</span>。当损失函数不满足此条件时，<span class="math notranslate nohighlight">\(h^*_i\)</span>反而会使得损失上升，即如下图中右侧的情况所示，而使用梯度下降法时并不会产生此问题。因此，我们应当选择在整个定义域上或在<span class="math notranslate nohighlight">\(y_i\)</span>临域上二阶导数恒正的损失函数，例如平方损失。</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/gbdt_pic3.png"><img alt="../_images/gbdt_pic3.png" src="../_images/gbdt_pic3.png" style="width: 500px;" /></a>
+</div>
+</div>
+<div class="section" id="id1">
+<h2>2. XGBoost的分割点查询<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+</div>
+<div class="section" id="id2">
+<h2>3. XGBoost的系统设计<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+</div>
+<div class="section" id="lightgbm">
+<h2>4. LightGBM算法<a class="headerlink" href="#lightgbm" title="永久链接至标题">¶</a></h2>
+<p>LightGBM的GBDT原理与XGBoost的二阶近似方法完全一致，并且在此基础上提出了三个改进，它们分别是优化直方图算法、单边梯度采样以及互斥特征绑定。</p>
+</div>
+<div class="section" id="id3">
+<h2>代码实践<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h2>
+</div>
+<div class="section" id="id4">
+<h2>算法实现<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
+</div>
+<div class="section" id="id5">
+<h2>知识回顾<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h2>
+</div>
+</div>
+
+
+              </div>
+              
+        
+        <div class='prev-next-bottom'>
+            
+    <a class='left-prev' id="prev-link" href="04_gbdt.html" title="previous page">Part D: 梯度提升树（上）</a>
+    <a class='right-next' id="next-link" href="../02_em_sampling/index.html" title="next page">EM算法与抽样理论</a>
+
+        </div>
+        
+        </div>
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By GYH<br/>
+        
+            &copy; Copyright 2021, GYH.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+  
+  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+
+  
+  </body>
+</html>

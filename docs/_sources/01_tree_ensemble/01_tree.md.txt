@@ -122,7 +122,7 @@ G(Y,X)&=\mathbb{E}_{Y}[-\log_2p(Y)]-\mathbb{E}_{X}[\mathbb{E}_{Y\vert X}[-\log_2
 &=-\sum_{k=1}^Kp(y_k)\log_2p(y_k)+\sum_{m=1}^Mp(x_m)\sum_{k=1}^K p(y_k\vert X=x_m)\log_2p(y_k\vert X=x_m) \\
 &=-\sum_{k=1}^K[\sum_{m=1}^Mp(y_k, x_m)]\log_2p(y_k)+\sum_{k=1}^K\sum_{m=1}^M p(x_m)\frac{p(y_k, x_m)}{p(x_m)}\log_2\frac{p(y_k, x_m)}{p(x_m)}\\
 &=\sum_{k=1}^K\sum_{m=1}^Mp(y_k,x_m)[\log_2\frac{p(y_k, x_m)}{p(x_m)}-\log_2p(y_k)] \\
-&=-\sum_{k=1}^K\sum_{m=1}^M p(y_k)p(x_m) \log\frac{p(y_k)p(x_m)}{p(y_k, x_m)}
+&=-\sum_{k=1}^K\sum_{m=1}^M p(y_k,x_m) \log\frac{p(y_k)p(x_m)}{p(y_k, x_m)}
 \end{aligned}
 $$
 
@@ -275,7 +275,11 @@ $$
 
 这个条件表明只要$E(Node^N)$的值小于给定的参数cpp\_alpha，那么这个节点下的所有节点都会被删除。事实上在sklearn中，在树完全生成后就会把所有节点的$E(Node^N)$值进行记录，每次剪枝都会分别查看所有非叶子节点的树节点对应的$E(Node^N)$值，并且对具有最小$E(Node^N)$值的非叶子节点进行剪枝，直到所有节点的$E(Node^N)$值都大于给定的cpp\_alpha。
 
-## 习题
+## 代码实践
+
+## 算法实现
+
+## 知识回顾
 
 ### A组
 
@@ -303,8 +307,8 @@ $$
 11. $X,Y$的联合熵为$H(Y,X)=\mathbb{E}_{(Y,X)\sim p(y,x)}[-\log_2p(Y,X)]$
     - 请证明如下关系：
         - $G(Y,X)=H(X)-H(X\vert Y)$
-        - $G(Y,X)=H(X)+H(Y)-H(X,Y)$
-        - $G(Y,X)=H(X,Y)-H(X\vert Y)-H(Y\vert X)$
+        - $G(Y,X)=H(X)+H(Y)-H(Y,X)$
+        - $G(Y,X)=H(Y,X)-H(X\vert Y)-H(Y\vert X)$
     - 下图被分为了A、B和C三个区域。若AB区域代表X的不确定性，BC区域代表Y的不确定性，那么$H(X)$、$H(Y)$、$H(X\vert Y)$、$H(Y\vert X)$、$H(X,Y)$和$G(X,Y)$分别指代的是哪片区域？
 
 ```{figure} ../_static/tree_pic3.png
