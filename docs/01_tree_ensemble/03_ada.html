@@ -41,7 +41,7 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="搜索" href="../search.html" />
-    <link rel="next" title="Part D: 梯度提升树（上）" href="04_gbdt.html" />
+    <link rel="next" title="Part D: 梯度提升树" href="04_gbdt.html" />
     <link rel="prev" title="Part B: 集成模式" href="02_ensemble.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -100,12 +100,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="04_gbdt.html">
-     Part D: 梯度提升树（上）
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="05_xgb_lgb.html">
-     Part E: 梯度提升树（下）
+     Part D: 梯度提升树
     </a>
    </li>
   </ul>
@@ -230,30 +225,8 @@
  </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#id2">
-   代码实践
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id3">
-   算法实现
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id4">
    知识回顾
   </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#a">
-     A组
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#b">
-     B组
-    </a>
-   </li>
-  </ul>
  </li>
 </ul>
 
@@ -284,6 +257,10 @@ y_k=\left\{
 \end{aligned}
 \right.
 \end{split}\]</div>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】假设有一个3分类问题，标签类别为第2类，模型输出的类别标签为[-0.1,-0.3,0.4]，请计算对应的指数损失。</p>
+</div>
 <p>设模型的输出结果为<span class="math notranslate nohighlight">\(\mathbf{f}=[f_1,...,f_K]^T\)</span>，则记损失函数为</p>
 <div class="math notranslate nohighlight">
 \[
@@ -312,7 +289,7 @@ k^* &amp; =\mathop{\arg\max}_kf_k^*(\mathbf{x})\\
 </div>
 <div class="section" id="samme">
 <h2>3. SAMME<a class="headerlink" href="#samme" title="永久链接至标题">¶</a></h2>
-<p>SAMME算法的全称是\textbf{S}tagewise \textbf{A}dditive \textbf{M}odeling using a \textbf{M}ulti-class \textbf{E}xponential loss function，它假定模型的总输出<span class="math notranslate nohighlight">\(\mathbf{f}\)</span>具有<span class="math notranslate nohighlight">\(\mathbf{f}^{(M)}(\mathbf{x})=\sum_{m=1}^M \beta^{(m)} \mathbf{b}^{(m)}(\mathbf{x})\)</span>的形式。其中，<span class="math notranslate nohighlight">\(M\)</span>是模型的总迭代轮数，<span class="math notranslate nohighlight">\(\beta^{(m)}\in \mathbb{R^+}\)</span>是每轮模型的加权系数，<span class="math notranslate nohighlight">\(\mathbf{b}^{(m)}(\mathbf{x}) \in\mathbb{R}^K\)</span>是基模型<span class="math notranslate nohighlight">\(G\)</span>输出类别的标签向量。设样本的标签类别为<span class="math notranslate nohighlight">\(k\)</span>，当基模型预测的样本类别结果为<span class="math notranslate nohighlight">\(k'\)</span>时，记</p>
+<p>SAMME算法的全称是<span class="math notranslate nohighlight">\(\rm{\textbf{S}tagewise\,\textbf{A}dditive\,\textbf{M}odeling\, using\, a\,\textbf{M}ulticlass\,\textbf{E}xponential\, loss\, function}\)</span>，它假定模型的总输出<span class="math notranslate nohighlight">\(\mathbf{f}\)</span>具有<span class="math notranslate nohighlight">\(\mathbf{f}^{(M)}(\mathbf{x})=\sum_{m=1}^M \beta^{(m)} \mathbf{b}^{(m)}(\mathbf{x})\)</span>的形式。其中，<span class="math notranslate nohighlight">\(M\)</span>是模型的总迭代轮数，<span class="math notranslate nohighlight">\(\beta^{(m)}\in \mathbb{R^+}\)</span>是每轮模型的加权系数，<span class="math notranslate nohighlight">\(\mathbf{b}^{(m)}(\mathbf{x}) \in\mathbb{R}^K\)</span>是基模型<span class="math notranslate nohighlight">\(G\)</span>输出类别的标签向量。设样本的标签类别为<span class="math notranslate nohighlight">\(k\)</span>，当基模型预测的样本类别结果为<span class="math notranslate nohighlight">\(k'\)</span>时，记</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
 b^{(m)}_{k'}=\left\{
@@ -368,7 +345,12 @@ err^{(m)}=\sum_{i=1}^n\frac{w_i}{\sum_{i=1}^nw_i}\mathbb{I}_{\{i\notin T\}}
 \[
 \mathbf{f}^{(m)}(\mathbf{x}_i)=\mathbf{f}^{(m-1)}(\mathbf{x}_i)+\beta^{*(m)}\mathbf{b}^{*(m)}(\mathbf{x}_i)
 \]</div>
-<div class="figure align-left">
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】对公式进行化简，写出<span class="math notranslate nohighlight">\(K=2\)</span>时的SAMME算法流程，并与李航《统计学习方法》一书中所述的Adaboost二分类算法对比是否一致。</p>
+</div>
+<p>将上述算法过程总结伪代码如下：</p>
+<div class="figure align-center">
 <a class="reference internal image-reference" href="../_images/ada_algo1.png"><img alt="../_images/ada_algo1.png" src="../_images/ada_algo1.png" style="width: 440px;" /></a>
 </div>
 <p>事实上，我们还能通过一些多分类的性质来改写算法的局部实现，使得一些变量前的系数得到简化。记</p>
@@ -381,15 +363,22 @@ err^{(m)}=\sum_{i=1}^n\frac{w_i}{\sum_{i=1}^nw_i}\mathbb{I}_{\{i\notin T\}}
 \[
 \tilde{w}_i = w_i\cdot\exp[\frac{1-K}{K}\alpha^{*(m)}]\exp(\alpha^{*(m)}\mathbb{1}_{\{i\notin T\}})
 \]</div>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】在sklearn源码中找出算法流程中每一行对应的处理代码。</p>
+</div>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】算法2第12行中给出了<span class="math notranslate nohighlight">\(\mathbf{f}\)</span>输出的迭代方案，但在sklearn包的实现中使用了<span class="math notranslate nohighlight">\(\mathbb{I}_{\{G^*(\mathbf{x})=S(\mathbf{y})\}}\)</span>来代替<span class="math notranslate nohighlight">\(\mathbf{b}^{*(m)}(\mathbf{x})\)</span>。请根据本文的实现，对sklearn包的源码进行修改并构造一个例子来比较它们的输出是否会不同。（提示：修改AdaboostClassifier类中的decision_function函数和staged_decision_function函数）</p>
+</div>
 <p>对<span class="math notranslate nohighlight">\(\mathbf{w}\)</span>进行归一化操作后，不会对下一轮算法1中<span class="math notranslate nohighlight">\(G^*\)</span>和<span class="math notranslate nohighlight">\(err^{(m)}\)</span>的结果产生任何影响。同时，如果把算法1第12行的<span class="math notranslate nohighlight">\(\beta^{*(m)}\)</span>替换为<span class="math notranslate nohighlight">\(\alpha^{*(m)}\)</span>，由于它们的输出结果只相差常数倍<span class="math notranslate nohighlight">\(\frac{(K-1)^2}{K}\)</span>，因此最后的预测结果<span class="math notranslate nohighlight">\(c(\mathbf{x})\)</span>也不会产生任何变化。</p>
 <p>由于<span class="math notranslate nohighlight">\(\exp[\frac{1-K}{K}\alpha^{*(m)}]\)</span>是样本公共项，故我们可以每次都利用</p>
 <div class="math notranslate nohighlight">
 \[
 \tilde{w}_i = w_i\cdot\exp(\alpha^{*(m)}\mathbb{1}_{\{i\notin T\}})
 \]</div>
-<p>来更新，而不影响归一化结果。</p>
-<p>此时，算法1的迭代循环可进行如下重写：</p>
-<div class="figure align-left">
+<p>来更新，而不影响归一化结果。此时，算法1的迭代循环可进行如下重写：</p>
+<div class="figure align-center">
 <a class="reference internal image-reference" href="../_images/ada_algo2.png"><img alt="../_images/ada_algo2.png" src="../_images/ada_algo2.png" style="width: 380px;" /></a>
 </div>
 </div>
@@ -431,12 +420,21 @@ L(\mathbf{h}^{(m)})=\exp[-\frac{1}{K}\mathbf{y}^T(\mathbf{f}^{(m-1)}(\mathbf{x})
 \[
 \mathbb{E} [L\vert \mathbf{x}] = \sum_{k=1}^K P_w(s(\mathbf{y})=k\vert \mathbf{x})\exp(-\frac{h^{(m)}_k(\mathbf{x})}{K-1})
 \]</div>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】验证<span class="math notranslate nohighlight">\(h^*_{k'}\)</span>的求解结果。</p>
+</div>
 <p>由对称约束条件，结合拉格朗日乘子法可得</p>
 <div class="math notranslate nohighlight">
 \[
 h^{*(m)}_{k'}=(K-1)[\log P_w(S(\mathbf{y})=k'\vert \mathbf{x})-\frac{1}{K}\sum_{k=1}^K\log P(S(\mathbf{y})=k\vert \mathbf{x})]
 \]</div>
-<div class="figure align-left">
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】算法3的第14行给出了<span class="math notranslate nohighlight">\(w_i\)</span>的更新策略，请说明其合理性。</p>
+</div>
+<p>将上述算法过程总结伪代码如下：</p>
+<div class="figure align-center">
 <a class="reference internal image-reference" href="../_images/ada_algo3.png"><img alt="../_images/ada_algo3.png" src="../_images/ada_algo3.png" style="width: 580px;" /></a>
 </div>
 </div>
@@ -450,8 +448,18 @@ e_{i}=\frac{\vert y_i-G^*(\mathbf{x}_i)\vert}{\max_i \vert y_i-G^*(\mathbf{x}_i)
 \]</div>
 <p>设样本的加权相对误差率为<span class="math notranslate nohighlight">\(E^{(m)}=\sum_{i=1}^n w_ie_i\)</span>，则相对误差率与正确率的比值为<span class="math notranslate nohighlight">\(\beta^{(m)}=\frac{E^{(m)}}{1-E^{(m)}}\)</span>，即预测器权重<span class="math notranslate nohighlight">\(\alpha^{(m)}=\log \frac{1}{\beta^{(m)}}\)</span>。</p>
 <p>更新权重<span class="math notranslate nohighlight">\(w_i\)</span>为<span class="math notranslate nohighlight">\(w_{i}[\alpha^{(m)}]^{1-e_{i}}\)</span>，权重在归一化后进入下一轮训练，由此可如下写出训练算法：</p>
-<div class="figure align-left">
+<div class="figure align-center">
 <a class="reference internal image-reference" href="../_images/ada_algo4.png"><img alt="../_images/ada_algo4.png" src="../_images/ada_algo4.png" style="width: 380px;" /></a>
+</div>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】请结合加权中位数的定义解决以下问题：</p>
+<ul class="simple">
+<li><p>当满足什么条件时，Adaboost.R2的输出结果恰为每个基预测器输出值的中位数？</p></li>
+<li><p>Adaboost.R2模型对测试样本的预测输出值是否一定会属于<span class="math notranslate nohighlight">\(M\)</span>个分类器中的一个输出结果？若是请说明理由，若不一定请给出反例。</p></li>
+<li><p>设<span class="math notranslate nohighlight">\(k\in \{y_1,...,y_M\}\)</span>，记<span class="math notranslate nohighlight">\(k\)</span>两侧（即大于或小于<span class="math notranslate nohighlight">\(k\)</span>）的样本集合对应的权重集合为<span class="math notranslate nohighlight">\(W^+\)</span>和<span class="math notranslate nohighlight">\(W^-\)</span>，证明使这两个集合元素之和差值最小的<span class="math notranslate nohighlight">\(k\)</span>就是Adaboost.R2输出的<span class="math notranslate nohighlight">\(y\)</span>。</p></li>
+<li><p>相对于普通中位数，加权中位数的输出结果鲁棒性更强，请结合公式说明理由。</p></li>
+</ul>
 </div>
 <p>在预测阶段，Adaboost.R2使用的是加权中位数算法。设每个基模型对某一个新测试样本的预测输出为<span class="math notranslate nohighlight">\(y_1,...,y_M\)</span>，基模型对应的预测器权重为<span class="math notranslate nohighlight">\(\alpha^{(1)},...,\alpha^{(M)}\)</span>，则Adaboost.R2的输出值为</p>
 <div class="math notranslate nohighlight">
@@ -460,15 +468,7 @@ y=\inf \{ y\big| \sum_{m\in \{m\vert y_m\leq y\}}\alpha^{(m)} \geq 0.5 \sum_{m=1
 \]</div>
 </div>
 <div class="section" id="id2">
-<h2>代码实践<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
-</div>
-<div class="section" id="id3">
-<h2>算法实现<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h2>
-</div>
-<div class="section" id="id4">
-<h2>知识回顾<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
-<div class="section" id="a">
-<h3>A组<a class="headerlink" href="#a" title="永久链接至标题">¶</a></h3>
+<h2>知识回顾<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
 <ol class="simple">
 <li><p>二分类问题下，Adaboost算法如何调节样本的权重？</p></li>
 <li><p>样本A在当轮分类错误，且样本B在当轮分类正确，请问在权重调整后，样本A的权重一定大于样本B吗？</p></li>
@@ -476,36 +476,6 @@ y=\inf \{ y\big| \sum_{m\in \{m\vert y_m\leq y\}}\alpha^{(m)} \geq 0.5 \sum_{m=1
 <li><p>Adaboost如何处理回归问题？</p></li>
 <li><p>用已经训练完毕的Adaboost分类模型和回归的模型来预测新样本的标签，请分别具体描述样本从输入到标签输出的流程。</p></li>
 </ol>
-</div>
-<div class="section" id="b">
-<h3>B组<a class="headerlink" href="#b" title="永久链接至标题">¶</a></h3>
-<ol class="simple">
-<li><p>假设有一个3分类问题，标签类别为第2类，模型输出的类别标签为[-0.1,-0.3,0.4]，请计算对应的指数损失。</p></li>
-<li><p>什么是贝叶斯最优决策条件？请针对Adaboost的分类问题，给出一个不符合贝叶斯最优决策条件的损失函数。</p></li>
-<li><p>对于二分类问题，请完成以下任务：</p>
-<ul class="simple">
-<li><p>对公式进行化简，写出<span class="math notranslate nohighlight">\(K=2\)</span>时的SAMME算法流程，并与李航《统计学习方法》一书中所述的Adaboost二分类算法对比是否一致。</p></li>
-<li><p>在sklearn源码中找出算法流程中每一行对应的处理代码。</p></li>
-</ul>
-</li>
-<li><p>算法2第12行中给出了<span class="math notranslate nohighlight">\(\mathbf{f}\)</span>输出的迭代方案，但在sklearn包的实现中使用了<span class="math notranslate nohighlight">\(\mathbb{I}_{\{G^*(\mathbf{x})=S(\mathbf{y})\}}\)</span>来代替<span class="math notranslate nohighlight">\(\mathbf{b}^{*(m)}(\mathbf{x})\)</span>。请根据本文的实现，对sklearn包的源码进行修改并构造一个例子来比较它们的输出是否会不同。（提示：修改AdaboostClassifier类中的decision_function函数和staged_decision_function函数）</p></li>
-<li><p>证明SAMME.R算法中<span class="math notranslate nohighlight">\(h^*_{k'}\)</span>的求解结果。</p></li>
-<li><p>算法3的第14行给出了<span class="math notranslate nohighlight">\(w_i\)</span>的更新策略，请说明其合理性。</p></li>
-<li><p>请实现SAMME、SAMME.R和Adaboost.R2算法。</p></li>
-<li><p>请结合加权中位数的定义解决以下问题：
-\begin{itemize}</p>
-<ul class="simple">
-<li><p>当满足什么条件时，Adaboost.R2的输出结果恰为每个基预测器输出值的中位数？</p></li>
-<li><p>Adaboost.R2模型对测试样本的预测输出值是否一定会属于<span class="math notranslate nohighlight">\(M\)</span>个分类器中的一个输出结果？若是请说明理由，若不一定请给出反例。</p></li>
-<li><p>设<span class="math notranslate nohighlight">\(k\in \{y_1,...,y_M\}\)</span>，记<span class="math notranslate nohighlight">\(k\)</span>两侧（即大于或小于<span class="math notranslate nohighlight">\(k\)</span>）的样本集合对应的权重集合为<span class="math notranslate nohighlight">\(W^+\)</span>和<span class="math notranslate nohighlight">\(W^-\)</span>，请证明使得这两个集合的元素之和差值最小的<span class="math notranslate nohighlight">\(k\)</span>就是Adaboost.R2的输出值<span class="math notranslate nohighlight">\(y\)</span>。</p></li>
-<li><p>设<span class="math notranslate nohighlight">\(
-y'=\sup \{ y'\big| \sum_{m\in \{m\vert y_m\leq y'\}}\alpha^{(m)} \leq 0.5 \sum_{m=1}^M\alpha^{(m)}\}
-\)</span>，它和定义中给出的<span class="math notranslate nohighlight">\(y\)</span>值一定相等吗？若不一定请举出反例。</p></li>
-<li><p>相对于普通中位数，加权中位数的输出结果鲁棒性更强，请结合公式说明理由。</p></li>
-</ul>
-</li>
-</ol>
-</div>
 </div>
 </div>
 
@@ -516,7 +486,7 @@ y'=\sup \{ y'\big| \sum_{m\in \{m\vert y_m\leq y'\}}\alpha^{(m)} \leq 0.5 \sum_{
         <div class='prev-next-bottom'>
             
     <a class='left-prev' id="prev-link" href="02_ensemble.html" title="previous page">Part B: 集成模式</a>
-    <a class='right-next' id="next-link" href="04_gbdt.html" title="next page">Part D: 梯度提升树（上）</a>
+    <a class='right-next' id="next-link" href="04_gbdt.html" title="next page">Part D: 梯度提升树</a>
 
         </div>
         

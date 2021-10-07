@@ -100,12 +100,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="04_gbdt.html">
-     Part D: 梯度提升树（上）
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="05_xgb_lgb.html">
-     Part E: 梯度提升树（下）
+     Part D: 梯度提升树
     </a>
    </li>
   </ul>
@@ -225,30 +220,8 @@
  </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#id4">
-   代码实践
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id5">
-   算法实现
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id6">
    知识回顾
   </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#a">
-     A组
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#b">
-     B组
-    </a>
-   </li>
-  </ul>
  </li>
 </ul>
 
@@ -370,6 +343,20 @@ G(X,Y)&amp;\geq -\log_2 [\sum_{k=1}^K\sum_{m=1}^M p(y_k,x_m)\frac{p(y_k)p(x_m)}{
 \end{aligned}
 \end{split}\]</div>
 </div>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】定义<span class="math notranslate nohighlight">\(X,Y\)</span>的联合熵为<span class="math notranslate nohighlight">\(H(Y,X)\)</span>为<span class="math notranslate nohighlight">\(\mathbb{E}_{(Y,X)\sim p(y,x)}[-\log_2p(Y,X)]\)</span></p>
+<ul class="simple">
+<li><p>请证明如下关系：
+<span class="math notranslate nohighlight">\(\tiny G(Y,X)=H(X)-H(X\vert Y)\)</span>
+<span class="math notranslate nohighlight">\(\tiny G(Y,X)=H(X)+H(Y)-H(Y,X)\)</span>
+<span class="math notranslate nohighlight">\(\tiny G(Y,X)=H(Y,X)-H(X\vert Y)-H(Y\vert X)\)</span></p></li>
+<li><p>下图被分为了A、B和C三个区域。若AB区域代表X的不确定性，BC区域代表Y的不确定性，那么<span class="math notranslate nohighlight">\(H(X)\)</span>、<span class="math notranslate nohighlight">\(H(Y)\)</span>、<span class="math notranslate nohighlight">\(H(X\vert Y)\)</span>、<span class="math notranslate nohighlight">\(H(Y\vert X)\)</span>、<span class="math notranslate nohighlight">\(H(X,Y)\)</span>和<span class="math notranslate nohighlight">\(G(X,Y)\)</span>分别指代的是哪片区域？</p></li>
+</ul>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/tree_pic3.png"><img alt="../_images/tree_pic3.png" src="../_images/tree_pic3.png" style="width: 180px;" /></a>
+</div>
+</div>
 <p>上述证明中的Jensen不等式的取等条件为<span class="math notranslate nohighlight">\(p(y,x)=p(y)p(x)\)</span>，其实际意义为随机变量<span class="math notranslate nohighlight">\(Y\)</span>和<span class="math notranslate nohighlight">\(X\)</span>独立。这个条件同样与直觉相符合，因为如果<span class="math notranslate nohighlight">\(Y\)</span>和<span class="math notranslate nohighlight">\(X\)</span>独立，那么意味着我们无论是否知道<span class="math notranslate nohighlight">\(X\)</span>的信息，都不会对<span class="math notranslate nohighlight">\(Y\)</span>的不确定性产生影响，此时信息增益为0。</p>
 <p>用信息增益的大小来进行决策树的节点分裂时，由于真实的分布函数未知，故用<span class="math notranslate nohighlight">\(p(y)\)</span>和<span class="math notranslate nohighlight">\(p(y\vert x)\)</span>的经验分布（即频率）来进行概率的估计。若节点<span class="math notranslate nohighlight">\(N\)</span>每个分支下的样本数量为<span class="math notranslate nohighlight">\(D_1,...,D_M\)</span>，记<span class="math notranslate nohighlight">\(\tilde{p}(x_m)=\frac{D_m}{\sum_{m'=1}^M D_{m'}}(m\in\{1,...,M\})\)</span>，<span class="math notranslate nohighlight">\(\tilde{p}(y_k)\)</span>和<span class="math notranslate nohighlight">\(\tilde{p}(y_k\vert x_m)\)</span>分别为节点中第k个类别的样本占节点总样本的比例和第m个子节点中第k个类别的样本数量占该子节点总样本的比例，则节点<span class="math notranslate nohighlight">\(N\)</span>分裂的信息增益定义为</p>
 <div class="math notranslate nohighlight">
@@ -383,8 +370,16 @@ G_N(Y,X)=-\sum_{i=1}^K\tilde{p}(y_k)\log \tilde{p}(y_k)+\sum_{m=1}^M\tilde{p}(x_
 <p>对于类别特征而言，给定一个阈值<span class="math notranslate nohighlight">\(\epsilon\)</span>，树的每一个节点会选择最大信息增益<span class="math notranslate nohighlight">\(G^{max}_N(Y,X)\)</span>对应的特征进行分裂，直到所有节点的相对最大信息增益<span class="math notranslate nohighlight">\(\frac{D_N}{D_{all}}G^{max}_N(Y,X)\)</span>小于<span class="math notranslate nohighlight">\(\epsilon\)</span>，<span class="math notranslate nohighlight">\(D_N\)</span>和<span class="math notranslate nohighlight">\(D_{all}\)</span>分别指节点<span class="math notranslate nohighlight">\(N\)</span>的样本个数和整个数据集的样本个数，这种生成算法称为ID3算法。在sklearn中，<span class="math notranslate nohighlight">\(\epsilon\)</span>即为min_impurity_decrease。</p>
 <p>C4.5算法在ID3算法的基础上做出了诸多改进，包括但不限于：处理数值特征、处理含缺失值的特征、使用信息增益比代替信息增益以及给出树的剪枝策略。其中，剪枝策略将在第4节进行讲解，下面先对前3个改进的细节来进行介绍。</p>
 <p>在处理节点数值特征时，可以用两种方法来将数值特征通过分割转化为类别，它们分别是最佳分割法和随机分割法，分别对应了sklearn中splitter参数的best选项和random选项。</p>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】假设当前我们需要处理一个分类问题，请问对输入特征进行归一化会对树模型的类别输出产生影响吗？请解释原因。</p>
+</div>
 <p>随机分割法下，取<span class="math notranslate nohighlight">\(s\sim U[x_{min}, x_{max}]\)</span>，其中<span class="math notranslate nohighlight">\(U[x_{min}, x_{max}]\)</span>代表特征最小值和最大值范围上的均匀分布，将节点样本按照特征<span class="math notranslate nohighlight">\(\mathbf{x}\)</span>中的元素是否超过<span class="math notranslate nohighlight">\(s\)</span>把样本划分为两个集合，这等价于把数值变量转换为了类别变量。此时，根据这两个类别来计算树节点分裂的信息增益，并将它作为这个数值特征分裂的信息增益。</p>
 <p>最佳分割法下，依次令<span class="math notranslate nohighlight">\(s\)</span>取遍所有的<span class="math notranslate nohighlight">\(x_i(i=1,...,D_N)\)</span>，将其作为分割点，按照特征<span class="math notranslate nohighlight">\(\mathbf{x}\)</span>中的元素是否超过<span class="math notranslate nohighlight">\(s\)</span>把样本划分为两个集合，计算所有<span class="math notranslate nohighlight">\(s\)</span>对应信息增益的最大值，并将其作为这个数值特征分裂的信息增益。</p>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】如果将系数替换为<span class="math notranslate nohighlight">\(1-\gamma^2\)</span>，请问对缺失值是加强了还是削弱了惩罚？</p>
+</div>
 <p>C4.5算法处理缺失数据的思想非常简单，样本的缺失值占比越大，那么对信息增益的惩罚就越大，这是因为缺失值本身就是一种不确定性成分。设节点<span class="math notranslate nohighlight">\(N\)</span>的样本缺失值比例为<span class="math notranslate nohighlight">\(\gamma\)</span>，记非缺失值对应的类别标签和特征分别为<span class="math notranslate nohighlight">\(\tilde{Y}\)</span>和<span class="math notranslate nohighlight">\(\tilde{X}\)</span>，则修正的信息增益为</p>
 <div class="math notranslate nohighlight">
 \[
@@ -402,6 +397,10 @@ G^R(Y,X) = \frac{G(Y,X)}{H(Y)}
 <a class="reference internal image-reference" href="../_images/tree_pic1.png"><img alt="../_images/tree_pic1.png" src="../_images/tree_pic1.png" style="width: 400px;" /></a>
 </div>
 <p>在sklearn中提供了两种生长模式，它们分别被称为深度优先生长和最佳增益生长，当参数max_leaf_nodes使用默认值None时使用前者，当它被赋予某个数值时使用后者。</p>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】如果将树的生长策略从深度优先生长改为广度优先生长，假设其他参数保持不变的情况下，两个模型对应的结果输出可能不同吗？</p>
+</div>
 <p>深度优先生长采用深度优先搜索的方法：若当前节点存在未搜索过的子节点，则当前节点跳转到子节点进行分裂决策；若当前节点为叶节点，则调转到上一层节点，直到根节点不存在未搜索过的子节点为止。对上图而言，当前节点为2号，它的两个子节点4号和5号都没有被搜索过，因此下一步则选择两个节点中的一个进行跳转。当决策树使用最佳增益生长时，每次总是选择会带来最大相对信息增益的节点进行分裂，直到叶节点的最大数量达到max_left_nodes。</p>
 </div>
 <div class="section" id="cart">
@@ -410,6 +409,10 @@ G^R(Y,X) = \frac{G(Y,X)}{H(Y)}
 <p>对于回归树而言，每个叶节点输出的不再是类别而是数值，其输出值为该叶节点所有样本标签值的均值。在每次分裂时，我们希望不同的子节点之间的差异较大，但每个子节点内部的差异较小。此时，分割策略仍然可以采用随机分割法或最佳分割法，只是现在不再以熵（条件熵）来评价节点（子节点）的纯度。</p>
 <p>我们应当如何定义回归树的节点纯度？对于数值标签而言，我们可以认为节点间元素大小越接近则纯度越高，因此可以考虑使用均方误差（MSE）或平均绝对误差（MAE）来替换熵和条件熵的位置。</p>
 <p>设节点<span class="math notranslate nohighlight">\(N\)</span>的样本标签为<span class="math notranslate nohighlight">\(y^{(D)}_1,...,y^{(D)}_N\)</span>，左右子节点的样本个数分别为<span class="math notranslate nohighlight">\(y^{(L)}_1,...,y^{(L)}_{N_R}\)</span>和<span class="math notranslate nohighlight">\(y^{(R)}_1,...,y^{(R)}_{N_R}\)</span>，记<span class="math notranslate nohighlight">\(\bar{y}^{(D)}=\frac{1}{N}\sum_{i=1}^{N}y^{(D)}_i\)</span>、<span class="math notranslate nohighlight">\(\bar{y}^{(L)}=\frac{1}{N_L}\sum_{i=1}^{N_L}y^{(L)}_i\)</span>和<span class="math notranslate nohighlight">\(\bar{y}^{(R)}=\frac{1}{N_R}\sum_{i=1}^{N_R}y^{(R)}_i\)</span>分别为节点<span class="math notranslate nohighlight">\(N\)</span>的样本标签均值、左子节点的样本标签均值和右子节点的样本标签均值，再记<span class="math notranslate nohighlight">\(\tilde{y}^{(D)}\)</span>、<span class="math notranslate nohighlight">\(\tilde{y}^{(L)}\)</span>和<span class="math notranslate nohighlight">\(\tilde{y}^{(R)}\)</span>分别为节点<span class="math notranslate nohighlight">\(N\)</span>的样本标签中位数、左子节点的样本标签中位数和右子节点的样本标签中位数。</p>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】在一般的机器学习问题中，我们总是通过一组参数来定义模型的损失函数，并且在训练集上以最小化该损失函数为目标进行优化。请问对于决策树而言，模型优化的目标是什么？</p>
+</div>
 <p>此时，两者的信息增益可以分别定义为</p>
 <div class="math notranslate nohighlight">
 \[
@@ -433,6 +436,10 @@ H(Y)=\mathbb{E}_YI(p)=\mathbb{E}_Y[-\log_2p(Y)]\approx\mathbb{E}_Y[1-p(Y)]
 &amp;=1-\sum_{k=1}^K\tilde{p}^2(y_k)
 \end{aligned}
 \end{split}\]</div>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】对信息熵中的<span class="math notranslate nohighlight">\(\log\)</span>函数在<span class="math notranslate nohighlight">\(p=1\)</span>处进行一阶泰勒展开可以近似为基尼系数，那么如果在<span class="math notranslate nohighlight">\(p=1\)</span>处进行二阶泰勒展开我们可以获得什么近似指标？请写出对应指标的信息增益公式。</p>
+</div>
 <p>类似地定义条件基尼系数为</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
@@ -442,6 +449,10 @@ H(Y)=\mathbb{E}_YI(p)=\mathbb{E}_Y[-\log_2p(Y)]\approx\mathbb{E}_Y[1-p(Y)]
 &amp;=\sum_{m=1}^M \tilde{p}(x_m)[1-\sum_{k=1}^K\tilde{p}^2(y_k\vert x_m)]
 \end{aligned}
 \end{split}\]</div>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】除了信息熵和基尼系数之外，我们还可以使用节点的<span class="math notranslate nohighlight">\(1-\max_{k}p(Y=y_k)\)</span>和第<span class="math notranslate nohighlight">\(m\)</span>个子节点的<span class="math notranslate nohighlight">\(1-\max_{k}p(Y=y_k\vert X=x_m)\)</span>来作为衡量纯度的指标。请解释其合理性并给出相应的信息增益和加权信息增益公式。</p>
+</div>
 <p>从而引出基于基尼系数的信息增益为</p>
 <div class="math notranslate nohighlight">
 \[
@@ -450,7 +461,15 @@ G(Y,X)={\rm Gini}(Y)-{\rm Gini}(Y\vert X)
 </div>
 <div class="section" id="id3">
 <h2>4. 决策树的剪枝<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h2>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】为什么对没有重复特征值的数据，决策树能够做到损失为0？</p>
+</div>
 <p>决策树具有很强的拟合能力，对于任何一个没有特征重复值的数据集，决策树一定能够在训练集上做到分类错误率或均方回归损失为0，因此我们应当通过一些手段来限制树的生长，这些方法被称为决策树树的剪枝方法。其中，预剪枝是指树在判断节点是否分裂的时候就预先通过一些规则来阻止其分裂，后剪枝是指在树的节点已经全部生长完成后，通过一些规则来摘除一些子树。</p>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】如何理解min_samples_leaf参数能够控制回归树输出值的平滑程度？</p>
+</div>
 <p>在sklearn的CART实现中，一共有6个控制预剪枝策略的参数，它们分别是最大树深度max_depth、节点分裂的最小样本数min_samples_split、叶节点最小样本数min_samples_leaf、节点样本权重和与所有样本权重和之比的最小比例min_weight_fraction_leaf、最大叶节点总数max_leaf_nodes以及之前提到的分裂阈值min_impurity_decrease。</p>
 <p>后剪枝过程又称作MCCP过程，即Minimal Cost-Complexity Pruning，它由参数ccp_alpha控制，记其值为<span class="math notranslate nohighlight">\(\alpha\)</span>。一般而言，树的叶子越多就越复杂，为了抑制树的生长，我们定义以节点<span class="math notranslate nohighlight">\(N\)</span>为根节点的树<span class="math notranslate nohighlight">\(T^N\)</span>的复杂度为该树的叶节点数量<span class="math notranslate nohighlight">\(\vert T^N\vert\)</span>。设树<span class="math notranslate nohighlight">\(T\)</span>的剪枝度量为</p>
 <div class="math notranslate nohighlight">
@@ -477,15 +496,7 @@ E(Node^N) = \frac{R(Node^N)-R(T)}{\vert T^N\vert -1}\leq \alpha
 <p>这个条件表明只要<span class="math notranslate nohighlight">\(E(Node^N)\)</span>的值小于给定的参数cpp_alpha，那么这个节点下的所有节点都会被删除。事实上在sklearn中，在树完全生成后就会把所有节点的<span class="math notranslate nohighlight">\(E(Node^N)\)</span>值进行记录，每次剪枝都会分别查看所有非叶子节点的树节点对应的<span class="math notranslate nohighlight">\(E(Node^N)\)</span>值，并且对具有最小<span class="math notranslate nohighlight">\(E(Node^N)\)</span>值的非叶子节点进行剪枝，直到所有节点的<span class="math notranslate nohighlight">\(E(Node^N)\)</span>值都大于给定的cpp_alpha。</p>
 </div>
 <div class="section" id="id4">
-<h2>代码实践<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
-</div>
-<div class="section" id="id5">
-<h2>算法实现<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h2>
-</div>
-<div class="section" id="id6">
-<h2>知识回顾<a class="headerlink" href="#id6" title="永久链接至标题">¶</a></h2>
-<div class="section" id="a">
-<h3>A组<a class="headerlink" href="#a" title="永久链接至标题">¶</a></h3>
+<h2>知识回顾<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
 <ol class="simple">
 <li><p>ID3树算法、C4.5树算法和CART算法之间有何异同？</p></li>
 <li><p>什么是信息增益？它衡量了什么指标？它有什么缺陷？</p></li>
@@ -494,42 +505,6 @@ E(Node^N) = \frac{R(Node^N)-R(T)}{\vert T^N\vert -1}\leq \alpha
 <li><p>基尼系数是什么？为什么要在CART中引入它？</p></li>
 <li><p>什么是树的预剪枝和后剪枝？具体分别是如何操作的？</p></li>
 </ol>
-</div>
-<div class="section" id="b">
-<h3>B组<a class="headerlink" href="#b" title="永久链接至标题">¶</a></h3>
-<ol class="simple">
-<li><p>在一般的机器学习问题中，我们总是通过一组参数来定义模型的损失函数，并且在训练集上以最小化该损失函数为目标进行优化。请问对于决策树而言，模型优化的目标是什么？</p></li>
-<li><p>如何理解min_samples_leaf参数能够控制回归树输出值的平滑程度？</p></li>
-<li><p>我们在第4节提到决策树具有很强的拟合能力，对于任何一个没有特征重复值的数据集，它一定能够在训练集上做到分类错误率或均方回归损失为0。为什么？</p></li>
-<li><p>对信息熵中的<span class="math notranslate nohighlight">\(\log\)</span>函数在<span class="math notranslate nohighlight">\(p=1\)</span>处进行一阶泰勒展开可以近似为基尼系数，那么如果在<span class="math notranslate nohighlight">\(p=1\)</span>处进行二阶泰勒展开我们可以获得什么近似指标？请写出对应指标的信息增益公式。</p></li>
-<li><p>除了信息熵和基尼系数之外，我们还可以使用节点的<span class="math notranslate nohighlight">\(1-\max_{k}p(Y=y_k)\)</span>和第<span class="math notranslate nohighlight">\(m\)</span>个子节点的<span class="math notranslate nohighlight">\(1-\max_{k}p(Y=y_k\vert X=x_m)\)</span>来作为衡量纯度的指标。请解释其合理性并给出相应的信息增益和加权信息增益公式。</p></li>
-<li><p>在讨论缺失值对信息增益的惩罚时，我们直接使用了<span class="math notranslate nohighlight">\(1-\gamma\)</span>作为惩罚系数，其中<span class="math notranslate nohighlight">\(\gamma\)</span>为缺失值的比例。如果将系数替换为<span class="math notranslate nohighlight">\(1-\gamma^2\)</span>，请问对缺失值而言是加强了惩罚还是削弱了惩罚？</p></li>
-<li><p>如果将树的生长策略从深度优先生长改为广度优先生长，假设其他参数保持不变的情况下，两个模型对应的结果输出可能不同吗？</p></li>
-<li><p>请实现参数与sklearn一致的DecisionTreeClassifier类，其成员函数包括fit、predict和predict_proba，同时需给出feature_importances_指标。</p>
-<ul class="simple">
-<li><p>predict_proba返回的是测试样本所在叶节点的各类别比例。</p></li>
-<li><p>feature_importances_指每个特征的重要性，对于某个特征而言，其特征重要性等于决策树中根据该特征分裂而产生的相对信息增益之和。</p></li>
-</ul>
-</li>
-<li><p>假设当前我们需要处理一个分类问题，请问对输入特征进行归一化会对树模型的类别输出产生影响吗？请解释原因。</p></li>
-<li><p>sklearn提供了class_weight参数来处理非平衡样本。设每个类别的样本数量为<span class="math notranslate nohighlight">\(n_1,...,n_K\)</span>，第<span class="math notranslate nohighlight">\(i\)</span>个样本的类别、样本权重和类别权重分别为<span class="math notranslate nohighlight">\(k\)</span>、<span class="math notranslate nohighlight">\(w_i\)</span>和<span class="math notranslate nohighlight">\(w^c_i\)</span>。当class_weight值是形式为{class_label: class_weight}的字典时，样本权重被调整为<span class="math notranslate nohighlight">\(w_i\cdot w^c_i\)</span>；当class_weight值是字符串“balanced”，样本权重被调整为<span class="math notranslate nohighlight">\(w_i\cdot \frac{\sum_{k'=1}^K n_{k'}}{K\cdot n_k}\)</span>；否则<span class="math notranslate nohighlight">\(w_i\)</span>不变。现有样本<span class="math notranslate nohighlight">\(x_1\)</span>、<span class="math notranslate nohighlight">\(x_2\)</span>和<span class="math notranslate nohighlight">\(x_3\)</span>的样本权重为<span class="math notranslate nohighlight">\([20,30,10]\)</span>，类别分别是<span class="math notranslate nohighlight">\(0\)</span>、<span class="math notranslate nohighlight">\(0\)</span>和<span class="math notranslate nohighlight">\(1\)</span>，且给定class_weight={0:40, 1:60}，请计算调整后的样本权重。</p></li>
-<li><p><span class="math notranslate nohighlight">\(X,Y\)</span>的联合熵为<span class="math notranslate nohighlight">\(H(Y,X)=\mathbb{E}_{(Y,X)\sim p(y,x)}[-\log_2p(Y,X)]\)</span></p>
-<ul class="simple">
-<li><p>请证明如下关系：</p>
-<ul>
-<li><p><span class="math notranslate nohighlight">\(G(Y,X)=H(X)-H(X\vert Y)\)</span></p></li>
-<li><p><span class="math notranslate nohighlight">\(G(Y,X)=H(X)+H(Y)-H(Y,X)\)</span></p></li>
-<li><p><span class="math notranslate nohighlight">\(G(Y,X)=H(Y,X)-H(X\vert Y)-H(Y\vert X)\)</span></p></li>
-</ul>
-</li>
-<li><p>下图被分为了A、B和C三个区域。若AB区域代表X的不确定性，BC区域代表Y的不确定性，那么<span class="math notranslate nohighlight">\(H(X)\)</span>、<span class="math notranslate nohighlight">\(H(Y)\)</span>、<span class="math notranslate nohighlight">\(H(X\vert Y)\)</span>、<span class="math notranslate nohighlight">\(H(Y\vert X)\)</span>、<span class="math notranslate nohighlight">\(H(X,Y)\)</span>和<span class="math notranslate nohighlight">\(G(X,Y)\)</span>分别指代的是哪片区域？</p></li>
-</ul>
-</li>
-</ol>
-<div class="figure align-center">
-<a class="reference internal image-reference" href="../_images/tree_pic3.png"><img alt="../_images/tree_pic3.png" src="../_images/tree_pic3.png" style="width: 300px;" /></a>
-</div>
-</div>
 </div>
 </div>
 

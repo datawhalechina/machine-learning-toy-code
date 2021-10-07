@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Part D: 梯度提升树（上） &#8212; Datawhale</title>
+    <title>Part D: 梯度提升树 &#8212; Datawhale</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
   <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -41,7 +41,7 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="搜索" href="../search.html" />
-    <link rel="next" title="Part E: 梯度提升树（下）" href="05_xgb_lgb.html" />
+    <link rel="next" title="EM算法与抽样理论" href="../02_em_sampling/index.html" />
     <link rel="prev" title="Part C: 自适应提升法" href="03_ada.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -100,12 +100,7 @@
    </li>
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
-     Part D: 梯度提升树（上）
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="05_xgb_lgb.html">
-     Part E: 梯度提升树（下）
+     Part D: 梯度提升树
     </a>
    </li>
   </ul>
@@ -214,22 +209,29 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id2">
-   3. GBDT中的并行策略
+  <a class="reference internal nav-link" href="#xgboost">
+   3. XGBoost算法
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id3">
-   代码实践
+  <a class="reference internal nav-link" href="#lightgbm">
+   4. LightGBM算法
   </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id2">
+     单边梯度采样
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id3">
+     互斥特征绑定
+    </a>
+   </li>
+  </ul>
  </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#id4">
-   算法实现
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id5">
    知识回顾
   </a>
  </li>
@@ -245,7 +247,7 @@
               <div>
                 
   <div class="section" id="part-d">
-<h1>Part D: 梯度提升树（上）<a class="headerlink" href="#part-d" title="永久链接至标题">¶</a></h1>
+<h1>Part D: 梯度提升树<a class="headerlink" href="#part-d" title="永久链接至标题">¶</a></h1>
 <div class="section" id="gbdt">
 <h2>1. 用于回归的GBDT<a class="headerlink" href="#gbdt" title="永久链接至标题">¶</a></h2>
 <p>设数据集为<span class="math notranslate nohighlight">\(D=\{(X_1,y_1),...,(X_N,y_N)\}\)</span>，模型的损失函数为<span class="math notranslate nohighlight">\(L(y,\hat{y})\)</span>，现希望利用多棵回归决策树来进行模型集成：设第<span class="math notranslate nohighlight">\(m\)</span>轮时，已知前<span class="math notranslate nohighlight">\(m-1\)</span>轮中对第<span class="math notranslate nohighlight">\(i\)</span>个样本的集成输出为<span class="math notranslate nohighlight">\(F_{m-1}(X_i)\)</span>，则本轮的集成输出<span class="math notranslate nohighlight">\(\hat{y}_i\)</span>为</p>
@@ -437,18 +439,178 @@ L(F_i) = - y_i\log \frac{e^{F_i}}{1+e^{F_i}} - (1-y_i)\log \frac{1}{1+e^{F_i}}
 \[
 [ \frac{1}{1+e^{F^{(0)}_i}},\frac{e^{F^{(0)}_i}}{1+e^{F^{(0)}_i}}]=[p_0,p_1]
 \]</div>
+<div class="admonition-monotonic-constraints admonition">
+<p class="admonition-title">单调约束（Monotonic Constraints）</p>
+<p>有时我们会对某个特征或某些特征如何影响模型的输出有先验的知识，例如每天投入在学习的有效时间上越长就越有可能在考试中取得好的成绩，即有效学习时间长度和考试分数是一种单调增的约束关系。许多GBDT的实现（sklearn中的Histogram-Based GBDT、XGBoost和LightGBM）都提供了单调约束的参数选项，有关其在内部的实现原理可以参考<a class="reference external" href="https://towardsdatascience.com/how-does-the-popular-xgboost-and-lightgbm-algorithms-enforce-monotonic-constraint-cf8fce797acb">本文</a>。</p>
 </div>
+</div>
+<div class="section" id="xgboost">
+<h2>3. XGBoost算法<a class="headerlink" href="#xgboost" title="永久链接至标题">¶</a></h2>
+<p>由于树模型较强的拟合能力，我们需要对模型进行正则约束来控制每轮模型学习的进度，除了学习率参数之外，XGBoost还引入了两项作用于损失函数的正则项：首先我们希望树的生长受到抑制而引入<span class="math notranslate nohighlight">\(\gamma T\)</span>，其中的<span class="math notranslate nohighlight">\(T\)</span>为树的叶子节点个数，<span class="math notranslate nohighlight">\(\gamma\)</span>越大，树就越不容易生长；接着我们希望模型每次的拟合值较小而引入<span class="math notranslate nohighlight">\(\frac{1}{2}\lambda \sum_{i=1}^T w_i^2\)</span>，其中的<span class="math notranslate nohighlight">\(w_i\)</span>是回归树上第<span class="math notranslate nohighlight">\(i\)</span>个叶子结点的预测目标值。记第<span class="math notranslate nohighlight">\(m\)</span>轮中第<span class="math notranslate nohighlight">\(i\)</span>个样本在上一轮的预测值为<span class="math notranslate nohighlight">\(F^{(m-1)}_i\)</span>，本轮需要学习的树模型为<span class="math notranslate nohighlight">\(h^{(m)}\)</span>，此时的损失函数即为</p>
+<div class="math notranslate nohighlight">
+\[
+L^{(m)}(h^{(m)}) = \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{i=1}^NL(y_i, F^{(m-1)}_i+h^{(m)}(X_i)) 
+\]</div>
+<p>从参数空间的角度而言，损失即为</p>
+<div class="math notranslate nohighlight">
+\[
+L^{(m)}(F^{(m)}_i)  = \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{i=1}^NL(y_i, F^{(m)}_i)
+\]</div>
+<p>不同于上一节中GBDT的梯度下降方法，XGBoost直接在<span class="math notranslate nohighlight">\(h^{(m)}=0\)</span>处（或<span class="math notranslate nohighlight">\(F^{(m)}_i=F^{(m-1)}_i\)</span>处）将损失函数近似为一个二次函数，从而直接将该二次函数的顶点坐标作为<span class="math notranslate nohighlight">\(h^{*(m)}(X_i)\)</span>的值，即具有更小的损失。梯度下降法只依赖损失的一阶导数，当损失的一阶导数变化较大时，使用一步梯度获得的<span class="math notranslate nohighlight">\(h^{*(m)}\)</span>估计很容易越过最优点，甚至使得损失变大（如子图2所示）；二次函数近似的方法需要同时利用一阶导数和二阶导数的信息，因此对于<span class="math notranslate nohighlight">\(h^{*(m)}\)</span>的估计在某些情况下会比梯度下降法的估计值更加准确，或说对各类损失函数更有自适应性（如子图3和子图4所示）。</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/gbdt_pic2.png"><img alt="../_images/gbdt_pic2.png" src="../_images/gbdt_pic2.png" style="width: 700px;" /></a>
+</div>
+<p>为了得到<span class="math notranslate nohighlight">\(h^{*(m)}(X_i)\)</span>，记<span class="math notranslate nohighlight">\(h_i=h^{(m)}(X_i)\)</span>，<span class="math notranslate nohighlight">\(\textbf{h}=[h_1,...,h_N]\)</span>，我们需要先将损失函数显式地展开为一个关于<span class="math notranslate nohighlight">\(h^{(m)}(X_i)\)</span>的二次函数，：</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+L^{(m)}(\textbf{h}) &amp;= \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{i=1}^N L(y_i, F^{(m-1)}_i+h_i) \\
+&amp;\approx \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{i=1}^N [L(y_i, F^{(m-1)}_i)+\left . \frac{\partial L}{\partial h_i}\right |_{h_i=0} h_i+\frac{1}{2}\left . \frac{\partial^2 L}{\partial h^2_i}\right |_{h_i=0} h^2_i]\\
+&amp;= \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{i=1}^N [\left . \frac{\partial L}{\partial h_i}\right |_{h_i=0} h_i+\frac{1}{2}\left . \frac{\partial^2 L}{\partial h^2_i}\right |_{h_i=0} h^2_i] + constant
+\end{aligned}
+\end{split}\]</div>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】请写出<span class="math notranslate nohighlight">\(L^{(m)}(F^{(m)}_i)\)</span>在<span class="math notranslate nohighlight">\(F^{(m)}_i=F^{(m-1)}_i\)</span>处的二阶展开。</p>
+</div>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】试说明不将损失函数展开至更高阶的原因。</p>
+</div>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】请写出平方损失下的近似损失。</p>
+</div>
+<p>由于近似后损失的第二项是按照叶子结点的编号来加和的，而第三项是按照样本编号来加和的，我们为了方便处理，不妨统一将第三项按照叶子结点的编号重排以统一形式。设叶子节点<span class="math notranslate nohighlight">\(j\)</span>上的样本编号集合为<span class="math notranslate nohighlight">\(I_j\)</span>，记<span class="math notranslate nohighlight">\(p_i=\left . \frac{\partial L}{\partial h_i}\right |_{h_i=0}\)</span>且<span class="math notranslate nohighlight">\(q_i=\left . \frac{\partial^2 L}{\partial h^2_i}\right |_{h_i=0}\)</span>，忽略常数项后有</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+\tilde{L}^{(m)}(\textbf{h}) &amp;= \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{i=1}^N [p_i h_i+\frac{1}{2}q_i h^2_i]\\
+&amp;= \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{j=1}^T[(\sum_{i\in I_j} p_i )w_j+\frac{1}{2}(\sum_{i\in I_j}q_i )w^2_i]\\
+&amp;= \gamma T+\sum_{j=1}^T[(\sum_{i\in I_j} p_i )w_j+\frac{1}{2}(\sum_{i\in I_j}q_i +\lambda)w^2_i]\\
+&amp;=\tilde{L}^{(m)}(\textbf{w})
+\end{aligned}
+\end{split}\]</div>
+<p>上式的第二个等号是由于同一个叶子节点上的模型输出一定相同，即<span class="math notranslate nohighlight">\(I_j\)</span>中样本对应的<span class="math notranslate nohighlight">\(h_i\)</span>一定都是<span class="math notranslate nohighlight">\(w_j\)</span>。此时，我们将损失统一为了关于叶子节点值<span class="math notranslate nohighlight">\(\textbf{w}=[w_1,...,w_T]\)</span>的二次函数，从而可以求得最优的输出值为</p>
+<div class="math notranslate nohighlight">
+\[
+w^*_j=-\frac{\sum_{i\in I_j}p_i}{\sum_{i\in I_j}q_i+\lambda}
+\]</div>
+<p>当前模型的近似损失（忽略常数项）即为</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+\tilde{L}^{(m)}(\textbf{w}^*)&amp;=\gamma T+\sum_{j=1}^T[-\frac{(\sum_{i\in I_j}p_i)^2}{\sum_{i\in I_j}q_i+\lambda}+\frac{1}{2}\frac{(\sum_{i\in I_j}p_i)^2}{\sum_{i\in I_j}q_i+\lambda}]\\
+&amp;= \gamma T-\frac{1}{2}\sum_{j=1}^T\frac{(\sum_{i\in I_j}p_i)^2}{\sum_{i\in I_j}q_i+\lambda}
+\end{aligned}
+\end{split}\]</div>
+<p>在决策树的一节中，我们曾以信息增益作为节点分裂行为操作的依据，信息增益本质上就是一种损失，增益越大即子节点的平均纯度越高，从而损失就越小。因此我们可以直接将上述的近似损失来作为分裂的依据，即选择使得损失减少得最多的特征及其分割点来进行节点分裂。由于对于某一个节点而言，分裂前后整棵树的损失变化只和该节点<span class="math notranslate nohighlight">\(I\)</span>及其左右子节点<span class="math notranslate nohighlight">\(I_L\)</span>与<span class="math notranslate nohighlight">\(L_R\)</span>的<span class="math notranslate nohighlight">\(w^*\)</span>值有关，此时分裂带来的近似损失减少量为</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+G&amp;= [\gamma T-\frac{1}{2}\frac{(\sum_{i\in I}p_i)^2}{\sum_{i\in I}q_i+\lambda}] - [\gamma (T+1)-\frac{1}{2}\frac{(\sum_{i\in I_L}p_i)^2}{\sum_{i\in I_L}q_i+\lambda}- \frac{1}{2}\frac{(\sum_{i\in I_R}p_i)^2}{\sum_{i\in I_R}q_i+\lambda}]\\
+&amp;= \frac{1}{2}[\frac{(\sum_{i\in I_L}p_i)^2}{\sum_{i\in I_L}q_i+\lambda}+\frac{(\sum_{i\in I_R}p_i)^2}{\sum_{i\in I_R}q_i+\lambda}-\frac{(\sum_{i\in I}p_i)^2}{\sum_{i\in I}q_i+\lambda}] -\gamma
+\end{aligned}
+\end{split}\]</div>
+<p>模型应当选择使得<span class="math notranslate nohighlight">\(G\)</span>达到最大的特征和分割点进行分裂。</p>
+<div class="admonition-xgboost admonition">
+<p class="admonition-title">XGBoost的特值处理</p>
+<p>XGBoost不支持分类变量处理，此处的特值是指稀疏值和缺失值，它们的处理方式类似：把0值或缺失值固定，先统一划分至左侧子节点，遍历非0值或非缺失值分割点进行不纯度计算，再统一划分至右侧子节点，又进行非0值或非缺失值分割点的遍历计算，从而得到当前节点当前特征的稀疏值或缺失值默认分配方向以及最佳分割点。特别的是，当训练时特征没有遇到缺失值但预测值出现时，它将会被分配给子节点样本数较多的一侧。</p>
+</div>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】在下列的三个损失函数<span class="math notranslate nohighlight">\(L(y,\hat{y})\)</span>中，请选出一个不应作为XGBoost损失的函数并说明理由。</p>
+<ul class="simple">
+<li><p>Root Absolute Error: <span class="math notranslate nohighlight">\(\sqrt{\vert y-\hat{y}\vert}\)</span></p></li>
+<li><p>Squared Log Error: <span class="math notranslate nohighlight">\(\frac{1}{2}[\log(\frac{y+1}{\hat{y}+1})]^2\)</span></p></li>
+<li><p>Pseudo Huber Error: <span class="math notranslate nohighlight">\(\delta^2(\sqrt{1+(\frac{y-\hat{y}}{\delta})^2}-1)\)</span></p></li>
+</ul>
+</div>
+<p>最后我们来重新回到单个样本的损失函数上：由于XGBoost使用的是二阶展开，为了保证函数在拐点处取到的是近似损失的最小值，需要满足二阶导数<span class="math notranslate nohighlight">\(q_i&gt;0\)</span>。当损失函数不满足此条件时，<span class="math notranslate nohighlight">\(h^*_i\)</span>反而会使得损失上升，即如下图中右侧的情况所示，而使用梯度下降法时并不会产生此问题。因此，我们应当选择在整个定义域上或在<span class="math notranslate nohighlight">\(y_i\)</span>临域上二阶导数恒正的损失函数，例如平方损失。</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/gbdt_pic3.png"><img alt="../_images/gbdt_pic3.png" src="../_images/gbdt_pic3.png" style="width: 500px;" /></a>
+</div>
+</div>
+<div class="section" id="lightgbm">
+<h2>4. LightGBM算法<a class="headerlink" href="#lightgbm" title="永久链接至标题">¶</a></h2>
+<p>LightGBM的GBDT原理与XGBoost的二阶近似方法完全一致，并且在此基础上提出了两个新算法，它们分别是单边梯度采样（GOSS）以及互斥特征绑定（EFB）。</p>
 <div class="section" id="id2">
-<h2>3. GBDT中的并行策略<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<h3>单边梯度采样<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h3>
+<p>在GBDT中，计算出的梯度值绝对值越小则说明样本预测地越是准确，而梯度绝对值越大则说明样本预测的偏离程度越大，因此我们可以考虑对梯度绝对值小的样本进行抽样。具体说，对样本梯度绝对值排序后，先选出Top <span class="math notranslate nohighlight">\(a \%\)</span>梯度绝对值对应的样本，再从剩下<span class="math notranslate nohighlight">\((1-a)\)</span>的样本中抽取<span class="math notranslate nohighlight">\(b \%\)</span>的样本（此处<span class="math notranslate nohighlight">\(b\%\)</span>是对于总样本的百分比）。此时，考虑基于均方损失的GBDT回归，记当前节点、左子节点、右子节点的梯度均值为<span class="math notranslate nohighlight">\(\bar{g},\bar{g}_L,\bar{g}_R\)</span>，设特征及其分割点为<span class="math notranslate nohighlight">\(F,d\)</span>，原先的信息增益为</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+Gain(F,d) &amp;= \frac{1}{N}[\sum_{i=1}^N(g_i-\bar{g})^2-\sum_{i=1}^{N_L}(g^{(L)}_i-\bar{g}_L)^2-\sum_{i=1}^{N_R}(g^{(R)}_i-\bar{g}_R)^2]\\
+&amp;= \frac{1}{N} [(\sum_{i=1}^Ng_i^2-N\bar{g}^2)-(\sum_{i=1}^{N_L}{g^{(L)}_i}^2-N{\bar{g}_L}^2)-(\sum_{i=1}^{N_R}{g^{(R)}_i}^2-N{\bar{g}_R}^2)] \\
+&amp;\propto \frac{1}{N}[\frac{(\sum_{i=1}^{N_L}{g^{(L)}_i})^2}{N_L}+\frac{(\sum_{i=1}^{N_R}{g^{(R)}_i})^2}{N_R}]
+\end{aligned}
+\end{split}\]</div>
+<p>记划分到左子节点对应的a部分样本为<span class="math notranslate nohighlight">\(A_L\)</span>、划分到左子节点对应的b部分抽样样本为<span class="math notranslate nohighlight">\(B_L\)</span>、划分到右子节点对应的a部分样本为<span class="math notranslate nohighlight">\(A_R\)</span>、划分到右子节点对应的b部分抽样样本为<span class="math notranslate nohighlight">\(B_R\)</span>。对于抽样部分的梯度和，我们使用<span class="math notranslate nohighlight">\(\frac{1-a}{b}\)</span>来进行补偿，例如原来从10个样本中划分6个为a部分，从剩下的4个中抽出两个为b部分，那么b部分的样本梯度和估计就是抽出两个样本的梯度和乘以<span class="math notranslate nohighlight">\(\frac{1-0.6}{0.2}\)</span>。因此，可以写出对应的<span class="math notranslate nohighlight">\(\tilde{Gain}(F,d)\)</span>为</p>
+<div class="math notranslate nohighlight">
+\[
+\tilde{Gain}(F,d) = \frac{1}{N}[\frac{(\sum_{i\in A_L}{g_i}+\frac{1-a}{b}\sum_{i\in B_L}{g_i})^2}{N_L}+\frac{(\sum_{i\in A_R}{g_i}+\frac{1-a}{b}\sum_{i\in B_R}{g_i})^2}{N_R}]
+\]</div>
 </div>
 <div class="section" id="id3">
-<h2>代码实践<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h2>
+<h3>互斥特征绑定<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h3>
+<p>实际的数据特征中可能有许多稀疏特征，即其非零值的数量远小于零值的数量，因此希望能够将这些特征进行合并来减少稀疏特征的数量，从而减少直方图构建的时间复杂度。我们将任意两个特征都不同时取非零值的特征集合称为一族互斥特征，数据集中的所有特征可被划分为这样的若干族互斥特征，例如下面就是一族互斥特征。</p>
+<center>
+<table class="colwidths-auto table">
+<thead>
+<tr class="row-odd"><th class="text-align:left head"><p></p></th>
+<th class="text-align:center head"><p>特征1</p></th>
+<th class="text-align:center head"><p>特征2</p></th>
+<th class="text-align:center head"><p>特征3</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-align:left"><p>样本1</p></td>
+<td class="text-align:center"><p>0</p></td>
+<td class="text-align:center"><p>1</p></td>
+<td class="text-align:center"><p>0</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p>样本2</p></td>
+<td class="text-align:center"><p>-1</p></td>
+<td class="text-align:center"><p>0</p></td>
+<td class="text-align:center"><p>0</p></td>
+</tr>
+<tr class="row-even"><td class="text-align:left"><p>样本3</p></td>
+<td class="text-align:center"><p>0</p></td>
+<td class="text-align:center"><p>0</p></td>
+<td class="text-align:center"><p>0</p></td>
+</tr>
+</tbody>
+</table>
+</center>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】请求出顶点最大度（即最多邻居数量）为<span class="math notranslate nohighlight">\(d\)</span>的无向图在最差和最好情况下需要多少种着色数，同时请构造对应的例子。</p>
+</div>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】在最差情况下LightGBM会生成几族互斥特征？这种情况的发生需要满足什么条件？</p>
+</div>
+<p>LightGBM提出了将互斥特征合并为单个特征的策略，从而让构建直方图的时间复杂度得以降低，因此需要找到最少的互斥绑定数量，即最少可以划分为几族。遗憾的是这个问题等价于图的着色问题，故它是NP-Hard的，目前并不存在多项式复杂度的解决方案，但我们可以通过近似方法来求解。为什么互斥特征绑定问题与图着色问题等价？如果我们把图的每一个顶点看做特征，将顶点之间是否存在边取决于两个特征是否存在同时为非零值的情况，若是则连接，那么此时没有边的顶点则代表他们之间满足互斥条件，将其涂上同种颜色作为同一族互斥特征，而寻找最少的绑定数量即是要寻找图的最少着色数。下图展示了<a class="reference external" href="https://en.wikipedia.org/wiki/Petersen_graph">Petersen图</a>最少需要三种着色数。</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/lgb_pic1.png"><img alt="../_images/lgb_pic1.png" src="../_images/lgb_pic1.png" style="width: 200px;" /></a>
+</div>
+<p>在实际操作中，由于严格互斥的特征数量可能还并不算多，但是几乎互斥的特征数量却很多，若存在一个样本使得两个特征同时为非零值则称它们存在一次冲突，所谓几乎互斥即一族特征之间的冲突总数不超过给定的最大冲突数<span class="math notranslate nohighlight">\(K\)</span>，此时即使两个顶点之间存在边的连接，只要新加入的顶点能够使得这族特征满足几乎互斥的条件，那么就仍然可进行合并（或着相同颜色），如果此时新顶点与任意一族特征都不满足几乎互斥，那么将自身作为新的一族互斥特征集合的第一个元素（或着新的颜色）。</p>
+<p>上述的讨论解决了特征绑定的问题，但我们只是将互斥特征放在了同一个集合里，还没有解决特征合并的问题。直观上说，我们需要用一个特征来表示多个特征时，要求新特征关于原特征族是可辨识的，即存在一一对应的关系。设需要合并的特征为<span class="math notranslate nohighlight">\(F_1,...,F_m\)</span>，它们对应的箱子分割点编号为<span class="math notranslate nohighlight">\(B_{i1},...,B_{ik_i}(i=1,...,m)\)</span>。由稀疏性，这里假设<span class="math notranslate nohighlight">\(B_{i1}\)</span>是0对应的箱子。对于样本<span class="math notranslate nohighlight">\(s\)</span>而言，如果其对应的特征都为0时，则投放至<span class="math notranslate nohighlight">\(\tilde{B}_{1}\)</span>号，若第<span class="math notranslate nohighlight">\(i\)</span>个特征非0，且其原特征对应的所在箱子为<span class="math notranslate nohighlight">\(B_{ij}\)</span>，则投放至<span class="math notranslate nohighlight">\(\tilde{B}_{k}\)</span>号，其中</p>
+<div class="math notranslate nohighlight">
+\[
+k = j+ \sum_{p=1}^{i-1} k_p
+\]</div>
+<p>对于上述的互斥特征绑定算法而言，我们确实能够对原数据集的特征进行互斥划分，也提取得到了新的直方图分割点，但考虑如下的情况：特征一和特征二是一族互斥特征，当遍历分割点位于特征一对应的非零区域时，此时右侧的点位对应所有的样本被划入右子节点，可此时划入右子节点的特征二非零值，由于互斥特性，本质上其特征一的值还是零，那么这种划分方法与不进行特征绑定单独考虑特征一相同位置的分割点，它们所计算出的信息增益值由于样本划分不同而会产生差异，这与论文中所描述的互斥特征绑定算法能够无损地提高性能不一致。如果有读者清楚其中缘由，欢迎对教程本段内容作出改进或补充说明，在此感谢。</p>
+</div>
 </div>
 <div class="section" id="id4">
-<h2>算法实现<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
-</div>
-<div class="section" id="id5">
-<h2>知识回顾<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h2>
+<h2>知识回顾<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
+<ol class="simple">
+<li><p>GBDT和梯度下降方法有什么联系？</p></li>
+<li><p>请叙述GBDT用于分类问题的算法流程。</p></li>
+<li><p>XGBoost和GBDT树有何异同？（可从目标损失、近似方法、分裂依据等方面考虑）</p></li>
+<li><p>请叙述LightGBM中GOSS和EFB的作用及算法流程。</p></li>
+</ol>
 </div>
 </div>
 
@@ -459,7 +621,7 @@ L(F_i) = - y_i\log \frac{e^{F_i}}{1+e^{F_i}} - (1-y_i)\log \frac{1}{1+e^{F_i}}
         <div class='prev-next-bottom'>
             
     <a class='left-prev' id="prev-link" href="03_ada.html" title="previous page">Part C: 自适应提升法</a>
-    <a class='right-next' id="next-link" href="05_xgb_lgb.html" title="next page">Part E: 梯度提升树（下）</a>
+    <a class='right-next' id="next-link" href="../02_em_sampling/index.html" title="next page">EM算法与抽样理论</a>
 
         </div>
         
