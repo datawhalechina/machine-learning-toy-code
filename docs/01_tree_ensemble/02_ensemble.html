@@ -306,7 +306,7 @@ Var(\hat{y})&amp;=Var(\frac{\sum_{i=1}^My^{(i)}}{M})\\
 <p>从上式的结果来看，当基模型之间的相关系数为1时方差不变，这相当于模型之间的输出完全一致，必然不可能带来方差的降低。bootstrap的放回抽样特性保证了模型两两之间很可能有一些样本不会同时包含，这使模型的相关系数得以降低，而集成的方差随着模型相关性的降低而减小，如果想要进一步减少模型之间的相关性，那么就需要对基学习器进行进一步的设计。</p>
 <div class="margin sidebar">
 <p class="sidebar-title"></p>
-<p>【练习】假设总体有<span class="math notranslate nohighlight">\(100\)</span>个样本，每轮利用bootstrap抽样从总体中抽出<span class="math notranslate nohighlight">\(10\)</span>个样本，请求出所有样本都被至少抽出过一次的期望轮数。</p>
+<p>【练习】假设总体有<span class="math notranslate nohighlight">\(100\)</span>个样本，每轮利用bootstrap抽样从总体中得到<span class="math notranslate nohighlight">\(10\)</span>个样本（即可能重复），请求出所有样本都被至少抽出过一次的期望轮数。（通过<a class="reference external" href="https://en.wikipedia.org/wiki/Coupon_collector%27s_problem">本文</a>介绍的方法，我们还能得到轮数方差的bound）</p>
 </div>
 <p>为了更具体地了解bootstrap造成的数据集差异，我们往往对两个量是非常关心的，它们分别是单个样本的入选概率和入选（非重复）样本的期望个数。我们首先计算第一个量：对于样本容量为<span class="math notranslate nohighlight">\(n\)</span>的原数据集，抽到某一个给定样本的概率是<span class="math notranslate nohighlight">\(\frac{1}{n}\)</span>，进行<span class="math notranslate nohighlight">\(n\)</span>次bootstrap采样但却没有选入该样本的概率为<span class="math notranslate nohighlight">\((1-\frac{1}{n})^n\)</span>，从而该样本入选数据集的概率为<span class="math notranslate nohighlight">\(1-(1-\frac{1}{n})^n\)</span>，当<span class="math notranslate nohighlight">\(n\rightarrow\infty\)</span>时的概率为<span class="math notranslate nohighlight">\(1-e^{-1}\)</span>。对于第二个量而言，记样本<span class="math notranslate nohighlight">\(i\)</span>在<span class="math notranslate nohighlight">\(n\)</span>次抽样中至少有一次入选这一事件为<span class="math notranslate nohighlight">\(A_i\)</span>，那么非重复样本的个数为<span class="math notranslate nohighlight">\(\sum_{i=1}^n\mathbb{1}_{\{A_i\}}\)</span>，从而期望个数为</p>
 <div class="math notranslate nohighlight">
