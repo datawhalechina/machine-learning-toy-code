@@ -263,6 +263,10 @@ y_i = f(\textbf{X}_i)+\epsilon_i,i\in\{1,2,...,n\}
 \]</div>
 <p>其中，假设噪声均值为<span class="math notranslate nohighlight">\(0\)</span>且方差为<span class="math notranslate nohighlight">\(\sigma^2\)</span>。此时，我们得到了一个完整的训练集<span class="math notranslate nohighlight">\(D=\{(\textbf{X}_1,y_1), (\textbf{X}_2,y_2),...,(\textbf{X}_n,y_n)\}\)</span>。对于新来的样本<span class="math notranslate nohighlight">\(\tilde{\textbf{X}}\sim p(\textbf{X})\)</span>，我们需要对其标签<span class="math notranslate nohighlight">\(y=f(\textbf{X}_i)+\epsilon_i\)</span>进行预测，假设当前处理的是回归问题，应学习一个模型<span class="math notranslate nohighlight">\(\hat{f}\)</span>使得平方损失<span class="math notranslate nohighlight">\((y-\hat{f}(\tilde{\textbf{X}}))^2\)</span>尽可能地小。</p>
 <p>值得注意的是，<span class="math notranslate nohighlight">\(\hat{f}\)</span>不仅是<span class="math notranslate nohighlight">\(\tilde{\textbf{X}}\)</span>的函数，由于它是从训练集上得到的，而训练集是从总体分布随机生成的有限分布，因此平方损失实际应记为为<span class="math notranslate nohighlight">\((y-\hat{f}_D(\tilde{\textbf{X}}))^2\)</span>。由于<span class="math notranslate nohighlight">\(D\)</span>是一个随机变量，故本质上优化的应当是<span class="math notranslate nohighlight">\(L=\mathbb{E}_D(y-\hat{f}_D(\tilde{\textbf{X}}))^2\)</span>，这表示我们希望在按照给定分布任意生成的数据集上训练出的模型都能够有较好的预测能力，即模型具有良好的泛化性。</p>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>左式第四个等号为何成立？</p>
+</div>
 <p>为了进一步研究<span class="math notranslate nohighlight">\(L\)</span>，我们把模型（基于不同数据集对新样本特征）的平均预测值信息<span class="math notranslate nohighlight">\(\mathbb{E}_D[\hat{f}_{D}(\tilde{\textbf{X}})]\)</span>添加到<span class="math notranslate nohighlight">\(L\)</span>中，此时存在如下分解：</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
@@ -275,6 +279,10 @@ L(\hat{f}) &amp;= \mathbb{E}_D(y-\hat{f}_D)^2\\
 \end{aligned}
 \end{split}\]</div>
 <p>上式中可见，预测数据产生的平均损失主要来自于三项。其中，第一项为数据真实值与模型平均预测值的偏差，偏差越小则代表模型的学习能力越强，能够较好地拟合数据，第二项为模型预测值的方差（我们要记住<span class="math notranslate nohighlight">\(\hat{f}\)</span>应视作随机变量<span class="math notranslate nohighlight">\(D\)</span>的函数，故<span class="math notranslate nohighlight">\(\hat{f}\)</span>是随机变量），方差越小则代表模型的抗干扰能力越强，不易因为数据的扰动而对预测结果造成大幅抖动，第三项为数据中的原始噪声，它是不可能通过优化模型来降解的。这种分解为我们设计模型提供了指导，即可以通过减小模型的偏差来降低测试数据的损失，也可以通过减少模型的预测方差来降低损失。</p>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>有人说<a class="reference external" href="https://en.wikipedia.org/wiki/Bias%E2%80%93variance_tradeoff">Bias-Variance Tradeoff</a>就是指“一个模型要么具有大的偏差，要么具有大的方差”，你认为这种说法对吗？你能否对“偏差-方差权衡”现象做出更准确的表述？</p>
+</div>
 <p>对于一个具体的学习问题，过于简单的学习器虽然抗干扰能力强，但由于不能充分拟合数据却会造成大的偏差，从而导致总的期望损失较高；类似地，过于复杂的学习器虽然其拟合能力很强，但由于学习了多余的局部信息，因此抗干扰能力较弱造成较大的方差，从而导致总的期望损失较高。上述联系由下图表达。</p>
 <div class="figure align-center">
 <a class="reference internal image-reference" href="../_images/ensem_pic1.png"><img alt="../_images/ensem_pic1.png" src="../_images/ensem_pic1.png" style="width: 400px;" /></a>
@@ -296,6 +304,10 @@ Var(\hat{y})&amp;=Var(\frac{\sum_{i=1}^My^{(i)}}{M})\\
 \end{aligned}
 \end{split}\]</div>
 <p>从上式的结果来看，当基模型之间的相关系数为1时方差不变，这相当于模型之间的输出完全一致，必然不可能带来方差的降低。bootstrap的放回抽样特性保证了模型两两之间很可能有一些样本不会同时包含，这使模型的相关系数得以降低，而集成的方差随着模型相关性的降低而减小，如果想要进一步减少模型之间的相关性，那么就需要对基学习器进行进一步的设计。</p>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】假设总体有100个样本，每轮利用bootstrap抽样从总体中抽出10个样本，请求出所有样本都被至少抽出过一次的期望轮数。</p>
+</div>
 <p>为了更具体地了解bootstrap造成的数据集差异，我们往往对两个量是非常关心的，它们分别是单个样本的入选概率和入选（非重复）样本的期望个数。我们首先计算第一个量：对于样本容量为<span class="math notranslate nohighlight">\(n\)</span>的原数据集，抽到某一个给定样本的概率是<span class="math notranslate nohighlight">\(\frac{1}{n}\)</span>，进行<span class="math notranslate nohighlight">\(n\)</span>次bootstrap采样但却没有选入该样本的概率为<span class="math notranslate nohighlight">\((1-\frac{1}{n})^n\)</span>，从而该样本入选数据集的概率为<span class="math notranslate nohighlight">\(1-(1-\frac{1}{n})^n\)</span>，当<span class="math notranslate nohighlight">\(n\rightarrow\infty\)</span>时的概率为<span class="math notranslate nohighlight">\(1-e^{-1}\)</span>。对于第二个量而言，记样本<span class="math notranslate nohighlight">\(i\)</span>在<span class="math notranslate nohighlight">\(n\)</span>次抽样中至少有一次入选这一事件为<span class="math notranslate nohighlight">\(A_i\)</span>，那么非重复样本的个数为<span class="math notranslate nohighlight">\(\sum_{i=1}^n\mathbb{1}_{\{A_i\}}\)</span>，从而期望个数为</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
@@ -312,6 +324,10 @@ Var(\hat{y})&amp;=Var(\frac{\sum_{i=1}^My^{(i)}}{M})\\
 <div class="section" id="stackingblending">
 <h2>3. stacking与blending<a class="headerlink" href="#stackingblending" title="永久链接至标题">¶</a></h2>
 <p>stacking本质上也属于并行集成方法，但其并不通过抽样来构造数据集进行基模型训练，而是采用<span class="math notranslate nohighlight">\(K\)</span>折交叉验证。假设数据集大小为<span class="math notranslate nohighlight">\(N\)</span>，测试集大小为<span class="math notranslate nohighlight">\(M\)</span>，我们先将数据集均匀地分为<span class="math notranslate nohighlight">\(K\)</span>份。对于第<span class="math notranslate nohighlight">\(m\)</span>个基模型，我们取<span class="math notranslate nohighlight">\(K\)</span>折数据集中的1折为验证集，在剩下的<span class="math notranslate nohighlight">\(K-1\)</span>折为训练集，这样依次取遍<span class="math notranslate nohighlight">\(K\)</span>份验证数据就可以分别训练得到<span class="math notranslate nohighlight">\(K\)</span>个模型以及<span class="math notranslate nohighlight">\(K\)</span>份验证集上的相应预测结果，这些预测结果恰好能够拼接起来作为基模型在训练集上的学习特征<span class="math notranslate nohighlight">\(F^{train}_{m}\)</span>。同时，我们还需要利用这<span class="math notranslate nohighlight">\(K\)</span>个模型对测试集进行预测，并将结果进行平均作为该基模型的输出<span class="math notranslate nohighlight">\(F^{test}_{m}\)</span>。对每个基模型进行上述操作后，我们就能得到对应的训练集特征<span class="math notranslate nohighlight">\(F^{train}_1,...,F^{train}_M\)</span>以及测试集特征<span class="math notranslate nohighlight">\(F^{test}_1,...,F^{test}_M\)</span>。此时，我们使用一个最终模型<span class="math notranslate nohighlight">\(f\)</span>，以<span class="math notranslate nohighlight">\(F^{train}_1,...,F^{train}_M\)</span>为特征，以训练集的样本标签为目标进行训练。在<span class="math notranslate nohighlight">\(f\)</span>拟合完成后，以<span class="math notranslate nohighlight">\(F^{test}_1,...,F^{test}_M\)</span>为模型输入，得到的输出结果作为整个集成模型的输出。</p>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】对于stacking和blending集成而言，若m个基模型使用k折交叉验证，此时分别需要进行几次训练和几次预测？</p>
+</div>
 <p>整个stacking的流程如下图所示，我们在3种基学习器使用4折交叉验证，因此图中的左侧部分需要12次训练，右侧的浅红色和深红色表示的是同一个最终模型，使用不同颜色是为了主要区分训练前和训练后的状态。这里需要注意的是，整个集成模型一共包含了25次预测过程，即每个基模型对各折数据的预测、每个基模型对测试集数据的预测以及最终模型的1次预测。</p>
 <div class="figure align-center">
 <a class="reference internal image-reference" href="../_images/ensem_pic2.png"><img alt="../_images/ensem_pic2.png" src="../_images/ensem_pic2.png" style="width: 600px;" /></a>
@@ -325,7 +341,9 @@ Var(\hat{y})&amp;=Var(\frac{\sum_{i=1}^My^{(i)}}{M})\\
 <p>随机森林是以决策树（常用CART树）为基学习器的bagging算法。当处理回归问题时，输出值为各学习器的均值；当处理分类问题时有两种策略，第一种是<a class="reference external" href="https://link.springer.com/content/pdf/10.1023/A:1010933404324.pdf">原始论文</a>中使用的投票策略，即每个学习器输出一个类别，返回最高预测频率的类别，第二种是sklearn中采用的概率聚合策略，即通过各个学习器输出的概率分布先计算样本属于某个类别的平均概率，在对平均的概率分布取<span class="math notranslate nohighlight">\(\arg\max\)</span>以输出最可能的类别。</p>
 <p>随机森林中的随机主要来自三个方面，其一为bootstrap抽样导致的训练集随机性，其二为每个节点随机选取特征子集进行不纯度计算的随机性，其三为当使用随机分割点选取时产生的随机性（此时的随机森林又被称为Extremely Randomized Trees）。</p>
 <p>随机森林中特征重要性的计算方式为：利用相对信息增益来度量单棵树上的各特征特征重要性（与决策树计算方式一致），再通过对所有树产出的重要性得分进行简单平均来作为最终的特征重要性。</p>
+<p>【练习】r2_score和均方误差的区别是什么？它具有什么优势？</p>
 <p>在训练时，一般而言我们总是需要对数据集进行训练集和验证集的划分，但随机森林由于每一个基学习器使用了重复抽样得到的数据集进行训练，因此总存在比例大约为<span class="math notranslate nohighlight">\(1-e^{-1}\)</span>的数据集没有参与训练，我们把这一部分数据称为out-of-bag样本，简称oob样本。此时，对每一个基学习器训练完毕后，我们都对oob样本进行预测，每个样本对应的oob_prediction_值为所有没有采样到该样本进行训练的基学习器预测结果均值，这一部分的逻辑参见<a class="reference external" href="https://github.com/scikit-learn/scikit-learn/blob/844b4be24d20fc42cc13b957374c718956a0db39/sklearn/ensemble/_forest.py#L498">此处</a>的源码实现。在得到所有样本的oob_prediction_后，对于回归问题，使用r2_score来计算对应的oob_score_，而对于分类问题，直接使用accuracy_score来计算oob_score_。</p>
+<p>【练习】假设使用闵氏距离来度量两个嵌入向量之间的距离，此时对叶子节点的编号顺序会对距离的度量结果有影响吗？</p>
 <p>最后，我们来介绍一种Totally Random Trees Embedding方法，它能够基于每个样本在各个决策树上的叶节点位置，得到一种基于森林的样本特征嵌入。具体地说，假设现在有4棵树且每棵树有4个叶子节点，我们依次对它们进行从0至15的编号，记样本<span class="math notranslate nohighlight">\(i\)</span>在4棵树叶子节点的位置编号为<span class="math notranslate nohighlight">\([0,7,8,14]\)</span>，样本<span class="math notranslate nohighlight">\(j\)</span>的编号为<span class="math notranslate nohighlight">\([1,7,9,13]\)</span>，此时这两个样本的嵌入向量即为<span class="math notranslate nohighlight">\([1,0,0,0,0,0,0,1,1,0,0,0,0,0,1,0]\)</span>和<span class="math notranslate nohighlight">\([0,1,0,0,0,0,0,1,0,1,0,0,0,1,0,0]\)</span>。假设样本<span class="math notranslate nohighlight">\(k\)</span>对应的编号为<span class="math notranslate nohighlight">\([0,6,8,14]\)</span>，那么其对应嵌入向量的距离应当和样本<span class="math notranslate nohighlight">\(i\)</span>较近，而离样本<span class="math notranslate nohighlight">\(j\)</span>较远，即两个样本在不同树上分配到相同的叶子结点次数越多，则越接近。因此，这个方法巧妙地利用树结构获得了样本的隐式特征。</p>
 </div>
 <div class="section" id="id4">
