@@ -77,7 +77,11 @@
 # L(\mathbf{p})=-\mathbf{p}^T\log \mathbf{p} + \lambda (\mathbb{1}^T\mathbf{p}-1)
 # $$
 # 
-# 求偏导数后可解得$\mathbf{p}^*=[\frac{1}{K},...,\frac{1}{K}]$，此时$\mathbb{E}_{Y}I(p)=\log K$。
+# 求偏导数后可解得$\mathbf{p}^*=[\frac{1}{K},...,\frac{1}{K}]^T$，此时$\mathbb{E}_{Y}I(p)=\log K$。
+# 
+# ```{admonition} 补充材料
+# 有关向量求导的内容可参考[这个](https://en.wikipedia.org/wiki/Matrix_calculus)wiki页面。
+# ```
 # 
 # 对于离散随机变量$X$，由于$p(Y)\in [0,1]$，故$-\log_2p(Y)\geq 0$，从而$\mathbb{E}_{Y}I(p)\geq 0$。注意到对于$\forall k\in \{1,...,K\}$，当$p_k=1$，即$p_{k'}=0(k'\in \{1,...,K\}/k)$时，$H(X)=0$。因此，离散信息熵的最小值为0且在单点分布时取到。由于$\mathbf{p}^*$是极值问题的唯一解，因此离散熵的最大值为$\log K$且在离散均匀分布时取到。
 # 
