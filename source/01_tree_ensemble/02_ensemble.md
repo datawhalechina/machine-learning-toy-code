@@ -96,7 +96,7 @@ $$
 \end{aligned}
 $$
 
-若$n\rightarrow\infty$时，入选样本占原数据集的期望比例为$\displaystyle \lim_{n\to \infty}\frac{\mathbb{E}\sum_{i=1}^n\mathbb{1}_{\{A_i\}}}{n}=\lim_{n\to\infty} [1-(1-\frac{1}{n})^n]$，即$1-\frac{1}{e}$。
+若$n\rightarrow\infty$时，入选样本占原数据集的期望比例为$\displaystyle \lim_{n\to \infty}\frac{\mathbb{E}\sum_{i=1}^n\mathbb{1}_{\{A_i\}}}{n}=\lim_{n\to\infty} [1-(1-\frac{1}{n})^n]$，即$1-e^{-1}$。
 
 boosting是一种串行集成方法，假设第$i$个基模型的输出是$\hat{f}^{(i)}(\mathbf{X})$，则总体模型的输出为$\sum_{i=1}^M\alpha_i\hat{f}^{(i)}(\tilde{X})$。boosting算法在拟合第$T$个学习器时，已经获得了前$T-1$个学习器的集成输出$\sum_{i=1}^{T-1}\alpha_i\hat{f}^{(i)}(\mathbf{X})$，对于损失函数$L(y,\hat{y})$，当前轮需要优化的目标即为使得$L(y,\alpha_{T}\hat{f}^{(T)}(\mathbf{X})+\sum_{i=1}^{T-1}\alpha_i\hat{f}^{(i)}(\mathbf{X}))$最小化。需要强调的是，当前轮所有需要优化的参数一般而言都会蕴藏在$\alpha_{T}\hat{f}^{(T)}$这一项中，不同的模型会对$\alpha_{T}\hat{f}^{(T)}$提出的不同假设。此外，由于优化损失在经验分布与总体分布相差不多的时候等价于优化了模型的偏差，因此多个模型集成后相较于单个模型的预测能够使得偏差降低。我们将在后面的章节将进行具体模型的学习。
 
