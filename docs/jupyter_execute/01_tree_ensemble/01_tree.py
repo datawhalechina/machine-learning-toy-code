@@ -51,7 +51,7 @@
 # L(\mathbf{p})=-\mathbf{p}^T\log \mathbf{p} + \lambda (\mathbb{1}^T\mathbf{p}-1)
 # $$
 # 
-# 求偏导数后可解得$\mathbf{p}^*=[\frac{1}{K},...,\frac{1}{K}]^T$，此时$\mathbb{E}_{Y}I(p)=\log K$。
+# 求偏导数后可解得$\mathbf{p}^*=[\frac{1}{K},...,\frac{1}{K}]^T$，此时$H(Y)=-\mathbb{E}_{Y}\log_2p(Y)=\log K$。
 # 
 # ```{admonition} 补充材料
 # 有关向量求导的内容可参考[这个wiki页面](https://en.wikipedia.org/wiki/Matrix_calculus)中的描述。
