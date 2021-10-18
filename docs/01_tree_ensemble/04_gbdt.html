@@ -300,7 +300,7 @@ L(w_i)=\sqrt{\vert r_i-w_i\vert }
 \[\begin{split}
 \begin{aligned}
 w^*_i &amp;= 0 - \left.\frac{\partial L}{\partial w} \right|_{w=0}\\
-&amp;= -\frac{1}{2\sqrt{r_i}}sign(r_i)
+&amp;= -\frac{1}{2\sqrt{\vert r_i\vert}}sign(r_i)
 \end{aligned}
 \end{split}\]</div>
 <p>为了缓解模型的过拟合现象，我们需要引入学习率参数<span class="math notranslate nohighlight">\(\eta\)</span>来控制每轮的学习速度，即获得了由<span class="math notranslate nohighlight">\(\textbf{w}^*\)</span>拟合的第m棵树<span class="math notranslate nohighlight">\(h^*\)</span>后，当前轮的输出结果为</p>

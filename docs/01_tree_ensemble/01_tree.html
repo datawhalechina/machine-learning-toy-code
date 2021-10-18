@@ -281,7 +281,7 @@ L(\mathbf{p})=-\mathbf{p}^T\log \mathbf{p} + \lambda (\mathbb{1}^T\mathbf{p}-1)
 <p class="admonition-title">补充材料</p>
 <p>有关向量求导的内容可参考<a class="reference external" href="https://en.wikipedia.org/wiki/Matrix_calculus">这个wiki页面</a>中的描述。</p>
 </div>
-<p>对于离散随机变量<span class="math notranslate nohighlight">\(X\)</span>，由于<span class="math notranslate nohighlight">\(p(Y)\in [0,1]\)</span>，故<span class="math notranslate nohighlight">\(-\log_2p(Y)\geq 0\)</span>，从而<span class="math notranslate nohighlight">\(\mathbb{E}_{Y}[-\log_2p(Y)]\geq 0\)</span>。注意到对于<span class="math notranslate nohighlight">\(\forall k\in \{1,...,K\}\)</span>，当<span class="math notranslate nohighlight">\(p_k=1\)</span>，即<span class="math notranslate nohighlight">\(p_{k'}=0(k'\in \{1,...,K\}/k)\)</span>时，<span class="math notranslate nohighlight">\(H(X)=0\)</span>。因此，离散信息熵的最小值为0且在单点分布时取到。由于<span class="math notranslate nohighlight">\(\mathbf{p}^*\)</span>是极值问题的唯一解，因此离散熵的最大值为<span class="math notranslate nohighlight">\(\log K\)</span>且在离散均匀分布时取到。</p>
+<p>对于离散随机变量<span class="math notranslate nohighlight">\(X\)</span>，由于<span class="math notranslate nohighlight">\(p(Y)\in [0,1]\)</span>，故<span class="math notranslate nohighlight">\(-\log_2p(Y)\geq 0\)</span>，从而<span class="math notranslate nohighlight">\(\mathbb{E}_{Y}[-\log_2p(Y)]\geq 0\)</span>。注意到对于<span class="math notranslate nohighlight">\(\forall k\in \{1,...,K\}\)</span>，当<span class="math notranslate nohighlight">\(p_k=1\)</span>，即<span class="math notranslate nohighlight">\(p_{k'}=0(k'\in \{1,...,K\}/k)\)</span>时，<span class="math notranslate nohighlight">\(H(Y)=0\)</span>。因此，离散信息熵的最小值为0且在单点分布时取到。由于<span class="math notranslate nohighlight">\(\mathbf{p}^*\)</span>是极值问题的唯一解，因此离散熵的最大值为<span class="math notranslate nohighlight">\(\log K\)</span>且在离散均匀分布时取到。</p>
 <p>在决策树的分裂过程中，我们不但需要考察本节点的不确定性或纯度，而且还要考察子节点的平均不确定性或平均纯度来决定是否进行分裂。子节点的产生来源于决策树分支的条件，因此我们不但要研究随机变量的信息熵，还要研究在给定条件下随机变量的平均信息熵或条件熵（Conditional Entropy）。从名字上看，条件熵就是条件分布的不确定性，那么自然可以如下定义条件熵<span class="math notranslate nohighlight">\(H(Y\vert X)\)</span>为</p>
 <div class="math notranslate nohighlight">
 \[
@@ -401,7 +401,7 @@ G^{MSE}(Y,X)=\frac{1}{N}\sum_{i=1}^{N}(y^{(D)}_i-\bar{y}^{(D)})^2-\frac{N_L}{N}\
 \]</div>
 <div class="math notranslate nohighlight">
 \[
-G^{MAE}(Y,X)=\frac{1}{N}\sum_{i=1}^{N}\vert y^{(D)}_i-\tilde{y}^{(D)}\vert-\frac{N_L}{N}\frac{1}{N_L}\sum_{i=1}^{N_L}\vert y^{(L)}_i-\tilde{y}^{(L)}\vert-\frac{N_R}{N}\sum_{i=1}^{N_R}\frac{1}{N_R}\vert y^{(R)}_i-\tilde{y}^{(R)}\vert
+G^{MAE}(Y,X)=\frac{1}{N}\sum_{i=1}^{N}\vert y^{(D)}_i-\tilde{y}^{(D)}\vert-\frac{N_L}{N}\frac{1}{N_L}\sum_{i=1}^{N_L}\vert y^{(L)}_i-\tilde{y}^{(L)}\vert-\frac{N_R}{N}\frac{1}{N_R}\sum_{i=1}^{N_R}\vert y^{(R)}_i-\tilde{y}^{(R)}\vert
 \]</div>
 <p>当处理分类问题时，虽然ID3或C4.5定义的熵仍然可以使用，但是由于对数函数<span class="math notranslate nohighlight">\(\log\)</span>的计算代价较大，CART将熵中的<span class="math notranslate nohighlight">\(\log\)</span>在<span class="math notranslate nohighlight">\(p=1\)</span>处利用一阶泰勒展开，基尼系数定义为熵的线性近似，即由于</p>
 <div class="math notranslate nohighlight">
@@ -425,7 +425,7 @@ H(Y)=\mathbb{E}_YI(p)=\mathbb{E}_Y[-\log_2p(Y)]\approx\mathbb{E}_Y[1-p(Y)]
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{aligned}
-{\rm Gini}(Y\vert X)&amp;=\mathbb{E}_X[\mathbb{E}_{Y\vert X}1-p(Y\vert X)]\\
+{\rm Gini}(Y\vert X)&amp;=\mathbb{E}_X[\mathbb{E}_{Y\vert X}[1-p(Y\vert X)]]\\
 &amp;=\sum_{m=1}^M \tilde{p}(x_m)\sum_{k=1}^K[\tilde{p}(y_k\vert x_m)(1-\tilde{p}(y_k\vert x_m))]\\
 &amp;=\sum_{m=1}^M \tilde{p}(x_m)[1-\sum_{k=1}^K\tilde{p}^2(y_k\vert x_m)]
 \end{aligned}

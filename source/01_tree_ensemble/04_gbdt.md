@@ -69,7 +69,7 @@ $$
 $$
 \begin{aligned}
 w^*_i &= 0 - \left.\frac{\partial L}{\partial w} \right|_{w=0}\\
-&= -\frac{1}{2\sqrt{r_i}}sign(r_i)
+&= -\frac{1}{2\sqrt{\vert r_i\vert}}sign(r_i)
 \end{aligned}
 $$
 
