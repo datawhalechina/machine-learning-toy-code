@@ -250,7 +250,7 @@ H(p_1,...,p_n)=-C\sum_{i=1}^np_i\log p_i
 \]</div>
 <p>其中，信息熵条件如下：</p>
 <ul class="simple">
-<li><p><span class="math notranslate nohighlight">\(H\)</span>关于<span class="math notranslate nohighlight">\(p_i\)</span>是连续函数。</p></li>
+<li><p><span class="math notranslate nohighlight">\(H\)</span>是关于<span class="math notranslate nohighlight">\(p_i\)</span>的连续函数。</p></li>
 <li><p>若<span class="math notranslate nohighlight">\(p_1=...=p_n\)</span>，则<span class="math notranslate nohighlight">\(H\)</span>关于<span class="math notranslate nohighlight">\(n\)</span>单调递增。</p></li>
 <li><p>若将某一个<span class="math notranslate nohighlight">\(p_i\)</span>拆分为<span class="math notranslate nohighlight">\(p_{i1}\)</span>和<span class="math notranslate nohighlight">\(p_{i2}\)</span>，即<span class="math notranslate nohighlight">\(p_{i1}+p_{i2}=p_i\)</span>，则</p></li>
 </ul>
@@ -261,7 +261,7 @@ H(p_1,...,p_{i-1},p_{i+1},...,p_n,p_{i1},p_{i2})=H(p_1,...,p_n)+p_iH(\frac{p_{i1
 </div>
 <p>从构造和计算的角度而言，条件一是容易满足的。对于条件二而言，假设原来箱子里分别有10个球和100个球，加入每次摸到的球都是等概率抽出的，那么100个球的箱子产生的不确定性必然是要大于10个球的箱子产生的不确定性，即<span class="math notranslate nohighlight">\(H\)</span>在等概率条件下关于<span class="math notranslate nohighlight">\(n\)</span>递增。</p>
 <p>条件三看上去比较复杂，但其意义是容易理解的，即<span class="math notranslate nohighlight">\(n\)</span>个事件拆分为<span class="math notranslate nohighlight">\(n+1\)</span>个事件时的不确定性增加了，并且增加的不确定性与拆分时的比例和拆分事件的概率有关。举例来说：将<span class="math notranslate nohighlight">\(\textbf{p}=[0.9,0.1]\)</span>分别拆分为<span class="math notranslate nohighlight">\(\textbf{p}_1=[0.45,0.45,0.1]\)</span>和<span class="math notranslate nohighlight">\(\textbf{p}_2=[0.9,0.05,0.05]\)</span>，那么显然<span class="math notranslate nohighlight">\(\textbf{p}_1\)</span>增加的不确定性远超过<span class="math notranslate nohighlight">\(\textbf{p}_2\)</span>；同时，将<span class="math notranslate nohighlight">\(\textbf{p}=[0.9,0.1]\)</span>分别拆分为<span class="math notranslate nohighlight">\(\textbf{p}_3=[0.8,0.1,0.1]\)</span>，那么显然<span class="math notranslate nohighlight">\(\textbf{p}_1\)</span>增加的不确定性也远超过<span class="math notranslate nohighlight">\(\textbf{p}_3\)</span>。</p>
-<p>由于指标<span class="math notranslate nohighlight">\(H(\textbf{p})\)</span>中的自变量<span class="math notranslate nohighlight">\(\textbf{p}\)</span>是对于某个随机变量<span class="math notranslate nohighlight">\(Y\)</span>分布的描述，因此不妨将其记为信息熵<span class="math notranslate nohighlight">\(H(Y)\)</span>来反应<span class="math notranslate nohighlight">\(Y\)</span>的不确定性。对于定义在有限状态集合<span class="math notranslate nohighlight">\(\{y_1,...,y_K\}\)</span>上的离散变量而言，对应信息熵的最大值在离散均匀分布时取到，最小值在单点分布时取到。此时，离散信息熵为</p>
+<p>由于指标<span class="math notranslate nohighlight">\(H(\textbf{p})\)</span>中的自变量<span class="math notranslate nohighlight">\(\textbf{p}\)</span>是对于某个随机变量<span class="math notranslate nohighlight">\(Y\)</span>分布的描述，因此不妨将其记为信息熵<span class="math notranslate nohighlight">\(H(Y)\)</span>来反映<span class="math notranslate nohighlight">\(Y\)</span>的不确定性。对于定义在有限状态集合<span class="math notranslate nohighlight">\(\{y_1,...,y_K\}\)</span>上的离散变量而言，对应信息熵的最大值在离散均匀分布时取到，最小值在单点分布时取到。此时，离散信息熵为</p>
 <div class="math notranslate nohighlight">
 \[
 H(Y)=-\sum_{k=1}^K p(y_k)\log_2p(y_k)
@@ -319,7 +319,7 @@ G(Y,X)&amp;=\mathbb{E}_{Y}[-\log_2p(Y)]-\mathbb{E}_{X}[\mathbb{E}_{Y\vert X}[-\l
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{aligned}
-G(X,Y)&amp;\geq -\log_2 [\sum_{k=1}^K\sum_{m=1}^M p(y_k,x_m)\frac{p(y_k)p(x_m)}{p(y_k, x_m)}]\\
+G(Y,X)&amp;\geq -\log_2 [\sum_{k=1}^K\sum_{m=1}^M p(y_k,x_m)\frac{p(y_k)p(x_m)}{p(y_k, x_m)}]\\
 &amp;= -\log_2 [\sum_{k=1}^K\sum_{m=1}^Mp(y_k,x_m)] = 0
 \end{aligned}
 \end{split}\]</div>
@@ -446,7 +446,7 @@ G(Y,X)={\rm Gini}(Y)-{\rm Gini}(Y\vert X)
 <p class="sidebar-title"></p>
 <p>【练习】为什么对没有重复特征值的数据，决策树能够做到损失为0？</p>
 </div>
-<p>决策树具有很强的拟合能力，对于任何一个没有特征重复值的数据集，决策树一定能够在训练集上做到分类错误率或均方回归损失为0，因此我们应当通过一些手段来限制树的生长，这些方法被称为决策树树的剪枝方法。其中，预剪枝是指树在判断节点是否分裂的时候就预先通过一些规则来阻止其分裂，后剪枝是指在树的节点已经全部生长完成后，通过一些规则来摘除一些子树。</p>
+<p>决策树具有很强的拟合能力，对于任何一个没有特征重复值的数据集，决策树一定能够在训练集上做到分类错误率或均方回归损失为0，因此我们应当通过一些手段来限制树的生长，这些方法被称为决策树的剪枝方法。其中，预剪枝是指树在判断节点是否分裂的时候就预先通过一些规则来阻止其分裂，后剪枝是指在树的节点已经全部生长完成后，通过一些规则来摘除一些子树。</p>
 <div class="margin sidebar">
 <p class="sidebar-title"></p>
 <p>【练习】如何理解min_samples_leaf参数能够控制回归树输出值的平滑程度？</p>
