@@ -25,7 +25,7 @@ $$
 y_i = f(\textbf{X}_i)+\epsilon_i,i\in\{1,2,...,n\}
 $$
 
-其中，假设噪声均值为$0$且方差为$\sigma^2$。此时，我们得到了一个完整的训练集$D=\{(\textbf{X}_1,y_1), (\textbf{X}_2,y_2),...,(\textbf{X}_n,y_n)\}$。对于新来的样本$\tilde{\textbf{X}}\sim p(\textbf{X})$，我们需要对其标签$y=f(\textbf{X}_i)+\epsilon_i$进行预测，假设当前处理的是回归问题，应学习一个模型$\hat{f}$使得平方损失$(y-\hat{f}(\tilde{\textbf{X}}))^2$尽可能地小。
+其中，假设噪声均值为$0$且方差为$\sigma^2$。此时，我们得到了一个完整的训练集$D=\{(\textbf{X}_1,y_1), (\textbf{X}_2,y_2),...,(\textbf{X}_n,y_n)\}$。对于新来的样本$\tilde{\textbf{X}}\sim p(\textbf{X})$，我们需要对其标签$y=f(\tilde{\textbf{X}}_i)+\epsilon_i$进行预测，假设当前处理的是回归问题，应学习一个模型$\hat{f}$使得平方损失$(y-\hat{f}(\tilde{\textbf{X}}))^2$尽可能地小。
 
 值得注意的是，$\hat{f}$不仅是$\tilde{\textbf{X}}$的函数，由于它是从训练集上得到的，而训练集是从总体分布随机生成的有限分布，因此平方损失实际应记为为$(y-\hat{f}_D(\tilde{\textbf{X}}))^2$。由于$D$是一个随机变量，故本质上优化的应当是$L=\mathbb{E}_D(y-\hat{f}_D(\tilde{\textbf{X}}))^2$，这表示我们希望在按照给定分布任意生成的数据集上训练出的模型都能够有较好的预测能力，即模型具有良好的泛化性。
 
@@ -98,7 +98,7 @@ $$
 
 若$n\rightarrow\infty$时，入选样本占原数据集的期望比例为$\displaystyle \lim_{n\to \infty}\frac{\mathbb{E}\sum_{i=1}^n\mathbb{1}_{\{A_i\}}}{n}=\lim_{n\to\infty} [1-(1-\frac{1}{n})^n]$，即$1-e^{-1}$。
 
-boosting是一种串行集成方法，假设第$i$个基模型的输出是$\hat{f}^{(i)}(\mathbf{X})$，则总体模型的输出为$\sum_{i=1}^M\alpha_i\hat{f}^{(i)}(\tilde{X})$。boosting算法在拟合第$T$个学习器时，已经获得了前$T-1$个学习器的集成输出$\sum_{i=1}^{T-1}\alpha_i\hat{f}^{(i)}(\mathbf{X})$，对于损失函数$L(y,\hat{y})$，当前轮需要优化的目标即为使得$L(y,\alpha_{T}\hat{f}^{(T)}(\mathbf{X})+\sum_{i=1}^{T-1}\alpha_i\hat{f}^{(i)}(\mathbf{X}))$最小化。需要强调的是，当前轮所有需要优化的参数一般而言都会蕴藏在$\alpha_{T}\hat{f}^{(T)}$这一项中，不同的模型会对$\alpha_{T}\hat{f}^{(T)}$提出的不同假设。此外，由于优化损失在经验分布与总体分布相差不多的时候等价于优化了模型的偏差，因此多个模型集成后相较于单个模型的预测能够使得偏差降低。我们将在后面的章节将进行具体模型的学习。
+boosting是一种串行集成方法，假设第$i$个基模型的输出是$\hat{f}^{(i)}(\mathbf{X})$，则总体模型的输出为$\sum_{i=1}^M\alpha_i\hat{f}^{(i)}(\mathbf{X})$。boosting算法在拟合第$T$个学习器时，已经获得了前$T-1$个学习器的集成输出$\sum_{i=1}^{T-1}\alpha_i\hat{f}^{(i)}(\mathbf{X})$，对于损失函数$L(y,\hat{y})$，当前轮需要优化的目标即为使得$L(y,\alpha_{T}\hat{f}^{(T)}(\mathbf{X})+\sum_{i=1}^{T-1}\alpha_i\hat{f}^{(i)}(\mathbf{X}))$最小化。需要强调的是，当前轮所有需要优化的参数一般而言都会蕴藏在$\alpha_{T}\hat{f}^{(T)}$这一项中，不同的模型会对$\alpha_{T}\hat{f}^{(T)}$提出的不同假设。此外，由于优化损失在经验分布与总体分布相差不多的时候等价于优化了模型的偏差，因此多个模型集成后相较于单个模型的预测能够使得偏差降低。我们将在后面的章节将进行具体模型的学习。
 
 ## 3. stacking与blending
 
