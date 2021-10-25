@@ -9,13 +9,13 @@
 # 
 # ## 2. 分类损失
 # 
-# 对于$K$分类问题而言，当样本标签$\mathbf{y}=[y_1,...,y_K]^T$的类别$c$为第$k$类时，记
+# 对于$K$分类问题而言，当样本标签$\mathbf{y}=[y_1,...,y_K]^T$的类别$c(\mathbf{y})$为第$k$类（$k=1,...,K$）时，标签$\mathbf{y}$的第$i$个（$i=1,...,K$）元素$y_i$满足
 # 
 # $$
-# y_k=\left\{
+# y_i=\left\{
 # \begin{aligned}
-# &1,\quad &{\rm if}\ c=k\\
-# &-\frac{1}{k-1},\quad &{\rm if}\ c\neq k
+# &1,\quad &{\rm if}\ c(\mathbf{y})=k\\
+# &-\frac{1}{K-1},\quad &{\rm if}\ c(\mathbf{y})\neq k
 # \end{aligned}
 # \right.
 # $$

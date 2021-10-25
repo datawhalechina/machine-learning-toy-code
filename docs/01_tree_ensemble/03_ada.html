@@ -247,13 +247,13 @@
 </div>
 <div class="section" id="id1">
 <h2>2. 分类损失<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
-<p>对于<span class="math notranslate nohighlight">\(K\)</span>分类问题而言，当样本标签<span class="math notranslate nohighlight">\(\mathbf{y}=[y_1,...,y_K]^T\)</span>的类别<span class="math notranslate nohighlight">\(c\)</span>为第<span class="math notranslate nohighlight">\(k\)</span>类时，记</p>
+<p>对于<span class="math notranslate nohighlight">\(K\)</span>分类问题而言，当样本标签<span class="math notranslate nohighlight">\(\mathbf{y}=[y_1,...,y_K]^T\)</span>的类别<span class="math notranslate nohighlight">\(c(\mathbf{y})\)</span>为第<span class="math notranslate nohighlight">\(k\)</span>类（<span class="math notranslate nohighlight">\(k=1,...,K\)</span>）时，标签<span class="math notranslate nohighlight">\(\mathbf{y}\)</span>的第<span class="math notranslate nohighlight">\(i\)</span>个（<span class="math notranslate nohighlight">\(i=1,...,K\)</span>）元素<span class="math notranslate nohighlight">\(y_i\)</span>满足</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
-y_k=\left\{
+y_i=\left\{
 \begin{aligned}
-&amp;1,\quad &amp;{\rm if}\ c=k\\
-&amp;-\frac{1}{k-1},\quad &amp;{\rm if}\ c\neq k
+&amp;1,\quad &amp;{\rm if}\ c(\mathbf{y})=k\\
+&amp;-\frac{1}{K-1},\quad &amp;{\rm if}\ c(\mathbf{y})\neq k
 \end{aligned}
 \right.
 \end{split}\]</div>
