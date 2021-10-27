@@ -20,8 +20,8 @@ Adaboost的全称是Adaptive Boosting，其含义为自适应提升算法。其�
 $$
 y_i=\left\{
 \begin{aligned}
-&1,\quad &{\rm if}\ S(\mathbf{y})=k\\
-&-\frac{1}{K-1},\quad &{\rm if}\ S(\mathbf{y})\neq k
+&1,\quad &{\rm if}\ i=k\\
+&-\frac{1}{K-1},\quad &{\rm if}\ i\neq k
 \end{aligned}
 \right.
 $$
