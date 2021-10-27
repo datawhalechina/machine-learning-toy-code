@@ -361,7 +361,7 @@ err^{(m)}=\sum_{i=1}^n\frac{w_i}{\sum_{i=1}^nw_i}\mathbb{I}_{\{i\notin T\}}
 <p>此时，<span class="math notranslate nohighlight">\(w_i\)</span>每轮会被更新为</p>
 <div class="math notranslate nohighlight">
 \[
-\tilde{w}_i = w_i\cdot\exp[\frac{1-K}{K}\alpha^{*(m)}]\exp(\alpha^{*(m)}\mathbb{1}_{\{i\notin T\}})
+w_i\cdot\exp[\frac{1-K}{K}\alpha^{*(m)}]\exp(\alpha^{*(m)}\mathbb{1}_{\{i\notin T\}})
 \]</div>
 <div class="margin sidebar">
 <p class="sidebar-title"></p>
@@ -447,7 +447,7 @@ h^{*(m)}_{k'}=(K-1)[\log P_w(S(\mathbf{y})=k'\vert \mathbf{x})-\frac{1}{K}\sum_{
 e_{i}=\frac{\vert y_i-G^*(\mathbf{x}_i)\vert}{\max_i \vert y_i-G^*(\mathbf{x}_i)\vert}
 \]</div>
 <p>设样本的加权相对误差率为<span class="math notranslate nohighlight">\(E^{(m)}=\sum_{i=1}^n w_ie_i\)</span>，则相对误差率与正确率的比值为<span class="math notranslate nohighlight">\(\beta^{(m)}=\frac{E^{(m)}}{1-E^{(m)}}\)</span>，即预测器权重<span class="math notranslate nohighlight">\(\alpha^{(m)}=\log \frac{1}{\beta^{(m)}}\)</span>。</p>
-<p>更新权重<span class="math notranslate nohighlight">\(w_i\)</span>为<span class="math notranslate nohighlight">\(w_{i}[\alpha^{(m)}]^{1-e_{i}}\)</span>，权重在归一化后进入下一轮训练，由此可如下写出训练算法：</p>
+<p>更新权重<span class="math notranslate nohighlight">\(w_i\)</span>为<span class="math notranslate nohighlight">\(w_{i}[\beta^{(m)}]^{1-e_{i}}\)</span>，权重在归一化后进入下一轮训练，由此可如下写出训练算法：</p>
 <div class="figure align-center">
 <a class="reference internal image-reference" href="../_images/ada_algo4.png"><img alt="../_images/ada_algo4.png" src="../_images/ada_algo4.png" style="width: 380px;" /></a>
 </div>

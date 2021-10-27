@@ -149,7 +149,7 @@ $$
 此时，$w_i$每轮会被更新为
 
 $$
-\tilde{w}_i = w_i\cdot\exp[\frac{1-K}{K}\alpha^{*(m)}]\exp(\alpha^{*(m)}\mathbb{1}_{\{i\notin T\}})
+w_i\cdot\exp[\frac{1-K}{K}\alpha^{*(m)}]\exp(\alpha^{*(m)}\mathbb{1}_{\{i\notin T\}})
 $$
 
 ````{margin}
@@ -258,7 +258,7 @@ $$
 
 设样本的加权相对误差率为$E^{(m)}=\sum_{i=1}^n w_ie_i$，则相对误差率与正确率的比值为$\beta^{(m)}=\frac{E^{(m)}}{1-E^{(m)}}$，即预测器权重$\alpha^{(m)}=\log \frac{1}{\beta^{(m)}}$。
 
-更新权重$w_i$为$w_{i}[\alpha^{(m)}]^{1-e_{i}}$，权重在归一化后进入下一轮训练，由此可如下写出训练算法：
+更新权重$w_i$为$w_{i}[\beta^{(m)}]^{1-e_{i}}$，权重在归一化后进入下一轮训练，由此可如下写出训练算法：
 
 ```{figure} ../_static/ada_algo4.png
 ---

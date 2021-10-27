@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99999 (TeX Live 2018/W32TeX) (preloaded format=xelatex 2020.9.11)  8 AUG 2021 01:46
+This is XeTeX, Version 3.14159265-2.6-0.99999 (TeX Live 2018/W32TeX) (preloaded format=xelatex 2020.9.11)  27 OCT 2021 19:57
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -2128,18 +2128,18 @@ Overfull \hbox (11.07085pt too wide) detected at line 262
 \tf@snm=\write10
 \openout10 = `ensemble_1.snm'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 417.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 417.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 419.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 419.
  (./ensemble_1.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 417.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 417.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 419.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 419.
 Package rerunfilecheck Info: File `ensemble_1.out' has not changed.
 (rerunfilecheck)             Checksum: ED860F506C35233CAF1D36EF373DABDF.
  ) 
 Here is how much of TeX's memory you used:
  38878 strings out of 492970
  807429 string characters out of 6137298
- 946673 words of memory out of 5000000
+ 946674 words of memory out of 5000000
  42210 multiletter control sequences out of 15000+600000
  546213 words of font info for 111 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191

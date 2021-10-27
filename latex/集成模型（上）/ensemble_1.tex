@@ -213,7 +213,7 @@ $\alpha^{*(m)}\leftarrow\log\frac{1-err^{(m)}}{err^{(m)}}+\log(K-1)$
 \For{$i\leftarrow 1$ \KwTo $n$}{
 $\mathbf{b}^{*(m)}(\mathbf{x}_i)\leftarrow G^*(\mathbf{x}_i)$
 
-$\tilde{w}_i \leftarrow w_i\cdot\exp(\alpha^{*(m)}\mathbbm{1}_{\{i\notin T\}})$}
+$w_i \leftarrow w_i\cdot\exp(\alpha^{*(m)}\mathbbm{1}_{\{i\notin T\}})$}
 
 \For{$i\leftarrow 1$ \KwTo $n$}{
 $w_i\leftarrow \frac{w_i}{\sum_{i=1}^n w_i}$
@@ -331,6 +331,8 @@ $$
 \For{$i\leftarrow 1$ \KwTo $n$}{
 $w_i\leftarrow \frac{1}{n}$}
 \For{$m\leftarrow 1$ \KwTo $M$}{
+以$w_i,i=1,...,n$训练$G$得到模型$G^*$
+
 \For{$i\leftarrow 1$ \KwTo $n$}{
 $e_{i}\leftarrow\frac{\vert y_i-G^*(\mathbf{x}_i)\vert}{\max_i \vert y_i-G^*(\mathbf{x}_i)\vert}$}
 
@@ -340,7 +342,7 @@ $\beta^{(m)}\leftarrow\frac{E^{(m)}}{1-E^{(m)}}$
 
 $\alpha^{(m)}\leftarrow\log \frac{1}{\beta^{(m)}}$
 
-$w_i\leftarrow w_{i}[\alpha^{(m)}]^{1-e_{i}}$
+$w_i\leftarrow w_{i}[\beta^{(m)}]^{1-e_{i}}$
 
 \For{$i\leftarrow 1$ \KwTo $n$}{
 $w_i\leftarrow \frac{w_i}{\sum_{i=1}^n w_i}$
