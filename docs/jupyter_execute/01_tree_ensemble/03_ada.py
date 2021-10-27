@@ -9,13 +9,13 @@
 # 
 # ## 2. 分类损失
 # 
-# 对于$K$分类问题而言，当样本标签$\mathbf{y}=[y_1,...,y_K]^T$的类别$c(\mathbf{y})$为第$k$类（$k=1,...,K$）时，标签$\mathbf{y}$的第$i$个（$i=1,...,K$）元素$y_i$满足
+# 对于$K$分类问题而言，当样本标签$\mathbf{y}=[y_1,...,y_K]^T$的类别$S(\mathbf{y})$为第$k$类（$k=1,...,K$）时，标签$\mathbf{y}$的第$i$个（$i=1,...,K$）元素$y_i$满足
 # 
 # $$
 # y_i=\left\{
 # \begin{aligned}
-# &1,\quad &{\rm if}\ c(\mathbf{y})=k\\
-# &-\frac{1}{K-1},\quad &{\rm if}\ c(\mathbf{y})\neq k
+# &1,\quad &{\rm if}\ S(\mathbf{y})=k\\
+# &-\frac{1}{K-1},\quad &{\rm if}\ S(\mathbf{y})\neq k
 # \end{aligned}
 # \right.
 # $$
@@ -42,13 +42,13 @@
 # f_1+f_2+...+f_K=0
 # $$
 # 
-# 从概率角度而言，一个设计良好的分类问题损失函数应当保证模型在期望损失达到最小时的输出结果是使得后验概率$P(c\vert \mathbf{x})$达到最大的类别，这个条件被称为贝叶斯最优决策条件。在本问题下，满足对称约束条件的损失函数期望损失$\mathbb{E}_{\mathbf{Y}\vert\mathbf{x}}L(\mathbf{Y},f)$达到最小时，由拉格朗日乘子法可解得模型输出为
+# 从概率角度而言，一个设计良好的分类问题损失函数应当保证模型在期望损失达到最小时的输出结果是使得后验概率$P(S(\mathbf{y})\vert \mathbf{x})$达到最大的类别，这个条件被称为贝叶斯最优决策条件。在本问题下，满足对称约束条件的损失函数期望损失$\mathbb{E}_{\mathbf{Y}\vert\mathbf{x}}L(\mathbf{Y},f)$达到最小时，由拉格朗日乘子法可解得模型输出为
 # 
 # $$
 # \begin{aligned}
 # k^* & =\mathop{\arg\max}_kf_k^*(\mathbf{x})\\
-# & =\mathop{\arg\max}_k (K-1)[\log P(c=k\vert \mathbf{x})-\frac{1}{K}\sum_{i=1}^K\log P(c=i\vert \mathbf{x})] \\
-# & =\mathop{\arg\max}_k P(c=k\vert \mathbf{x})
+# & =\mathop{\arg\max}_k (K-1)[\log P(S(\mathbf{y})=k\vert \mathbf{x})-\frac{1}{K}\sum_{i=1}^K\log P(S(\mathbf{y})=i\vert \mathbf{x})] \\
+# & =\mathop{\arg\max}_k P(S(\mathbf{y})=k\vert \mathbf{x})
 # \end{aligned}
 # $$
 # 
@@ -154,7 +154,7 @@
 # 【练习】算法2第12行中给出了$\mathbf{f}$输出的迭代方案，但在sklearn包的实现中使用了$\mathbb{I}_{\{G^*(\mathbf{x})=S(\mathbf{y})\}}$来代替$\mathbf{b}^{*(m)}(\mathbf{x})$。请根据本文的实现，对sklearn包的源码进行修改并构造一个例子来比较它们的输出是否会不同。（提示：修改AdaboostClassifier类中的decision\_function函数和staged\_decision\_function函数）
 # ````
 # 
-# 对$\mathbf{w}$进行归一化操作后，不会对下一轮算法1中$G^*$和$err^{(m)}$的结果产生任何影响。同时，如果把算法1第12行的$\beta^{*(m)}$替换为$\alpha^{*(m)}$，由于它们的输出结果只相差常数倍$\frac{(K-1)^2}{K}$，因此最后的预测结果$c(\mathbf{x})$也不会产生任何变化。
+# 对$\mathbf{w}$进行归一化操作后，不会对下一轮算法1中$G^*$和$err^{(m)}$的结果产生任何影响。同时，如果把算法1第12行的$\beta^{*(m)}$替换为$\alpha^{*(m)}$，由于它们的输出结果只相差常数倍$\frac{(K-1)^2}{K}$，因此最后的预测结果也不会产生任何变化。
 # 
 # 由于$\exp[\frac{1-K}{K}\alpha^{*(m)}]$是样本公共项，故我们可以每次都利用
 # 

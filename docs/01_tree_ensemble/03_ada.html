@@ -247,13 +247,13 @@
 </div>
 <div class="section" id="id1">
 <h2>2. 分类损失<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
-<p>对于<span class="math notranslate nohighlight">\(K\)</span>分类问题而言，当样本标签<span class="math notranslate nohighlight">\(\mathbf{y}=[y_1,...,y_K]^T\)</span>的类别<span class="math notranslate nohighlight">\(c(\mathbf{y})\)</span>为第<span class="math notranslate nohighlight">\(k\)</span>类（<span class="math notranslate nohighlight">\(k=1,...,K\)</span>）时，标签<span class="math notranslate nohighlight">\(\mathbf{y}\)</span>的第<span class="math notranslate nohighlight">\(i\)</span>个（<span class="math notranslate nohighlight">\(i=1,...,K\)</span>）元素<span class="math notranslate nohighlight">\(y_i\)</span>满足</p>
+<p>对于<span class="math notranslate nohighlight">\(K\)</span>分类问题而言，当样本标签<span class="math notranslate nohighlight">\(\mathbf{y}=[y_1,...,y_K]^T\)</span>的类别<span class="math notranslate nohighlight">\(S(\mathbf{y})\)</span>为第<span class="math notranslate nohighlight">\(k\)</span>类（<span class="math notranslate nohighlight">\(k=1,...,K\)</span>）时，标签<span class="math notranslate nohighlight">\(\mathbf{y}\)</span>的第<span class="math notranslate nohighlight">\(i\)</span>个（<span class="math notranslate nohighlight">\(i=1,...,K\)</span>）元素<span class="math notranslate nohighlight">\(y_i\)</span>满足</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
 y_i=\left\{
 \begin{aligned}
-&amp;1,\quad &amp;{\rm if}\ c(\mathbf{y})=k\\
-&amp;-\frac{1}{K-1},\quad &amp;{\rm if}\ c(\mathbf{y})\neq k
+&amp;1,\quad &amp;{\rm if}\ S(\mathbf{y})=k\\
+&amp;-\frac{1}{K-1},\quad &amp;{\rm if}\ S(\mathbf{y})\neq k
 \end{aligned}
 \right.
 \end{split}\]</div>
@@ -276,13 +276,13 @@ L(\mathbf{y}, \mathbf{f}+a\mathbb{1})=\exp(-\frac{\mathbf{y}^T\mathbf{f}}{K}-\fr
 \[
 f_1+f_2+...+f_K=0
 \]</div>
-<p>从概率角度而言，一个设计良好的分类问题损失函数应当保证模型在期望损失达到最小时的输出结果是使得后验概率<span class="math notranslate nohighlight">\(P(c\vert \mathbf{x})\)</span>达到最大的类别，这个条件被称为贝叶斯最优决策条件。在本问题下，满足对称约束条件的损失函数期望损失<span class="math notranslate nohighlight">\(\mathbb{E}_{\mathbf{Y}\vert\mathbf{x}}L(\mathbf{Y},f)\)</span>达到最小时，由拉格朗日乘子法可解得模型输出为</p>
+<p>从概率角度而言，一个设计良好的分类问题损失函数应当保证模型在期望损失达到最小时的输出结果是使得后验概率<span class="math notranslate nohighlight">\(P(S(\mathbf{y})\vert \mathbf{x})\)</span>达到最大的类别，这个条件被称为贝叶斯最优决策条件。在本问题下，满足对称约束条件的损失函数期望损失<span class="math notranslate nohighlight">\(\mathbb{E}_{\mathbf{Y}\vert\mathbf{x}}L(\mathbf{Y},f)\)</span>达到最小时，由拉格朗日乘子法可解得模型输出为</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{aligned}
 k^* &amp; =\mathop{\arg\max}_kf_k^*(\mathbf{x})\\
-&amp; =\mathop{\arg\max}_k (K-1)[\log P(c=k\vert \mathbf{x})-\frac{1}{K}\sum_{i=1}^K\log P(c=i\vert \mathbf{x})] \\
-&amp; =\mathop{\arg\max}_k P(c=k\vert \mathbf{x})
+&amp; =\mathop{\arg\max}_k (K-1)[\log P(S(\mathbf{y})=k\vert \mathbf{x})-\frac{1}{K}\sum_{i=1}^K\log P(S(\mathbf{y})=i\vert \mathbf{x})] \\
+&amp; =\mathop{\arg\max}_k P(S(\mathbf{y})=k\vert \mathbf{x})
 \end{aligned}
 \end{split}\]</div>
 <p>因此，选择指数损失能够满足贝叶斯最优决策条件。</p>
@@ -371,7 +371,7 @@ w_i\cdot\exp[\frac{1-K}{K}\alpha^{*(m)}]\exp(\alpha^{*(m)}\mathbb{1}_{\{i\notin 
 <p class="sidebar-title"></p>
 <p>【练习】算法2第12行中给出了<span class="math notranslate nohighlight">\(\mathbf{f}\)</span>输出的迭代方案，但在sklearn包的实现中使用了<span class="math notranslate nohighlight">\(\mathbb{I}_{\{G^*(\mathbf{x})=S(\mathbf{y})\}}\)</span>来代替<span class="math notranslate nohighlight">\(\mathbf{b}^{*(m)}(\mathbf{x})\)</span>。请根据本文的实现，对sklearn包的源码进行修改并构造一个例子来比较它们的输出是否会不同。（提示：修改AdaboostClassifier类中的decision_function函数和staged_decision_function函数）</p>
 </div>
-<p>对<span class="math notranslate nohighlight">\(\mathbf{w}\)</span>进行归一化操作后，不会对下一轮算法1中<span class="math notranslate nohighlight">\(G^*\)</span>和<span class="math notranslate nohighlight">\(err^{(m)}\)</span>的结果产生任何影响。同时，如果把算法1第12行的<span class="math notranslate nohighlight">\(\beta^{*(m)}\)</span>替换为<span class="math notranslate nohighlight">\(\alpha^{*(m)}\)</span>，由于它们的输出结果只相差常数倍<span class="math notranslate nohighlight">\(\frac{(K-1)^2}{K}\)</span>，因此最后的预测结果<span class="math notranslate nohighlight">\(c(\mathbf{x})\)</span>也不会产生任何变化。</p>
+<p>对<span class="math notranslate nohighlight">\(\mathbf{w}\)</span>进行归一化操作后，不会对下一轮算法1中<span class="math notranslate nohighlight">\(G^*\)</span>和<span class="math notranslate nohighlight">\(err^{(m)}\)</span>的结果产生任何影响。同时，如果把算法1第12行的<span class="math notranslate nohighlight">\(\beta^{*(m)}\)</span>替换为<span class="math notranslate nohighlight">\(\alpha^{*(m)}\)</span>，由于它们的输出结果只相差常数倍<span class="math notranslate nohighlight">\(\frac{(K-1)^2}{K}\)</span>，因此最后的预测结果也不会产生任何变化。</p>
 <p>由于<span class="math notranslate nohighlight">\(\exp[\frac{1-K}{K}\alpha^{*(m)}]\)</span>是样本公共项，故我们可以每次都利用</p>
 <div class="math notranslate nohighlight">
 \[
