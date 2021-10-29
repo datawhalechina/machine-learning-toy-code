@@ -243,8 +243,8 @@ $$
 
 $$
 \begin{aligned}
-\mathbf{h}^{*(m)}&=\mathop{\arg\min}_{\mathbf{h}^{(m)}} \mathbb{E} [L\vert \mathbf{x}]\\
-&=\mathop{\arg\min}_{\mathbf{h}^{(m)}} \mathbb{E}_{\mathbf{y}}[ \exp[-\frac{1}{K}\mathbf{y}^T(\mathbf{f}^{(m-1)}(\mathbf{x})+\mathbf{h}^{(m)}(\mathbf{x}))]\vert \mathbf{x}]
+\mathbf{h}^{*(m)}&=\mathop{\arg\min}_{\mathbf{h}^{(m)}} \mathbb{E}_{\mathbf{y}\vert\mathbf{x}} [L\vert \mathbf{x}]\\
+&=\mathop{\arg\min}_{\mathbf{h}^{(m)}} \mathbb{E}_{\mathbf{y}\vert\mathbf{x}}[ \exp[-\frac{1}{K}\mathbf{y}^T(\mathbf{f}^{(m-1)}(\mathbf{x})+\mathbf{h}^{(m)}(\mathbf{x}))]\vert \mathbf{x}]
 \end{aligned}
 $$
 
@@ -252,7 +252,7 @@ $$
 
 $$
 \begin{aligned}
-\mathbb{E} [L\vert \mathbf{x}] &= \mathbb{E}_{\mathbf{y}}[ \exp[-\frac{1}{K}\mathbf{y}^T\mathbf{f}^{(m-1)}(\mathbf{x})]
+\mathbb{E}_{\mathbf{y}\vert\mathbf{x}} [L\vert \mathbf{x}] &= \mathbb{E}_{\mathbf{y}\vert\mathbf{x}}[ \exp[-\frac{1}{K}\mathbf{y}^T\mathbf{f}^{(m-1)}(\mathbf{x})]
 \exp[-\frac{1}{K}\mathbf{y}^T\mathbf{h}^{(m)}(\mathbf{x})]]\vert \mathbf{x}]\\
 &=\sum_{k=1}^K\left. [\exp[-\frac{1}{K}\mathbf{y}^T\mathbf{f}^{(m-1)}(\mathbf{x})]\exp[-\frac{1}{K}\mathbf{y}^T\mathbf{h}^{(m)}(\mathbf{x})]]\right|_{S(\mathbf{y})=k}P(S(\mathbf{y})=k\vert \mathbf{x})\\
 &=\sum_{k=1}^K \left.[\exp[-\frac{1}{K}\mathbf{y}^T\mathbf{f}^{(m-1)}(\mathbf{x})]\right|_{S(\mathbf{y})=k}P(S(\mathbf{y})=k\vert \mathbf{x})]\exp(-\frac{h^{(m)}_k(\mathbf{x})}{K-1})
@@ -262,7 +262,7 @@ $$
 记$w=\exp[-\frac{1}{K}\mathbf{y}^T\mathbf{f}^{(m-1)}(\mathbf{x})]$，则
 
 $$
-\mathbb{E} [L\vert \mathbf{x}] = \sum_{k=1}^K \left.w\right|_{S(\mathbf{y})=k}\cdot P(S(\mathbf{y})=k)\exp(-\frac{h^{(m)}_k(\mathbf{x})}{K-1})
+\mathbb{E}_{\mathbf{y}\vert\mathbf{x}} [L\vert \mathbf{x}] = \sum_{k=1}^K \left.w\right|_{S(\mathbf{y})=k}\cdot P(S(\mathbf{y})=k)\exp(-\frac{h^{(m)}_k(\mathbf{x})}{K-1})
 $$
 
 不难发现对于样本$\mathbf{y}$而言，越大的$w$意味着上一轮的模型结果越糟糕，此时负责预测$P(S(\mathbf{y})=k)$的基模型就要加大对该样本的重视程度以获得较小的损失。
@@ -272,7 +272,7 @@ $$
 此时，损失函数近似为
 
 $$
-\mathbb{E} [L\vert \mathbf{x}] = \sum_{k=1}^K P_w(s(\mathbf{y})=k\vert \mathbf{x})\exp(-\frac{h^{(m)}_k(\mathbf{x})}{K-1})
+\mathbb{E}_{\mathbf{y}\vert\mathbf{x}} [L\vert \mathbf{x}] = \sum_{k=1}^K P_w(s(\mathbf{y})=k\vert \mathbf{x})\exp(-\frac{h^{(m)}_k(\mathbf{x})}{K-1})
 $$
 
 ````{margin}

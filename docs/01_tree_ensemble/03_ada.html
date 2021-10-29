@@ -438,15 +438,15 @@ L(\mathbf{h}^{(m)})=\exp[-\frac{1}{K}\mathbf{y}^T(\mathbf{f}^{(m-1)}(\mathbf{x})
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{aligned}
-\mathbf{h}^{*(m)}&amp;=\mathop{\arg\min}_{\mathbf{h}^{(m)}} \mathbb{E} [L\vert \mathbf{x}]\\
-&amp;=\mathop{\arg\min}_{\mathbf{h}^{(m)}} \mathbb{E}_{\mathbf{y}}[ \exp[-\frac{1}{K}\mathbf{y}^T(\mathbf{f}^{(m-1)}(\mathbf{x})+\mathbf{h}^{(m)}(\mathbf{x}))]\vert \mathbf{x}]
+\mathbf{h}^{*(m)}&amp;=\mathop{\arg\min}_{\mathbf{h}^{(m)}} \mathbb{E}_{\mathbf{y}\vert\mathbf{x}} [L\vert \mathbf{x}]\\
+&amp;=\mathop{\arg\min}_{\mathbf{h}^{(m)}} \mathbb{E}_{\mathbf{y}\vert\mathbf{x}}[ \exp[-\frac{1}{K}\mathbf{y}^T(\mathbf{f}^{(m-1)}(\mathbf{x})+\mathbf{h}^{(m)}(\mathbf{x}))]\vert \mathbf{x}]
 \end{aligned}
 \end{split}\]</div>
 <p>设样本<span class="math notranslate nohighlight">\(\mathbf{y}\)</span>对应的标签为<span class="math notranslate nohighlight">\(S(\mathbf{y})\)</span>，则</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{aligned}
-\mathbb{E} [L\vert \mathbf{x}] &amp;= \mathbb{E}_{\mathbf{y}}[ \exp[-\frac{1}{K}\mathbf{y}^T\mathbf{f}^{(m-1)}(\mathbf{x})]
+\mathbb{E}_{\mathbf{y}\vert\mathbf{x}} [L\vert \mathbf{x}] &amp;= \mathbb{E}_{\mathbf{y}\vert\mathbf{x}}[ \exp[-\frac{1}{K}\mathbf{y}^T\mathbf{f}^{(m-1)}(\mathbf{x})]
 \exp[-\frac{1}{K}\mathbf{y}^T\mathbf{h}^{(m)}(\mathbf{x})]]\vert \mathbf{x}]\\
 &amp;=\sum_{k=1}^K\left. [\exp[-\frac{1}{K}\mathbf{y}^T\mathbf{f}^{(m-1)}(\mathbf{x})]\exp[-\frac{1}{K}\mathbf{y}^T\mathbf{h}^{(m)}(\mathbf{x})]]\right|_{S(\mathbf{y})=k}P(S(\mathbf{y})=k\vert \mathbf{x})\\
 &amp;=\sum_{k=1}^K \left.[\exp[-\frac{1}{K}\mathbf{y}^T\mathbf{f}^{(m-1)}(\mathbf{x})]\right|_{S(\mathbf{y})=k}P(S(\mathbf{y})=k\vert \mathbf{x})]\exp(-\frac{h^{(m)}_k(\mathbf{x})}{K-1})
@@ -455,14 +455,14 @@ L(\mathbf{h}^{(m)})=\exp[-\frac{1}{K}\mathbf{y}^T(\mathbf{f}^{(m-1)}(\mathbf{x})
 <p>记<span class="math notranslate nohighlight">\(w=\exp[-\frac{1}{K}\mathbf{y}^T\mathbf{f}^{(m-1)}(\mathbf{x})]\)</span>，则</p>
 <div class="math notranslate nohighlight">
 \[
-\mathbb{E} [L\vert \mathbf{x}] = \sum_{k=1}^K \left.w\right|_{S(\mathbf{y})=k}\cdot P(S(\mathbf{y})=k)\exp(-\frac{h^{(m)}_k(\mathbf{x})}{K-1})
+\mathbb{E}_{\mathbf{y}\vert\mathbf{x}} [L\vert \mathbf{x}] = \sum_{k=1}^K \left.w\right|_{S(\mathbf{y})=k}\cdot P(S(\mathbf{y})=k)\exp(-\frac{h^{(m)}_k(\mathbf{x})}{K-1})
 \]</div>
 <p>不难发现对于样本<span class="math notranslate nohighlight">\(\mathbf{y}\)</span>而言，越大的<span class="math notranslate nohighlight">\(w\)</span>意味着上一轮的模型结果越糟糕，此时负责预测<span class="math notranslate nohighlight">\(P(S(\mathbf{y})=k)\)</span>的基模型就要加大对该样本的重视程度以获得较小的损失。</p>
 <p>但是，此时基模型本身是不带权重的，SAMME.R采用的近似方法是，考虑以<span class="math notranslate nohighlight">\(w\)</span>为权重的基模型<span class="math notranslate nohighlight">\(G\)</span>，用其输出<span class="math notranslate nohighlight">\(P_w(s(\mathbf{y})=k\vert \mathbf{x})\)</span>的概率值来代替<span class="math notranslate nohighlight">\(\left.w\right|_{S(\mathbf{y})=k}\cdot P(S(\mathbf{y})=k\vert \mathbf{x})\)</span>，这种行为合法的原因在于权重对于总体损失的惩罚方向是一致的，<span class="math notranslate nohighlight">\(G\)</span>通过权重<span class="math notranslate nohighlight">\(w\)</span>将原本作用于<span class="math notranslate nohighlight">\(L\)</span>的损失近似地“分配”给了基分类器的损失。</p>
 <p>此时，损失函数近似为</p>
 <div class="math notranslate nohighlight">
 \[
-\mathbb{E} [L\vert \mathbf{x}] = \sum_{k=1}^K P_w(s(\mathbf{y})=k\vert \mathbf{x})\exp(-\frac{h^{(m)}_k(\mathbf{x})}{K-1})
+\mathbb{E}_{\mathbf{y}\vert\mathbf{x}} [L\vert \mathbf{x}] = \sum_{k=1}^K P_w(s(\mathbf{y})=k\vert \mathbf{x})\exp(-\frac{h^{(m)}_k(\mathbf{x})}{K-1})
 \]</div>
 <div class="margin sidebar">
 <p class="sidebar-title"></p>
