@@ -48,17 +48,44 @@ $$
 f_1+f_2+...+f_K=0
 $$
 
-从概率角度而言，一个设计良好的分类问题损失函数应当保证模型在期望损失达到最小时的输出结果$k^*$是使得后验概率达到最大的类别$\mathop{\arg\max}_k P(S(\mathbf{y})=k\vert \mathbf{x})$，这个条件被称为贝叶斯最优决策条件。在本问题下，满足对称约束条件的损失函数期望损失$\mathbb{E}_{\mathbf{Y}\vert\mathbf{x}}L(\mathbf{Y},f)$达到最小时，由拉格朗日乘子法可解得模型输出为
+当模型训练完毕后，等价于我们估计出了给定特征$\mathbf{x}$情况下$\mathbf{y}$属于各个类别的后验概率，在预测时对于一个新的$\mathbf{x}$我们总是希望$L(\mathbf{y},\mathbf{f})$越小越好，但此时$y$是随机变量，因此我们希望损失的后验期望$\mathbb{E}_{\mathbf{y}\vert\mathbf{x}}$较小。从概率角度而言，一个设计良好的分类问题损失函数应当保证模型在损失后验期望达到最小时的输出结果$k^*$是使得后验概率达到最大的类别$\mathop{\arg\max}_k P(S(\mathbf{y})=k\vert \mathbf{x})$，这个条件被称为贝叶斯最优决策条件。在本问题下，$k^* =\mathop{\arg\max}_kf_k^*(\mathbf{x})$，即选取$\mathbf{f}$中分量最大的位置对应类别输出。
+
+想要验证指数损失是否满足贝叶斯最优决策条件，我们只需证明当损失后验期望达到最小时有
+
+$$\mathop{\arg\max}_kf_k^*(\mathbf{x})=\mathop{\arg\max}_k P(S(\mathbf{y})=k\vert \mathbf{x})$$
+
+由于此处约束为$\mathbf{f}$分量和为$0$，因此可以通过拉格朗日乘子法求解。写出拉格朗日函数为
 
 $$
 \begin{aligned}
-k^* & =\mathop{\arg\max}_kf_k^*(\mathbf{x})\\
-& =\mathop{\arg\max}_k (K-1)[\log P(S(\mathbf{y})=k\vert \mathbf{x})-\frac{1}{K}\sum_{i=1}^K\log P(S(\mathbf{y})=i\vert \mathbf{x})] \\
-& =\mathop{\arg\max}_k P(S(\mathbf{y})=k\vert \mathbf{x})
+Lag(\mathbf{f}, \lambda) &= \mathbb{E}_{\mathbf{y}\vert\mathbf{x}}\exp(-\frac{\mathbf{y}^T\mathbf{f}}{K}) + \lambda \sum_{i=1}^K f_i\\
+&= \sum_{i=1}^K \left.\exp(-\frac{1}{K}\sum_{t=1}^Ky_tf_t)\right|_{S(\mathbf{y})=i}P(S(\mathbf{y})=i\vert \mathbf{x}) + \lambda \sum_{i=1}^K f_i\\
 \end{aligned}
 $$
 
-因此，选择指数损失能够满足贝叶斯最优决策条件。
+当$S(\mathbf{y})=i$时，指数内的式子满足
+
+$$
+\begin{aligned}
+-\frac{1}{K}\sum_{t=1}^Ky_tf_t &=-\frac{1}{K}[ f_i+\sum_{t\neq i}(-\frac{1}{K-1})f_t]\\
+&=-\frac{1}{K}[f_i -\frac{-f_i}{K-1}]\\
+&=-\frac{f_i}{K-1}
+\end{aligned}
+$$
+
+此时有
+
+$$
+Lag(\mathbf{f}, \lambda) = \sum_{i=1}^K\exp(-\frac{f_i}{K-1}) P(S(\mathbf{y})=i\vert \mathbf{x}) + \lambda \sum_{i=1}^K f_i
+$$
+
+对各变量$f_1,...,f_K,\lambda$求偏导数结果式置0后，联立可解得
+
+$$
+f_k^*=(K-1)[\log P(S(\mathbf{y})=k\vert \mathbf{x})-\frac{1}{K}\sum_{i=1}^K\log P(S(\mathbf{y})=i\vert \mathbf{x})],k=1,...,K
+$$
+
+此时有$\mathop{\arg\max}_kf_k^*(\mathbf{x})=\mathop{\arg\max}_k P(S(\mathbf{y})=k\vert \mathbf{x})$，故选择指数损失能够满足贝叶斯最优决策条件。
 
 ## 3. SAMME
 
@@ -90,6 +117,10 @@ $$
 $$
 (\beta^{*(m)}, \mathbf{b}^{*(m)})=\mathop{\arg\min}_{\beta^{(m)}, \mathbf{b}^{(m)}}\sum_{i=1}^n w_i\exp(-\frac{1}{K}\beta^{(m)}\mathbf{y}_i^T\mathbf{b}^{(m)}(\mathbf{x}_i))
 $$
+
+````{margin}
+【练习】左侧公式的第二个等号是由于当样本分类正确时，$\mathbf{y}^T\mathbf{b}=\frac{K}{K-1}$，当样本分类错误时，$\mathbf{y}^T\mathbf{b}=-\frac{K}{(K-1)^2}$，请说明原因。
+````
 
 设当轮预测正确的样本索引集合为$T$，则损失可表示为
 
@@ -149,7 +180,28 @@ $$
 此时，$w_i$每轮会被更新为
 
 $$
-w_i\cdot\exp[\frac{1-K}{K}\alpha^{*(m)}]\exp(\alpha^{*(m)}\mathbb{1}_{\{i\notin T\}})
+\begin{aligned}
+w^{new}_i&=w_i\exp(-\frac{1}{K}\beta^{*(m)}\mathbf{y}_i^T\mathbf{b}^{*(m)}(\mathbf{x}_i))\\
+&=w_i\exp(-\frac{(K-1)^2}{K^2}\alpha^{*(m)}\mathbf{y}_i^T\mathbf{b}^{*(m)}(\mathbf{x}_i))
+\end{aligned}
+$$
+
+当样本分类正确时，$\mathbf{y}_i^T\mathbf{b}^{*(m)}(\mathbf{x}_i)=\frac{K}{K-1}$，即
+
+$$
+w^{new}_i=w_i\cdot\exp[\frac{1-K}{K}\alpha^{*(m)}]
+$$
+
+当样本分类错误时，$\mathbf{y}_i^T\mathbf{b}^{*(m)}(\mathbf{x}_i)=-\frac{K}{(K-1)^2}$，即
+
+$$
+w^{new}_i=w_i\cdot\exp[\frac{1}{K}\alpha^{*(m)}]
+$$
+
+从而可以利用示性函数$\mathbb{1}_{\{i\notin T\}}$来统一表示$w_i$更新的两类结果：
+
+$$
+w^{new}_i=w_i\cdot\exp[\frac{1-K}{K}\alpha^{*(m)}]\exp(\alpha^{*(m)}\mathbb{1}_{\{i\notin T\}})
 $$
 
 ````{margin}

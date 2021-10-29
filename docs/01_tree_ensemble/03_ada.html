@@ -276,16 +276,38 @@ L(\mathbf{y}, \mathbf{f}+a\mathbb{1})=\exp(-\frac{\mathbf{y}^T\mathbf{f}}{K}-\fr
 \[
 f_1+f_2+...+f_K=0
 \]</div>
-<p>从概率角度而言，一个设计良好的分类问题损失函数应当保证模型在期望损失达到最小时的输出结果<span class="math notranslate nohighlight">\(k^*\)</span>是使得后验概率达到最大的类别<span class="math notranslate nohighlight">\(\mathop{\arg\max}_k P(S(\mathbf{y})=k\vert \mathbf{x})\)</span>，这个条件被称为贝叶斯最优决策条件。在本问题下，满足对称约束条件的损失函数期望损失<span class="math notranslate nohighlight">\(\mathbb{E}_{\mathbf{Y}\vert\mathbf{x}}L(\mathbf{Y},f)\)</span>达到最小时，由拉格朗日乘子法可解得模型输出为</p>
+<p>当模型训练完毕后，等价于我们估计出了给定特征<span class="math notranslate nohighlight">\(\mathbf{x}\)</span>情况下<span class="math notranslate nohighlight">\(\mathbf{y}\)</span>属于各个类别的后验概率，在预测时对于一个新的<span class="math notranslate nohighlight">\(\mathbf{x}\)</span>我们总是希望<span class="math notranslate nohighlight">\(L(\mathbf{y},\mathbf{f})\)</span>越小越好，但此时<span class="math notranslate nohighlight">\(y\)</span>是随机变量，因此我们希望损失的后验期望<span class="math notranslate nohighlight">\(\mathbb{E}_{\mathbf{y}\vert\mathbf{x}}\)</span>较小。从概率角度而言，一个设计良好的分类问题损失函数应当保证模型在损失后验期望达到最小时的输出结果<span class="math notranslate nohighlight">\(k^*\)</span>是使得后验概率达到最大的类别<span class="math notranslate nohighlight">\(\mathop{\arg\max}_k P(S(\mathbf{y})=k\vert \mathbf{x})\)</span>，这个条件被称为贝叶斯最优决策条件。在本问题下，<span class="math notranslate nohighlight">\(k^* =\mathop{\arg\max}_kf_k^*(\mathbf{x})\)</span>，即选取<span class="math notranslate nohighlight">\(\mathbf{f}\)</span>中分量最大的位置对应类别输出。</p>
+<p>想要验证指数损失是否满足贝叶斯最优决策条件，我们只需证明当损失后验期望达到最小时有</p>
+<div class="math notranslate nohighlight">
+\[\mathop{\arg\max}_kf_k^*(\mathbf{x})=\mathop{\arg\max}_k P(S(\mathbf{y})=k\vert \mathbf{x})\]</div>
+<p>由于此处约束为<span class="math notranslate nohighlight">\(\mathbf{f}\)</span>分量和为<span class="math notranslate nohighlight">\(0\)</span>，因此可以通过拉格朗日乘子法求解。写出拉格朗日函数为</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{aligned}
-k^* &amp; =\mathop{\arg\max}_kf_k^*(\mathbf{x})\\
-&amp; =\mathop{\arg\max}_k (K-1)[\log P(S(\mathbf{y})=k\vert \mathbf{x})-\frac{1}{K}\sum_{i=1}^K\log P(S(\mathbf{y})=i\vert \mathbf{x})] \\
-&amp; =\mathop{\arg\max}_k P(S(\mathbf{y})=k\vert \mathbf{x})
+Lag(\mathbf{f}, \lambda) &amp;= \mathbb{E}_{\mathbf{y}\vert\mathbf{x}}\exp(-\frac{\mathbf{y}^T\mathbf{f}}{K}) + \lambda \sum_{i=1}^K f_i\\
+&amp;= \sum_{i=1}^K \left.\exp(-\frac{1}{K}\sum_{t=1}^Ky_tf_t)\right|_{S(\mathbf{y})=i}P(S(\mathbf{y})=i\vert \mathbf{x}) + \lambda \sum_{i=1}^K f_i\\
 \end{aligned}
 \end{split}\]</div>
-<p>因此，选择指数损失能够满足贝叶斯最优决策条件。</p>
+<p>当<span class="math notranslate nohighlight">\(S(\mathbf{y})=i\)</span>时，指数内的式子满足</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+-\frac{1}{K}\sum_{t=1}^Ky_tf_t &amp;=-\frac{1}{K}[ f_i+\sum_{t\neq i}(-\frac{1}{K-1})f_t]\\
+&amp;=-\frac{1}{K}[f_i -\frac{-f_i}{K-1}]\\
+&amp;=-\frac{f_i}{K-1}
+\end{aligned}
+\end{split}\]</div>
+<p>此时有</p>
+<div class="math notranslate nohighlight">
+\[
+Lag(\mathbf{f}, \lambda) = \sum_{i=1}^K\exp(-\frac{f_i}{K-1}) P(S(\mathbf{y})=i\vert \mathbf{x}) + \lambda \sum_{i=1}^K f_i
+\]</div>
+<p>对各变量<span class="math notranslate nohighlight">\(f_1,...,f_K,\lambda\)</span>求偏导数结果式置0后，联立可解得</p>
+<div class="math notranslate nohighlight">
+\[
+f_k^*=(K-1)[\log P(S(\mathbf{y})=k\vert \mathbf{x})-\frac{1}{K}\sum_{i=1}^K\log P(S(\mathbf{y})=i\vert \mathbf{x})],k=1,...,K
+\]</div>
+<p>此时有<span class="math notranslate nohighlight">\(\mathop{\arg\max}_kf_k^*(\mathbf{x})=\mathop{\arg\max}_k P(S(\mathbf{y})=k\vert \mathbf{x})\)</span>，故选择指数损失能够满足贝叶斯最优决策条件。</p>
 </div>
 <div class="section" id="samme">
 <h2>3. SAMME<a class="headerlink" href="#samme" title="永久链接至标题">¶</a></h2>
@@ -314,6 +336,10 @@ w_i=\exp(-\frac{1}{K}\mathbf{y}_i^T\mathbf{f}^{(m-1)}(\mathbf{x}_i))
 \[
 (\beta^{*(m)}, \mathbf{b}^{*(m)})=\mathop{\arg\min}_{\beta^{(m)}, \mathbf{b}^{(m)}}\sum_{i=1}^n w_i\exp(-\frac{1}{K}\beta^{(m)}\mathbf{y}_i^T\mathbf{b}^{(m)}(\mathbf{x}_i))
 \]</div>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】左侧公式的第二个等号是由于当样本分类正确时，<span class="math notranslate nohighlight">\(\mathbf{y}^T\mathbf{b}=\frac{K}{K-1}\)</span>，当样本分类错误时，<span class="math notranslate nohighlight">\(\mathbf{y}^T\mathbf{b}=-\frac{K}{(K-1)^2}\)</span>，请说明原因。</p>
+</div>
 <p>设当轮预测正确的样本索引集合为<span class="math notranslate nohighlight">\(T\)</span>，则损失可表示为</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
@@ -360,8 +386,26 @@ err^{(m)}=\sum_{i=1}^n\frac{w_i}{\sum_{i=1}^nw_i}\mathbb{I}_{\{i\notin T\}}
 \]</div>
 <p>此时，<span class="math notranslate nohighlight">\(w_i\)</span>每轮会被更新为</p>
 <div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+w^{new}_i&amp;=w_i\exp(-\frac{1}{K}\beta^{*(m)}\mathbf{y}_i^T\mathbf{b}^{*(m)}(\mathbf{x}_i))\\
+&amp;=w_i\exp(-\frac{(K-1)^2}{K^2}\alpha^{*(m)}\mathbf{y}_i^T\mathbf{b}^{*(m)}(\mathbf{x}_i))
+\end{aligned}
+\end{split}\]</div>
+<p>当样本分类正确时，<span class="math notranslate nohighlight">\(\mathbf{y}_i^T\mathbf{b}^{*(m)}(\mathbf{x}_i)=\frac{K}{K-1}\)</span>，即</p>
+<div class="math notranslate nohighlight">
 \[
-w_i\cdot\exp[\frac{1-K}{K}\alpha^{*(m)}]\exp(\alpha^{*(m)}\mathbb{1}_{\{i\notin T\}})
+w^{new}_i=w_i\cdot\exp[\frac{1-K}{K}\alpha^{*(m)}]
+\]</div>
+<p>当样本分类错误时，<span class="math notranslate nohighlight">\(\mathbf{y}_i^T\mathbf{b}^{*(m)}(\mathbf{x}_i)=-\frac{K}{(K-1)^2}\)</span>，即</p>
+<div class="math notranslate nohighlight">
+\[
+w^{new}_i=w_i\cdot\exp[\frac{1}{K}\alpha^{*(m)}]
+\]</div>
+<p>从而可以利用示性函数<span class="math notranslate nohighlight">\(\mathbb{1}_{\{i\notin T\}}\)</span>来统一表示<span class="math notranslate nohighlight">\(w_i\)</span>更新的两类结果：</p>
+<div class="math notranslate nohighlight">
+\[
+w^{new}_i=w_i\cdot\exp[\frac{1-K}{K}\alpha^{*(m)}]\exp(\alpha^{*(m)}\mathbb{1}_{\{i\notin T\}})
 \]</div>
 <div class="margin sidebar">
 <p class="sidebar-title"></p>
