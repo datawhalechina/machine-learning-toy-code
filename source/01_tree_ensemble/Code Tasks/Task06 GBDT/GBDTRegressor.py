@@ -58,7 +58,7 @@ class GBDTRegressor:
 if __name__ == "__main__":
 
     X, y = make_regression(
-        n_samples=10000, n_features=50, n_informative=20, random_state=0)
+        n_samples=10000, n_features=50, n_informative=20, random_state=1)
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.25, random_state=0)
 
