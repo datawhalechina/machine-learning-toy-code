@@ -178,7 +178,7 @@
 # 当$K\geq3$时，仍然使用独热编码来写出损失函数：
 # 
 # $$
-# L(F_{1i},...,F_{(K-1)i})= y_{Ki}\log [1+\sum_{c=1}^{K-1}e^{F_{ci}}] -\sum_{c=1}^{K-1} y_{ci}\log \frac{e^{F_{ci}}}{\sum_{c=1}^Ke^{F_{ci}}} 
+# L(F_{1i},...,F_{(K-1)i})= y_{Ki}\log [1+\sum_{c=1}^{K-1}e^{F_{ci}}] -\sum_{c=1}^{K-1} y_{ci}\log \frac{e^{F_{ci}}}{1+\sum_{c=1}^{K-1}e^{F_{ci}}} 
 # $$
 # 
 # ````{margin}
@@ -190,8 +190,8 @@
 # $$
 # -\left.\frac{\partial L}{\partial F_{ki}} \right|_{\textbf{F}_i=\textbf{F}_i^{(m-1)}} = \left\{
 # \begin{aligned}
-# -\frac{e^{F^{(m-1)}_{ki}}}{\sum_{c=1}^{K-1} e^{F^{(m-1)}_{ci}}}  &\qquad y_{Ki}=1 \\
-# y_{ki} - \frac{e^{F^{(m-1)}_{ki}}}{\sum_{c=1}^{K-1} e^{F^{(m-1)}_{ci}}} & \qquad y_{Ki}=0 \\
+# -\frac{e^{F^{(m-1)}_{ki}}}{1+\sum_{c=1}^{K-1} e^{F^{(m-1)}_{ci}}}  &\qquad y_{Ki}=1 \\
+# y_{ki} - \frac{e^{F^{(m-1)}_{ki}}}{1+\sum_{c=1}^{K-1} e^{F^{(m-1)}_{ci}}} & \qquad y_{Ki}=0 \\
 # \end{aligned}
 # \right.
 # $$

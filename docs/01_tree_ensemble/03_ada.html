@@ -413,9 +413,13 @@ w^{new}_i=w_i\cdot\exp[\frac{1-K}{K}\alpha^{*(m)}]\exp(\alpha^{*(m)}\mathbb{1}_{
 </div>
 <div class="margin sidebar">
 <p class="sidebar-title"></p>
-<p>【练习】算法2第12行中给出了<span class="math notranslate nohighlight">\(\mathbf{f}\)</span>输出的迭代方案，但在sklearn包的实现中使用了<span class="math notranslate nohighlight">\(\mathbb{I}_{\{G^*(\mathbf{x})=S(\mathbf{y})\}}\)</span>来代替<span class="math notranslate nohighlight">\(\mathbf{b}^{*(m)}(\mathbf{x})\)</span>。请根据本文的实现，对sklearn包的源码进行修改并构造一个例子来比较它们的输出是否会不同。（提示：修改AdaboostClassifier类中的decision_function函数和staged_decision_function函数）</p>
+<p>【练习】算法2第12行中给出了<span class="math notranslate nohighlight">\(\mathbf{f}\)</span>输出的迭代方案，但在sklearn包的实现中使用了<span class="math notranslate nohighlight">\(\mathbb{I}_{\{G^*(\mathbf{x})=S(\mathbf{y})\}}\)</span>来代替<span class="math notranslate nohighlight">\(\mathbf{b}^{*(m)}(\mathbf{x})\)</span>。请根据本文的实现，对sklearn包的源码进行修改并构造一个例子来比较它们的输出是否会不同。（提示：修改AdaboostClassifier类中的decision_function函数）</p>
 </div>
-<p>对<span class="math notranslate nohighlight">\(\mathbf{w}\)</span>进行归一化操作后，不会对下一轮算法1中<span class="math notranslate nohighlight">\(G^*\)</span>和<span class="math notranslate nohighlight">\(err^{(m)}\)</span>的结果产生任何影响。同时，如果把算法1第12行的<span class="math notranslate nohighlight">\(\beta^{*(m)}\)</span>替换为<span class="math notranslate nohighlight">\(\alpha^{*(m)}\)</span>，由于它们的输出结果只相差常数倍<span class="math notranslate nohighlight">\(\frac{(K-1)^2}{K}\)</span>，因此最后的预测结果也不会产生任何变化。</p>
+<div class="margin sidebar">
+<p class="sidebar-title"></p>
+<p>【练习】请解释将<span class="math notranslate nohighlight">\(\beta^{*(m)}\)</span>替换为<span class="math notranslate nohighlight">\(\alpha^{*(m)}\)</span>不会改变输出类别的原因。</p>
+</div>
+<p>对<span class="math notranslate nohighlight">\(\mathbf{w}\)</span>进行归一化操作后，不会对下一轮算法1中<span class="math notranslate nohighlight">\(G^*\)</span>和<span class="math notranslate nohighlight">\(err^{(m)}\)</span>的结果产生任何影响。同时，如果把算法1第12行的<span class="math notranslate nohighlight">\(\beta^{*(m)}\)</span>替换为<span class="math notranslate nohighlight">\(\alpha^{*(m)}\)</span>，最后的预测结果（即取<span class="math notranslate nohighlight">\(\arg\max\)</span>产生的类别）也不会产生任何变化。</p>
 <p>由于<span class="math notranslate nohighlight">\(\exp[\frac{1-K}{K}\alpha^{*(m)}]\)</span>是样本公共项，故我们可以每次都利用</p>
 <div class="math notranslate nohighlight">
 \[

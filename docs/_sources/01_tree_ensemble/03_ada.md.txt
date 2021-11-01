@@ -209,10 +209,14 @@ $$
 ````
 
 ````{margin}
-【练习】算法2第12行中给出了$\mathbf{f}$输出的迭代方案，但在sklearn包的实现中使用了$\mathbb{I}_{\{G^*(\mathbf{x})=S(\mathbf{y})\}}$来代替$\mathbf{b}^{*(m)}(\mathbf{x})$。请根据本文的实现，对sklearn包的源码进行修改并构造一个例子来比较它们的输出是否会不同。（提示：修改AdaboostClassifier类中的decision\_function函数和staged\_decision\_function函数）
+【练习】算法2第12行中给出了$\mathbf{f}$输出的迭代方案，但在sklearn包的实现中使用了$\mathbb{I}_{\{G^*(\mathbf{x})=S(\mathbf{y})\}}$来代替$\mathbf{b}^{*(m)}(\mathbf{x})$。请根据本文的实现，对sklearn包的源码进行修改并构造一个例子来比较它们的输出是否会不同。（提示：修改AdaboostClassifier类中的decision\_function函数）
 ````
 
-对$\mathbf{w}$进行归一化操作后，不会对下一轮算法1中$G^*$和$err^{(m)}$的结果产生任何影响。同时，如果把算法1第12行的$\beta^{*(m)}$替换为$\alpha^{*(m)}$，由于它们的输出结果只相差常数倍$\frac{(K-1)^2}{K}$，因此最后的预测结果也不会产生任何变化。
+````{margin}
+【练习】请解释将$\beta^{*(m)}$替换为$\alpha^{*(m)}$不会改变输出类别的原因。
+````
+
+对$\mathbf{w}$进行归一化操作后，不会对下一轮算法1中$G^*$和$err^{(m)}$的结果产生任何影响。同时，如果把算法1第12行的$\beta^{*(m)}$替换为$\alpha^{*(m)}$，最后的预测结果（即取$\arg\max$产生的类别）也不会产生任何变化。
 
 由于$\exp[\frac{1-K}{K}\alpha^{*(m)}]$是样本公共项，故我们可以每次都利用
 
