@@ -1,6 +1,6 @@
 from sklearn.tree import DecisionTreeRegressor as DT
 from sklearn.datasets import make_regression
-from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 import numpy as np
 
@@ -15,9 +15,9 @@ class GBDTRegressor:
         self.best_round = None
 
     def record_score(self, y_train, y_val, train_predict, val_predict, i):
-        mse_val = mean_absolute_error(y_val, val_predict)
+        mse_val = mean_squared_error(y_val, val_predict)
         if (i+1)%10==0:
-            mse_train = mean_absolute_error(y_train, train_predict)
+            mse_train = mean_squared_error(y_train, train_predict)
             print("第%d轮\t训练集： %.4f\t"
                 "验证集： %.4f"%(i+1, mse_train, mse_val))
         return mse_val
@@ -27,7 +27,7 @@ class GBDTRegressor:
         X_train, X_val, y_train, y_val = train_test_split(
             X, y, test_size=0.25, random_state=0)
         train_predict, val_predict = 0, 0
-        next_fit_val = np.full(X_train.shape[0], np.median(y_train))
+        next_fit_val = np.full(X_train.shape[0], np.mean(y_train))
         # 为early_stop做记录准备
         last_val_score = np.infty
         for i in range(self.n_estimator):
@@ -42,10 +42,10 @@ class GBDTRegressor:
             self.booster.append(cur_booster)
             cur_val_score = self.record_score(
                 y_train, y_val, train_predict, val_predict, i)
-            if cur_val_score > last_val_score:
-                self.best_round = i
-                print("\n训练结束！最佳轮数为%d"%(i+1))
-                break
+            #if cur_val_score > last_val_score:
+            #    self.best_round = i
+            #    print("\n训练结束！最佳轮数为%d"%(i+1))
+            #    break
             last_val_score = cur_val_score
 
     def predict(self, X):
@@ -65,5 +65,5 @@ if __name__ == "__main__":
     model = GBDTRegressor()
     model.fit(X_train, y_train)
     prediction = model.predict(X_test)
-    mse = mean_absolute_error(y_test, prediction)
+    mse = mean_squared_error(y_test, prediction)
     print("\n测试集的MSE为 %.4f"%(mse))

@@ -446,15 +446,15 @@ L(F_i) = - y_i\log \frac{e^{F_i}}{1+e^{F_i}} - (1-y_i)\log \frac{1}{1+e^{F_i}}
 </div>
 <div class="section" id="xgboost">
 <h2>3. XGBoost算法<a class="headerlink" href="#xgboost" title="永久链接至标题">¶</a></h2>
-<p>由于树模型较强的拟合能力，我们需要对模型进行正则约束来控制每轮模型学习的进度，除了学习率参数之外，XGBoost还引入了两项作用于损失函数的正则项：首先我们希望树的生长受到抑制而引入<span class="math notranslate nohighlight">\(\gamma T\)</span>，其中的<span class="math notranslate nohighlight">\(T\)</span>为树的叶子节点个数，<span class="math notranslate nohighlight">\(\gamma\)</span>越大，树就越不容易生长；接着我们希望模型每次的拟合值较小而引入<span class="math notranslate nohighlight">\(\frac{1}{2}\lambda \sum_{i=1}^T w_i^2\)</span>，其中的<span class="math notranslate nohighlight">\(w_i\)</span>是回归树上第<span class="math notranslate nohighlight">\(i\)</span>个叶子结点的预测目标值。记第<span class="math notranslate nohighlight">\(m\)</span>轮中第<span class="math notranslate nohighlight">\(i\)</span>个样本在上一轮的预测值为<span class="math notranslate nohighlight">\(F^{(m-1)}_i\)</span>，本轮需要学习的树模型为<span class="math notranslate nohighlight">\(h^{(m)}\)</span>，此时的损失函数即为</p>
+<p>由于树模型较强的拟合能力，我们需要对模型进行正则约束来控制每轮模型学习的进度，除了学习率参数之外，XGBoost还引入了两项作用于损失函数的正则项：首先我们希望树的生长受到抑制而引入<span class="math notranslate nohighlight">\(\gamma T\)</span>，其中的<span class="math notranslate nohighlight">\(T\)</span>为树的叶子节点个数，<span class="math notranslate nohighlight">\(\gamma\)</span>越大，树就越不容易生长；接着我们希望模型每次的拟合值较小而引入<span class="math notranslate nohighlight">\(\frac{1}{2}\lambda \sum_{j=1}^T w_j^2\)</span>，其中的<span class="math notranslate nohighlight">\(w_i\)</span>是回归树上第<span class="math notranslate nohighlight">\(i\)</span>个叶子结点的预测目标值。记第<span class="math notranslate nohighlight">\(m\)</span>轮中第<span class="math notranslate nohighlight">\(i\)</span>个样本在上一轮的预测值为<span class="math notranslate nohighlight">\(F^{(m-1)}_i\)</span>，本轮需要学习的树模型为<span class="math notranslate nohighlight">\(h^{(m)}\)</span>，此时的损失函数即为</p>
 <div class="math notranslate nohighlight">
 \[
-L^{(m)}(h^{(m)}) = \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{i=1}^NL(y_i, F^{(m-1)}_i+h^{(m)}(X_i)) 
+L^{(m)}(h^{(m)}) = \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw^2_j+\sum_{i=1}^NL(y_i, F^{(m-1)}_i+h^{(m)}(X_i)) 
 \]</div>
 <p>从参数空间的角度而言，损失即为</p>
 <div class="math notranslate nohighlight">
 \[
-L^{(m)}(F^{(m)}_i)  = \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{i=1}^NL(y_i, F^{(m)}_i)
+L^{(m)}(F^{(m)}_i)  = \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw^2_j+\sum_{i=1}^NL(y_i, F^{(m)}_i)
 \]</div>
 <p>不同于上一节中GBDT的梯度下降方法，XGBoost直接在<span class="math notranslate nohighlight">\(h^{(m)}=0\)</span>处（或<span class="math notranslate nohighlight">\(F^{(m)}_i=F^{(m-1)}_i\)</span>处）将损失函数近似为一个二次函数，从而直接将该二次函数的顶点坐标作为<span class="math notranslate nohighlight">\(h^{*(m)}(X_i)\)</span>的值，即具有更小的损失。梯度下降法只依赖损失的一阶导数，当损失的一阶导数变化较大时，使用一步梯度获得的<span class="math notranslate nohighlight">\(h^{*(m)}\)</span>估计很容易越过最优点，甚至使得损失变大（如子图2所示）；二次函数近似的方法需要同时利用一阶导数和二阶导数的信息，因此对于<span class="math notranslate nohighlight">\(h^{*(m)}\)</span>的估计在某些情况下会比梯度下降法的估计值更加准确，或说对各类损失函数更有自适应性（如子图3和子图4所示）。</p>
 <div class="figure align-center">
@@ -464,9 +464,9 @@ L^{(m)}(F^{(m)}_i)  = \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{i=1}^NL(
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{aligned}
-L^{(m)}(\textbf{h}) &amp;= \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{i=1}^N L(y_i, F^{(m-1)}_i+h_i) \\
-&amp;\approx \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{i=1}^N [L(y_i, F^{(m-1)}_i)+\left . \frac{\partial L}{\partial h_i}\right |_{h_i=0} h_i+\frac{1}{2}\left . \frac{\partial^2 L}{\partial h^2_i}\right |_{h_i=0} h^2_i]\\
-&amp;= \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{i=1}^N [\left . \frac{\partial L}{\partial h_i}\right |_{h_i=0} h_i+\frac{1}{2}\left . \frac{\partial^2 L}{\partial h^2_i}\right |_{h_i=0} h^2_i] + constant
+L^{(m)}(\textbf{h}) &amp;= \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw^2_j+\sum_{i=1}^N L(y_i, F^{(m-1)}_i+h_i) \\
+&amp;\approx \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw^2_j+\sum_{i=1}^N [L(y_i, F^{(m-1)}_i)+\left . \frac{\partial L}{\partial h_i}\right |_{h_i=0} h_i+\frac{1}{2}\left . \frac{\partial^2 L}{\partial h^2_i}\right |_{h_i=0} h^2_i]\\
+&amp;= \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw^2_j+\sum_{i=1}^N [\left . \frac{\partial L}{\partial h_i}\right |_{h_i=0} h_i+\frac{1}{2}\left . \frac{\partial^2 L}{\partial h^2_i}\right |_{h_i=0} h^2_i] + constant
 \end{aligned}
 \end{split}\]</div>
 <div class="margin sidebar">
@@ -485,8 +485,8 @@ L^{(m)}(\textbf{h}) &amp;= \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{i=1
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{aligned}
-\tilde{L}^{(m)}(\textbf{h}) &amp;= \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{i=1}^N [p_i h_i+\frac{1}{2}q_i h^2_i]\\
-&amp;= \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{j=1}^T[(\sum_{i\in I_j} p_i )w_j+\frac{1}{2}(\sum_{i\in I_j}q_i )w^2_i]\\
+\tilde{L}^{(m)}(\textbf{h}) &amp;= \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw^2_j+\sum_{i=1}^N [p_i h_i+\frac{1}{2}q_i h^2_i]\\
+&amp;= \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw^2_j+\sum_{j=1}^T[(\sum_{i\in I_j} p_i )w_j+\frac{1}{2}(\sum_{i\in I_j}q_i )w^2_i]\\
 &amp;= \gamma T+\sum_{j=1}^T[(\sum_{i\in I_j} p_i )w_j+\frac{1}{2}(\sum_{i\in I_j}q_i +\lambda)w^2_i]\\
 &amp;=\tilde{L}^{(m)}(\textbf{w})
 \end{aligned}

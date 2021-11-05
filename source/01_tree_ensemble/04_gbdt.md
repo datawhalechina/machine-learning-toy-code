@@ -240,16 +240,16 @@ $$
 
 ## 3. XGBoost算法
 
-由于树模型较强的拟合能力，我们需要对模型进行正则约束来控制每轮模型学习的进度，除了学习率参数之外，XGBoost还引入了两项作用于损失函数的正则项：首先我们希望树的生长受到抑制而引入$\gamma T$，其中的$T$为树的叶子节点个数，$\gamma$越大，树就越不容易生长；接着我们希望模型每次的拟合值较小而引入$\frac{1}{2}\lambda \sum_{i=1}^T w_i^2$，其中的$w_i$是回归树上第$i$个叶子结点的预测目标值。记第$m$轮中第$i$个样本在上一轮的预测值为$F^{(m-1)}_i$，本轮需要学习的树模型为$h^{(m)}$，此时的损失函数即为
+由于树模型较强的拟合能力，我们需要对模型进行正则约束来控制每轮模型学习的进度，除了学习率参数之外，XGBoost还引入了两项作用于损失函数的正则项：首先我们希望树的生长受到抑制而引入$\gamma T$，其中的$T$为树的叶子节点个数，$\gamma$越大，树就越不容易生长；接着我们希望模型每次的拟合值较小而引入$\frac{1}{2}\lambda \sum_{j=1}^T w_j^2$，其中的$w_i$是回归树上第$i$个叶子结点的预测目标值。记第$m$轮中第$i$个样本在上一轮的预测值为$F^{(m-1)}_i$，本轮需要学习的树模型为$h^{(m)}$，此时的损失函数即为
 
 $$
-L^{(m)}(h^{(m)}) = \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{i=1}^NL(y_i, F^{(m-1)}_i+h^{(m)}(X_i)) 
+L^{(m)}(h^{(m)}) = \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw^2_j+\sum_{i=1}^NL(y_i, F^{(m-1)}_i+h^{(m)}(X_i)) 
 $$
 
 从参数空间的角度而言，损失即为
 
 $$
-L^{(m)}(F^{(m)}_i)  = \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{i=1}^NL(y_i, F^{(m)}_i)
+L^{(m)}(F^{(m)}_i)  = \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw^2_j+\sum_{i=1}^NL(y_i, F^{(m)}_i)
 $$
 
 不同于上一节中GBDT的梯度下降方法，XGBoost直接在$h^{(m)}=0$处（或$F^{(m)}_i=F^{(m-1)}_i$处）将损失函数近似为一个二次函数，从而直接将该二次函数的顶点坐标作为$h^{*(m)}(X_i)$的值，即具有更小的损失。梯度下降法只依赖损失的一阶导数，当损失的一阶导数变化较大时，使用一步梯度获得的$h^{*(m)}$估计很容易越过最优点，甚至使得损失变大（如子图2所示）；二次函数近似的方法需要同时利用一阶导数和二阶导数的信息，因此对于$h^{*(m)}$的估计在某些情况下会比梯度下降法的估计值更加准确，或说对各类损失函数更有自适应性（如子图3和子图4所示）。
@@ -265,9 +265,9 @@ align: center
 
 $$
 \begin{aligned}
-L^{(m)}(\textbf{h}) &= \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{i=1}^N L(y_i, F^{(m-1)}_i+h_i) \\
-&\approx \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{i=1}^N [L(y_i, F^{(m-1)}_i)+\left . \frac{\partial L}{\partial h_i}\right |_{h_i=0} h_i+\frac{1}{2}\left . \frac{\partial^2 L}{\partial h^2_i}\right |_{h_i=0} h^2_i]\\
-&= \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{i=1}^N [\left . \frac{\partial L}{\partial h_i}\right |_{h_i=0} h_i+\frac{1}{2}\left . \frac{\partial^2 L}{\partial h^2_i}\right |_{h_i=0} h^2_i] + constant
+L^{(m)}(\textbf{h}) &= \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw^2_j+\sum_{i=1}^N L(y_i, F^{(m-1)}_i+h_i) \\
+&\approx \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw^2_j+\sum_{i=1}^N [L(y_i, F^{(m-1)}_i)+\left . \frac{\partial L}{\partial h_i}\right |_{h_i=0} h_i+\frac{1}{2}\left . \frac{\partial^2 L}{\partial h^2_i}\right |_{h_i=0} h^2_i]\\
+&= \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw^2_j+\sum_{i=1}^N [\left . \frac{\partial L}{\partial h_i}\right |_{h_i=0} h_i+\frac{1}{2}\left . \frac{\partial^2 L}{\partial h^2_i}\right |_{h_i=0} h^2_i] + constant
 \end{aligned}
 $$
 
@@ -285,8 +285,8 @@ $$
 
 $$
 \begin{aligned}
-\tilde{L}^{(m)}(\textbf{h}) &= \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{i=1}^N [p_i h_i+\frac{1}{2}q_i h^2_i]\\
-&= \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw_j+\sum_{j=1}^T[(\sum_{i\in I_j} p_i )w_j+\frac{1}{2}(\sum_{i\in I_j}q_i )w^2_i]\\
+\tilde{L}^{(m)}(\textbf{h}) &= \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw^2_j+\sum_{i=1}^N [p_i h_i+\frac{1}{2}q_i h^2_i]\\
+&= \gamma T+\frac{1}{2}\lambda \sum_{j=1}^Tw^2_j+\sum_{j=1}^T[(\sum_{i\in I_j} p_i )w_j+\frac{1}{2}(\sum_{i\in I_j}q_i )w^2_i]\\
 &= \gamma T+\sum_{j=1}^T[(\sum_{i\in I_j} p_i )w_j+\frac{1}{2}(\sum_{i\in I_j}q_i +\lambda)w^2_i]\\
 &=\tilde{L}^{(m)}(\textbf{w})
 \end{aligned}

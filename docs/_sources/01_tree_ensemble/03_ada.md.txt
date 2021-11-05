@@ -36,7 +36,7 @@ $$
 L(\mathbf{y},\mathbf{f})=\exp(-\frac{\mathbf{y}^T\mathbf{f}}{K})
 $$
 
-由于对任意的向量$a\mathbb{1}$有
+由于对任意的向量$a\mathbb{1},a\in \mathbb{R}$有
 
 $$
 L(\mathbf{y}, \mathbf{f}+a\mathbb{1})=\exp(-\frac{\mathbf{y}^T\mathbf{f}}{K}-\frac{a\mathbf{y}^T\mathbb{1}}{K})=\exp(-\frac{\mathbf{y}^T\mathbf{f}}{K})=L(\mathbf{y}, \mathbf{f})
