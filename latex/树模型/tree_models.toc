@@ -1,5 +1,0 @@
-\beamer@sectionintoc {1}{信息论基础}{2}{0}{1}
-\beamer@sectionintoc {2}{分类树的节点分裂}{17}{0}{2}
-\beamer@sectionintoc {3}{CART树}{26}{0}{3}
-\beamer@sectionintoc {4}{决策树的剪枝}{33}{0}{4}
-\beamer@sectionintoc {5}{习题}{38}{0}{5}

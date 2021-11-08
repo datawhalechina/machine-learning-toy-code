@@ -1,6 +1,0 @@
-\beamer@sectionintoc {1}{概述}{3}{0}{1}
-\beamer@sectionintoc {2}{分类损失}{4}{0}{2}
-\beamer@sectionintoc {3}{SAMME}{7}{0}{3}
-\beamer@sectionintoc {4}{SAMME.R}{16}{0}{4}
-\beamer@sectionintoc {5}{Adaboost.R2}{22}{0}{5}
-\beamer@sectionintoc {6}{习题}{25}{0}{6}
