@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 #!/usr/bin/env python
 # coding=utf-8
 '''
@@ -7,24 +5,47 @@ Author: JiangJi
 Email: johnjim0816@gmail.com
 Date: 2021-08-26 11:23:51
 LastEditor: JiangJi
-LastEditTime: 2021-09-03 16:07:02
+LastEditTime: 2021-12-17 15:18:14
 Discription: 
 Environment: 
 '''
 import sys,os
 curr_path = os.path.dirname(os.path.abspath(__file__)) # 当前文件所在绝对路径
 parent_path = os.path.dirname(curr_path) # 父路径
-sys.path.append(parent_path) # 添加路径到系统路径
+p_parent_path = os.path.dirname(parent_path)
+sys.path.append(p_parent_path) 
+print(f"主目录为：{p_parent_path}")
 
->>>>>>> 93f89a64cf9f7418bbdadc2dddc3423e8d4dbf8a
+
 import time
 import numpy as np
 import math
 import random
 from tqdm import tqdm
+from torch.utils.data import DataLoader
+from torchvision import datasets
+import torchvision
+import torchvision.transforms as transforms
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report
 
-from Mnist.load_data import load_local_mnist # 本地载入数据集
-
+def load_local_mnist():
+    ''' 使用Torch加载本地Mnist数据集
+    '''
+    train_dataset = datasets.MNIST(root = p_parent_path+'/datasets/', train = True,transform = transforms.ToTensor(), download = False)
+    test_dataset = datasets.MNIST(root = p_parent_path+'/datasets/', train = False, 
+                                transform = transforms.ToTensor(), download = False)
+    batch_size = len(train_dataset)
+    train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
+    test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=True)
+    X_train,y_train = next(iter(train_loader))
+    X_test,y_test = next(iter(test_loader))
+    X_train,y_train = X_train.cpu().numpy(),y_train.cpu().numpy() # tensor转为array形式)
+    X_test,y_test = X_test.cpu().numpy(),y_test.cpu().numpy() # tensor转为array形式)
+    X_train = X_train.reshape(X_train.shape[0],784)
+    X_test = X_test.reshape(X_test.shape[0],784)    
+    return X_train,X_test,y_train,y_test
 class SVM:
     def __init__(self, X_train, y_train, gamma = 0.001, C = 200, toler = 0.001):
         '''SVM相关参数初始化
@@ -54,7 +75,7 @@ class SVM:
     def calc_kernel_1(self):
         '''计算高斯核
         '''
-        print("开始计算计算高斯核...")
+        print("开始计算高斯核...")
         m =  self.X_train.shape[0] # 训练集数量 
         kernel = [[0 for _ in range(m)] for _ in range(m)] 
         for i in tqdm(range(m)):
@@ -74,11 +95,11 @@ class SVM:
     def calc_kernel(self):
         ''' 快速计算高斯核：https://www.scutmath.com/fast_kernel_matrix_generation.html
         '''
-        print("开始计算计算高斯核...")
+        print("开始计算高斯核...")
         X1,X2 = self.X_train, self.X_train
         kernel = np.sum(X1**2, 1).reshape(-1, 1) + np.sum(X2**2, 1) - 2 * np.dot(X1, X2.T)
         kernel = np.exp(- self.gamma * kernel)
-        print("完成计算高斯核函！")
+        print("完成计算高斯核！")
         return kernel
     def is_satisfy_KKT(self, i):
         '''
@@ -198,17 +219,17 @@ class SVM:
         #返回第二个变量的E2值以及其索引
         return E2, maxIndex
 
-    def train(self, max_iter = 100):
+    def train(self, n_epochs = 100):
         ''' SMO算法训练
         '''
-        # max_iter: 迭代次数，超过设置次数还未收敛则强制停止
+        # n_epochs: 迭代次数，超过设置次数还未收敛则强制停止
         # alpha_change_flag: 单次迭代中有参数改变则增加1
-        i_iter = 0 
+        i_epoch = 0 
         alpha_change_flag = 1 # alpha_change_flag==0时表示上次迭代没有参数改变，如果遍历一遍都没有参数改变，说明达到收敛状态，可以停止了
         m =  self.X_train.shape[0] # 训练集数量 
-        while (i_iter < max_iter) and (alpha_change_flag > 0):
-            i_iter += 1 # 迭代步数加1
-            print(f"{i_iter}/{max_iter}")
+        while (i_epoch < n_epochs) and (alpha_change_flag > 0):
+            i_epoch += 1 # 迭代步数加1
+            print(f"{i_epoch}/{n_epochs}")
             alpha_change_flag = 0  # 新的一轮将参数改变标志位重新置0
             #大循环遍历所有样本，用于找SMO中第一个变量
             for i in range(m):
@@ -275,14 +296,9 @@ class SVM:
                     self.alpha[j] = alpha2_new
                     self.b = b_new
 
-<<<<<<< HEAD
-                    self.E[i] = self.calcEi(i)
-                    self.E[j] = self.calcEi(j)
-=======
                     self.E[i] = self.calc_Ei(i)
                     self.E[j] = self.calc_Ei(j)
 
->>>>>>> 93f89a64cf9f7418bbdadc2dddc3423e8d4dbf8a
                     #如果α2的改变量过于小，就认为该参数未改变，不增加parameterChanged值
                     #反之则自增1
                     if math.fabs(alpha2_new - alpha2_old) >= 0.00001:
@@ -291,7 +307,7 @@ class SVM:
                
 
         #全部计算结束后，重新遍历一遍α，查找里面的支持向量
-        for i in range(self.m):
+        for i in range(m):
             #如果α>0，说明是支持向量
             if self.alpha[i] > 0:
                 #将支持向量的索引保存起来
@@ -358,15 +374,15 @@ class SVM:
 
 if __name__ == '__main__':
     start = time.time()
-    (X_train, y_train), (X_test, y_test) = load_local_mnist(one_hot=False) # one_hot指对标签y进行one hot编码    
+    X_train,X_test,y_train,y_test = load_local_mnist()  
     # 初始化SVM类
-    model = SVM(X_train[:1000], y_train[:1000], gamma=0.001,C = 200, toler = 0.001)
+    model = SVM(X_train[:100], y_train[:100], gamma=0.001,C = 200, toler = 0.001)
     # 开始训练
     print('start to train')
     model.train()
     # 开始测试
     print('start to test')
-    accuracy = model.test(X_test[:200], y_test[:200])
+    accuracy = model.test(X_test[:20], y_test[:20])
     print('the accuracy is:%d'%(accuracy * 100), '%')
     # 打印时间
     print('time span:', time.time() - start)
