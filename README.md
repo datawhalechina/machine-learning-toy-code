@@ -4,18 +4,21 @@
 
 ## 算法进度
 
-|   算法名称              | 相关材料 | 进度 | 备注 |
+|   算法名称               | 相关材料 | 进度 | 备注 |
 | :----------:            | :------: | :--: | ---- |
-| 01-LinearRegression    |sklearn   |  OK|      |
+| 01-LinearRegression     |sklearn   |  OK|      |
 | 02-LogisticRegression   |          |  OK  |      |
-| 线性判别分析            |          |      |      |
-|    决策树               |          |      |      |
-|    感知机               |          |      |      |
-|  支持向量机             |          |      |      |
-|    贝叶斯               |          |      |      |
-|   集成学习              |          |      |      |
-|  k均值聚类              |          |      |      |
-|  主成分分析             |          |      |      |
+| 03-DecisionTree         |          |      |      |
+| 04-MLP                  |          |      |      |
+| 05-SVM                  |          |      |      |
+| 06-Bayes                |          |      |      |
+| 07-Random Forest        |          |      |      |
+| 08-AdaBoos              |          |      |      |
+| 09-K-means              |          |      |      |
+| 10-kNN                  |          |      |      |
+| 11-PCA                  |          |      |      |
+| 12-HMM                  |          |      |      |
+| 13-Visualization        |          |      |      |
 
 
 
