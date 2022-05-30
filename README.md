@@ -45,8 +45,7 @@
          <p>chap 1-4<br> 广州城市理工学院</p>
       </td>
       <td>
-         <a href="https://github.com"><img width="70" height="70" src="https://github.com/datawhalechina/machine-learning-toy-code/blob/main/assets/%D0%9D%D0%B0%D0%B4%D0%B5%D0%B6%D0%B4%D0%B0.jpg" alt="pic"></a><br>
-         <a href="https://github.com/muxiaoxiong">张若萱</a>
+         <a >张若萱</a>
          <p>chap 5-8<br> 天津理工大学</p>
       </td>
       <td>
@@ -57,6 +56,7 @@
     </tr>
   </tbody>
 </table>
+
 
 
 ## Refs
