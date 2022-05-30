@@ -46,7 +46,7 @@
       </td>
       <td>
          <a href="https://github.com/zhangruoxuan"><img width="70" height="70" src="https://github.com/zhangruoxuan.png?s=40" alt="pic"></a><br>
-         <a >张若萱</a>
+         <a href="https://github.com/zhangruoxuan">张若萱</a>
          <p>chap 5-8<br> 天津理工大学</p>
       </td>
       <td>
