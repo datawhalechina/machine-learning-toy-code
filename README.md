@@ -28,33 +28,36 @@
   <tbody>
     <tr align="center" >
       <td>
-         <a href="https://github.com/JohnJim0816"><img width="70" height="70" src="https://github.com/JohnJim0816.png?s=40" alt="pic"></a><br>
-         <a href="https://github.com/JohnJim0816">John Jim</a>
-         <p>算法实战<br> 北京大学</p>
+         <a href="https://github.com/JohnJim0816">
+            <img width="70" height="70" src="https://github.com/JohnJim0816.png?s=40" alt="pic">
+         </a><br>
+            <a href="https://github.com/JohnJim0816">John Jim</a>
+            <p>算法实战<br> 北京大学</p>
       </td>
       <td>
-         <a href="https://github.com/JohnJim0816"><img width="70" height="70" src="https://github.com/JohnJim0816.png?s=40" alt="pic"></a><br>
-         <a href="https://github.com/JohnJim0816">牧小熊</a>
-         <p>算法实战<br> 北京大学</p>
+         <a href="https://github.com/muxiaoxiong"><img width="70" height="70" src="https://github.com/muxiaoxiong.png?s=40" alt="pic"></a><br>
+         <a href="https://github.com/muxiaoxiong">牧小熊</a>
+         <p>chap 13<br> 华中农业大学</p>
       </td>
       <td>
-         <a href="https://github.com/JohnJim0816"><img width="70" height="70" src="https://github.com/JohnJim0816.png?s=40" alt="pic"></a><br>
-         <a href="https://github.com/JohnJim0816">John Jim</a>
-         <p>算法实战<br> 北京大学</p>
+         <a href="https://github.com/leungkafai"><img width="70" height="70" src="https://github.com/leungkafai.png?s=40" alt="pic"></a><br>
+         <a href="https://github.com/leungkafai">梁家晖</a>
+         <p>chap 1-4<br> 广州城市理工学院</p>
       </td>
       <td>
-         <a href="https://github.com/JohnJim0816"><img width="70" height="70" src="https://github.com/JohnJim0816.png?s=40" alt="pic"></a><br>
-         <a href="https://github.com/JohnJim0816">John Jim</a>
-         <p>算法实战<br> 北京大学</p>
+         <a href="https://github.com"><img width="70" height="70" src="https://github.com/datawhalechina/machine-learning-toy-code/blob/main/assets/%D0%9D%D0%B0%D0%B4%D0%B5%D0%B6%D0%B4%D0%B0.jpg" alt="pic"></a><br>
+         <a href="https://github.com/muxiaoxiong">张若萱</a>
+         <p>chap 5-8<br> 天津理工大学</p>
       </td>
       <td>
-         <a href="https://github.com/JohnJim0816"><img width="70" height="70" src="https://github.com/JohnJim0816.png?s=40" alt="pic"></a><br>
-         <a href="https://github.com/JohnJim0816">John Jim</a>
-         <p>算法实战<br> 北京大学</p>
+         <a href="https://github.com/yueqianhaobo"><img width="70" height="70" src="https://github.com/yueqianhaobo.png?s=40" alt="pic"></a><br>
+         <a href="https://github.com/yueqianhaobo">孙子涵</a>
+         <p>chap 9-12<br> 太原理工大学</p>
       </td>
     </tr>
   </tbody>
 </table>
+
 
 ## Refs
 
