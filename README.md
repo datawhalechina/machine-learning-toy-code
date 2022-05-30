@@ -45,7 +45,7 @@
          <p>chap 1-4<br> 广州城市理工学院</p>
       </td>
       <td>
-         <img width="70" height="70" src="./assets/Надежда.jpg"></a><br>
+         <a href="https://github.com/zhangruoxuan"><img width="70" height="70" src="https://github.com/zhangruoxuan.png?s=40" alt="pic"></a><br>
          <a >张若萱</a>
          <p>chap 5-8<br> 天津理工大学</p>
       </td>
