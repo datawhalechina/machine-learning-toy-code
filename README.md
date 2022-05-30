@@ -6,19 +6,19 @@
 
 |   算法名称               | 相关材料 | 进度 | 备注 |
 | :----------:            | :------: | :--: | ---- |
-| 01-LinearRegression     |sklearn   |  OK|      |
-| 02-LogisticRegression   |          |  OK  |      |
-| 03-DecisionTree         |          |      |      |
-| 04-MLP                  |          |      |      |
-| 05-SVM                  |          |      |      |
-| 06-Bayes                |          |      |      |
-| 07-Random Forest        |          |      |      |
-| 08-AdaBoos              |          |      |      |
-| 09-K-means              |          |      |      |
-| 10-kNN                  |          |      |      |
-| 11-PCA                  |          |      |      |
-| 12-HMM                  |          |      |      |
-| 13-Visualization        |          |      |      |
+| 01-LinearRegression     |sklearn   |  OK  |      |
+| 02-LogisticRegression   |sklearn   |  OK  |      |
+| 03-DecisionTree         |sklearn   |  OK  |      |
+| 04-MLP                  |sklearn   |   OK |      |
+| 05-SVM                  |sklearn   |  OK  |      |
+| 06-Bayes                |sklearn   |  OK  |      |
+| 07-Random Forest        |sklearn   |  OK  |      |
+| 08-AdaBoos              |sklearn   |  OK  |      |
+| 09-K-means              |sklearn   | OK   |      |
+| 10-kNN                  |sklearn   | OK   |      |
+| 11-PCA                  |sklearn   | OK   |      |
+| 12-HMM                  |sklearn   | OK   |      |
+| 13-Visualization        |sklearn   | OK   |      |
 
 
 
@@ -31,6 +31,7 @@
          <a href="https://github.com/JohnJim0816"><img width="70" height="70" src="https://github.com/JohnJim0816.png?s=40" alt="pic"></a><br>
          <a href="https://github.com/JohnJim0816">John Jim</a>
          <p>算法实战<br> 北京大学</p>
+        
       </td>
     </tr>
   </tbody>
