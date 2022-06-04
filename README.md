@@ -19,7 +19,7 @@
 | 09-K-means              |sklearn   | OK   |      |
 | 10-kNN                  |sklearn   | OK   |      |
 | 11-PCA                  |sklearn   | OK   |      |
-| 12-HMM                  |sklearn   | OK   |      |
+| 12-HMM                  |hmmlearn  | OK   |      |
 | 13-Visualization        |sklearn   | OK   |      |
 
 
