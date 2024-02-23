@@ -22,6 +22,14 @@
 | 12-HMM                  |hmmlearn  | OK   |      |
 | 13-Visualization        |sklearn   | OK   |      |
 
+## 算法项目实战
+
+学习完了西瓜书，手动实现相关的算法后，接下来就是到了实战的环节，datawhale开源的数据竞赛项目给大家施展自己coding的平台
+
+- [数据挖掘实践（二手车价格预测）](https://github.com/datawhalechina/team-learning-data-mining/tree/master/SecondHandCarPriceForecast)
+
+- [数据挖掘实践（金融风控）](https://github.com/datawhalechina/team-learning-data-mining/tree/master/FinancialRiskControl)
+- [数据挖掘实践（心跳信号分类）](https://github.com/datawhalechina/team-learning-data-mining/tree/master/HeartbeatClassification)
 
 
 ## 贡献者
